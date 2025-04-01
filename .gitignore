@@ -1,0 +1,9 @@
+Library/
+.idea/
+Logs/
+obj/
+Packages/
+Temp/
+Assembly-CSharp.csproj
+Platform Jump.sln
+Platform Jump.sln.DotSettings.user
