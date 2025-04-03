@@ -21,6 +21,8 @@ public class Player : Entity
     public PlayerWallJumpState wallJump { get; private set; }
     public PlayerPrimaryAttackState primaryAttack { get; private set; }
     public playerCounterAttackState CounterAttack { get; private set; }
+    public PlayerAimSwordState aimSword { get; private set; }
+    public PlayerCatchSwordState catchSword { get; private set; }
     #endregion
 
     [Header("Attack details")]
@@ -50,6 +52,8 @@ public class Player : Entity
         wallJump = new PlayerWallJumpState(this, stateMachine, "Jump");
         primaryAttack = new PlayerPrimaryAttackState(this, stateMachine, "Attack");
         CounterAttack = new playerCounterAttackState(this, stateMachine, "CounterAttack");
+        aimSword = new PlayerAimSwordState(this, stateMachine, "AimSword");
+        catchSword = new PlayerCatchSwordState(this, stateMachine, "CatchSword");
     }
 
     protected override void Start()

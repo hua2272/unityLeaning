@@ -18,6 +18,10 @@ public class PlayerGroundedState : PlayerState
     public override void Update()
     {
         base.Update();
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            stateMachine.ChangeState(player.aimSword);
+        }
         if (Input.GetKeyDown(KeyCode.Q))
         {
             stateMachine.ChangeState(player.CounterAttack);
@@ -28,7 +32,6 @@ public class PlayerGroundedState : PlayerState
         }
         if (Input.GetKeyDown(KeyCode.Space) && player.isGroundDetected())
         {
-            Debug.Log("Jump");
             stateMachine.ChangeState(player.jumpState);
         }
         if (Input.GetKey(KeyCode.Mouse0))
@@ -40,6 +43,5 @@ public class PlayerGroundedState : PlayerState
     public override void Exist()
     {
         base.Exist();
-        
     }
 }
