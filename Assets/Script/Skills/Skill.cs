@@ -14,7 +14,7 @@ public class Skill : MonoBehaviour
         player = PlayerManager.instance.player;
     }
 
-    protected void Update()
+    protected virtual void Update()
     {
         coolDownTimer -= Time.deltaTime;
     }
