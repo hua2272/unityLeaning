@@ -31,7 +31,8 @@ public class Sword_Skill_Controller : MonoBehaviour
 
     public void ReturnSword()
     {
-        rb.isKinematic = false;
+        //rb.isKinematic = false;
+        rb.constraints = RigidbodyConstraints2D.FreezeAll;
         transform.parent = null;
         isReturning = true;
     }
@@ -47,13 +48,17 @@ public class Sword_Skill_Controller : MonoBehaviour
             transform.position = Vector2.MoveTowards(transform.position, player.transform.position, returnSpeed * Time.deltaTime);
             if (Vector2.Distance(transform.position, player.transform.position) < 1)
             {
-                player.ClearOldSword();
+                player.CatchTheSword();
             }
         }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (isReturning) //todo 后期改为回收时碰到敌人可造成伤害
+        {
+            return;
+        }
         anim.SetBool("Rotation", false);
         canRotate = false;
         cd.enabled = false;
