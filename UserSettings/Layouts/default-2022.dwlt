@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 2194.286
     height: 1192
   m_ShowMode: 4
-  m_Title: Scene
+  m_Title: Game
   m_RootView: {fileID: 4}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -152,7 +152,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 129
+  controlID: 132
   draggingID: 0
 --- !u!114 &7
 MonoBehaviour:
@@ -273,8 +273,8 @@ MonoBehaviour:
     y: 0
     width: 1230.2858
     height: 637.1429
-  m_MinSize: {x: 201, y: 221}
-  m_MaxSize: {x: 4001, y: 4021}
+  m_MinSize: {x: 200, y: 200}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 22}
   m_Panes:
   - {fileID: 22}
@@ -432,9 +432,9 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 652
-    width: 1078.4286
-    height: 541.5714
+    y: 709.7143
+    width: 1229.2858
+    height: 483.85712
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -447,7 +447,7 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_LockTracker:
     m_IsLocked: 0
-  m_LastSelectedObjectID: 27018
+  m_LastSelectedObjectID: 26978
 --- !u!114 &17
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -470,8 +470,8 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 72.571434
-    width: 1116.7142
-    height: 662.4286
+    width: 1229.2858
+    height: 616.1429
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -640,9 +640,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 8a690000
-      m_LastClickedID: 27018
-      m_ExpandedIDs: fcfaffff3469000062690000
+      m_SelectedIDs: c46b0000
+      m_LastClickedID: 0
+      m_ExpandedIDs: fcfaffff62690000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -758,7 +758,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Script/Player
+    - Assets/Script/Skills
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -766,15 +766,15 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 72
   m_LastFolders:
-  - Assets/Script/Player
+  - Assets/Script/Skills
   m_LastFoldersGridSize: 72
   m_LastProjectPath: E:\unity\project\Platform Jump
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 0e6c0000
-    m_LastClickedID: 27662
+    m_SelectedIDs: c46b0000
+    m_LastClickedID: 27588
     m_ExpandedIDs: 00000000946b0000966b0000986b00009a6b0000bc6b0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -1326,9 +1326,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 12.846972, y: 0.8521094, z: 0.048387885}
+    m_Target: {x: 25.395573, y: -4.373507, z: -0.013984548}
     speed: 2
-    m_Value: {x: 12.846972, y: 0.8521094, z: 0.048387885}
+    m_Value: {x: 25.395573, y: -4.373507, z: -0.013984548}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1378,9 +1378,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 5.1612315
+    m_Target: 11.39847
     speed: 2
-    m_Value: 5.1612315
+    m_Value: 11.39847
   m_Ortho:
     m_Target: 1
     speed: 2
