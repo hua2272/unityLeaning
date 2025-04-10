@@ -12,7 +12,7 @@ public class Blackhole_Skill_Controller : MonoBehaviour
     public float growSpeed;
     public bool canGrow;
     
-    public List<Transform> targets;
+    public List<Transform> targets = new List<Transform>();
 
     private void Update()
     {
@@ -28,11 +28,22 @@ public class Blackhole_Skill_Controller : MonoBehaviour
         {
             //targets.Add(collision.transform);
             //todo 冻结，时停敌人
-            GameObject newHotkey = Instantiate(hotkeyPrefab, collision.transform.position + new Vector3(0,2), Quaternion.identity);
-            KeyCode chooseKey = keyCodeList[Random.Range(0, keyCodeList.Count)];
-            keyCodeList.Remove(chooseKey);
-            Blackhole_Hotkey_Controller newHotkeyScript = newHotkey.GetComponent<Blackhole_Hotkey_Controller>();
-            newHotkeyScript.SetupHotkey(chooseKey);
+            CreateHotkey(collision);
         }
     }
+
+    private void CreateHotkey(Collider2D collision)
+    {
+        if (keyCodeList.Count <= 0)
+        {
+            return;
+        }
+        GameObject newHotkey = Instantiate(hotkeyPrefab, collision.transform.position + new Vector3(0,2), Quaternion.identity);
+        KeyCode chooseKey = keyCodeList[Random.Range(0, keyCodeList.Count)];
+        keyCodeList.Remove(chooseKey);
+        Blackhole_Hotkey_Controller newHotkeyScript = newHotkey.GetComponent<Blackhole_Hotkey_Controller>();
+        newHotkeyScript.SetupHotkey(chooseKey, collision.transform, this);
+    }
+
+    public void AddEnemyList(Transform _enemyTransform) => targets.Add(_enemyTransform);
 }
