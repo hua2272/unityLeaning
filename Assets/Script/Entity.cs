@@ -9,6 +9,8 @@ public class Entity : MonoBehaviour
     public Animator anim { get; private set; }
     public Rigidbody2D rb { get; private set; }
     public EntityFX fx { get; private set; }
+    public SpriteRenderer sr { get; private set; }
+    public CharacterState status { get; private set; }
     #endregion
     
     [Header("Knockback Info")]
@@ -35,11 +37,12 @@ public class Entity : MonoBehaviour
         anim = GetComponentInChildren<Animator>();
         rb = GetComponentInChildren<Rigidbody2D>();
         fx = GetComponentInChildren<EntityFX>();
+        status = GetComponent<CharacterState>();
     }   
     
     protected virtual void Update() {}
 
-    public virtual void Danmage()
+    public virtual void DanmageEffect()
     {
         fx.StartCoroutine("FlashFX");
         StartCoroutine("HitKnockback");
