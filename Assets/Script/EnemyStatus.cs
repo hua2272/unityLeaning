@@ -18,4 +18,10 @@ public class EnemyStatus : CharacterState
         base.TakeDamage(damage);
         enemy.DanmageEffect();
     }
+
+    public override void Die()
+    {
+        base.Die();
+        enemy.Die();
+    }
 }
