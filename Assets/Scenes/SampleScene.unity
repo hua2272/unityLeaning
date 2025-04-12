@@ -918,7 +918,7 @@ MonoBehaviour:
     baseValue: 0
     modifiers: 
   damage:
-    baseValue: 10
+    baseValue: 30
     modifiers: 
   maxHealth:
     baseValue: 100

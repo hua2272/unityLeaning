@@ -17,4 +17,10 @@ public class PlayerStatus : CharacterState
         base.TakeDamage(damage);
         player.DanmageEffect();
     }
+
+    public override void Die()
+    {
+        base.Die();
+        player.Die();
+    }
 }

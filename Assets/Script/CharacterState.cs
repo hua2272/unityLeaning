@@ -27,6 +27,11 @@ public class CharacterState : MonoBehaviour
         currentHealth -= _damage;
         if (currentHealth < 0)
         {
+            Die();
         }
+    }
+
+    public virtual void Die()
+    {
     }
 }
