@@ -3,12 +3,24 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using Random = System.Random;
+using Range = UnityEngine.SocialPlatforms.Range;
 
 public class CharacterState : MonoBehaviour
 {
-    public Status strength;
-    public Status damage;
+    [Header("Major stats")]
+    public Status strength; //物伤加点
+    public Status agility; //敏捷加点
+    public Status intelligence; //法术加点
+    public Status vitality; //生命值加点
+    
+    [Header("Defense stats")]
     public Status maxHealth;
+    public Status armor;
+    public Status evasion;
+    
+    public Status damage;
+    
     [SerializeField] private int currentHealth;
 
     protected virtual void Start()
@@ -18,7 +30,9 @@ public class CharacterState : MonoBehaviour
 
     public virtual void DoDamage(CharacterState _targetState)
     {
-        int totalDamage = damage.getValue() + strength.getValue();
+        // int totalEvasion = _targetState.evasion.getValue() + _targetState.agility.getValue();
+        // if (Random.Range(0, 100) < totalEvasion){}
+        int totalDamage = Mathf.Clamp(damage.getValue() + strength.getValue() - _targetState.armor.getValue(), 0, int.MaxValue); //护甲值过大会导致伤害为负数
         _targetState.TakeDamage(totalDamage);
     }
 
