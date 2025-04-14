@@ -19,13 +19,15 @@ public class CharacterState : MonoBehaviour
     public Status armor;
     public Status evasion;
     
+    [Header("Offence stats")]
     public Status damage;
     
-    [SerializeField] private int currentHealth;
+    public int currentHealth;
+    public System.Action onHealthChange;
 
     protected virtual void Start()
     {
-        currentHealth = maxHealth.getValue();
+        currentHealth = GetMaxHealthValue();
     }
 
     public virtual void DoDamage(CharacterState _targetState)
@@ -38,14 +40,25 @@ public class CharacterState : MonoBehaviour
 
     public virtual void TakeDamage(int _damage)
     {
-        currentHealth -= _damage;
+        DecreaseHealth(_damage);
         if (currentHealth < 0)
         {
             Die();
         }
     }
 
+    protected virtual void DecreaseHealth(int _damage)
+    {
+        currentHealth -= _damage;
+        if (onHealthChange != null)
+        {
+            onHealthChange();
+        }
+    }
+
     public virtual void Die()
     {
     }
+
+    public int GetMaxHealthValue() => maxHealth.getValue() + vitality.getValue();
 }
