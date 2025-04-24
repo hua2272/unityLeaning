@@ -8,8 +8,10 @@ public class Inventory : MonoBehaviour
     public static Inventory instance;
     public List<InventoryItem> inventory;
     public List<InventoryItem> stash;
+    public List<InventoryItem> equipment;
     public Dictionary<ItemData, InventoryItem> inventoryDictionary;
     public Dictionary<ItemData, InventoryItem> stashDictionary;
+    public Dictionary<ItemDataEquipment, InventoryItem> equipmentDictionary;
     
     [Header("Inventory UI")]
     [SerializeField] private Transform inventorySlotParent;
@@ -33,14 +35,56 @@ public class Inventory : MonoBehaviour
     {
         inventory = new List<InventoryItem>();
         stash = new List<InventoryItem>();
+        equipment = new List<InventoryItem>();
         inventoryDictionary = new Dictionary<ItemData, InventoryItem>();
         stashDictionary = new Dictionary<ItemData, InventoryItem>();
+        equipmentDictionary = new Dictionary<ItemDataEquipment, InventoryItem>();
         inventoryItemSlot = inventorySlotParent.GetComponentsInChildren<UI_ItemSlot>();
         stashItemSlot = stashSlotParent.GetComponentsInChildren<UI_ItemSlot>();
     }
 
+    public void EquipItem(ItemData _item)
+    {
+        ItemDataEquipment newEquipment = _item as ItemDataEquipment; //在继承体系中的向下转型
+        InventoryItem newItem = new InventoryItem(newEquipment);
+        ItemDataEquipment oldItem = null;
+        foreach (KeyValuePair<ItemDataEquipment, InventoryItem> item in equipmentDictionary)
+        {
+            if (item.Key.equipmentType == newEquipment.equipmentType)
+            {
+                oldItem = item.Key;
+            }
+        }
+        if (oldItem != null)
+        {
+            UnequipItem(oldItem);
+            AddItem(oldItem);
+        }
+        equipment.Add(newItem);
+        equipmentDictionary.Add(newEquipment, newItem);
+        RemoveItem(_item);
+        UpdateSlotUI();
+    }
+
+    private void UnequipItem(ItemDataEquipment oldItem)
+    {
+        if (equipmentDictionary.TryGetValue(oldItem, out InventoryItem value))
+        {
+            equipment.Remove(value);
+            equipmentDictionary.Remove(oldItem);
+        }
+    }
+
     private void UpdateSlotUI()
     {
+        for (int i = 0; i < inventoryItemSlot.Length; i++)
+        {
+            inventoryItemSlot[i].CleanUpSlot();
+        }
+        for (int i = 0; i < stashItemSlot.Length; i++)
+        {
+            stashItemSlot[i].CleanUpSlot();
+        }
         for (int i = 0; i < inventory.Count; i++)
         {
             inventoryItemSlot[i].UpdateSlot(inventory[i]);

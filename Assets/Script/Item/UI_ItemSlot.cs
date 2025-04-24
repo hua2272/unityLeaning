@@ -3,30 +3,47 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class UI_ItemSlot : MonoBehaviour
+public class UI_ItemSlot : MonoBehaviour, IPointerDownHandler
 {
     [SerializeField] private Image itemImage;
     [SerializeField] private TextMeshProUGUI itemText;
 
-    public InventoryItem Item;
+    public InventoryItem item;
 
-    public void UpdateSlot(InventoryItem _newItem)
+    public void UpdateSlot(InventoryItem _newItem) 
     {
-        Item = _newItem;
+        item = _newItem;
         itemImage.color = Color.white;
-        if (Item != null)
+        if (item != null)
         {
-            itemImage.sprite = Item.data.icon;
-            if (Item.stackSize > 1)
+            itemImage.sprite = item.data.icon;
+            if (item.stackSize > 1)
             {
-                itemText.text = Item.stackSize.ToString();
+                itemText.text = item.stackSize.ToString();
             }
             else
             {
                 itemText.text = "";
             }
+        }
+    }
+
+    public void CleanUpSlot()
+    {
+        item = null;
+        itemImage.sprite = null;
+        itemImage.color = Color.clear;
+        itemText.text = "";
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (item.data.itemType == ItemType.Equipment)
+        {
+            Inventory.instance.EquipItem(item.data);
         }
     }
 }
