@@ -8,4 +8,19 @@ public enum EquipmentType {Weapon, Armor, Amulet, Flask}
 public class ItemDataEquipment : ItemData
 {
     public EquipmentType equipmentType;
+
+    [Header("Major stats")]
+    public int strength;
+
+    public void AddModifiers()
+    {
+        PlayerStatus playerStatus = PlayerManager.instance.player.GetComponent<PlayerStatus>();
+        playerStatus.strength.AddModifier(strength);
+    }
+    
+    public void RemoveModifiers()
+    {
+        PlayerStatus playerStatus = PlayerManager.instance.player.GetComponent<PlayerStatus>();
+        playerStatus.strength.RemoveModifier(strength);
+    }
 }
