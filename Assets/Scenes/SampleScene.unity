@@ -1911,6 +1911,7 @@ GameObject:
   - component: {fileID: 473150278}
   - component: {fileID: 473150279}
   - component: {fileID: 473150280}
+  - component: {fileID: 473150281}
   m_Layer: 7
   m_Name: Enemy_Skeleton
   m_TagString: Untagged
@@ -2087,6 +2088,25 @@ CapsuleCollider2D:
   m_Offset: {x: 0.0059334724, y: -0.25513333}
   m_Size: {x: 0.93906695, y: 1.5102675}
   m_Direction: 0
+--- !u!114 &473150281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 473150273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e693b61c87afe1740acf443cafc63573, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dropTable:
+  - itemPrefab: {fileID: 962726075}
+    dropChance: 1
+    minAmount: 1
+    maxAmount: 1
+  dropOffset: {x: 0, y: 0.5}
+  dropRadius: 1
 --- !u!1001 &493839197
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4181,6 +4201,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inventory: []
   stash: []
+  equipment: []
   inventorySlotParent: {fileID: 885538498}
   stashSlotParent: {fileID: 17539756}
 --- !u!1 &847864647
