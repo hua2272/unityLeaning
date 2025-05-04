@@ -39,8 +39,8 @@ public class MenuController : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log($"按钮可交互状态: {questBtn.interactable}");
-        Debug.Log($"按钮监听器数量: {inventoryBtn.onClick.GetPersistentEventCount()}");
+        //Debug.Log($"按钮可交互状态: {questBtn.interactable}");
+        //Debug.Log($"按钮监听器数量: {inventoryBtn.onClick.GetPersistentEventCount()}");
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             ToggleMenu();
