@@ -6,7 +6,8 @@ public class MainMenuUI : MonoBehaviour
     public void OnNewGameClicked()
     {
         GameManager.Instance.StartNewGame(); // 通知 GameManager 初始化新游戏
-        SceneLoader.Instance.LoadScene("GameScene"); // 加载游戏场景
+        //SceneLoader.Instance.LoadScene("GameScene"); // 加载游戏场景
+        SceneTransitionManager.Instance.LoadSceneWithFade("GameScene");
     }
 
     public void OnLoadGameClicked()
@@ -14,7 +15,8 @@ public class MainMenuUI : MonoBehaviour
         if (GameSaveManager.DoesSaveExist()) // 检查是否有存档
         {
             GameManager.Instance.LoadGame(); // 通知 GameManager 加载存档
-            SceneLoader.Instance.LoadScene("GameScene"); // 加载游戏场景
+            //SceneLoader.Instance.LoadScene("GameScene"); // 加载游戏场景
+            SceneTransitionManager.Instance.LoadSceneWithFade("GameScene");
         }
         else
         {
