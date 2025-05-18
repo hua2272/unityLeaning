@@ -26,8 +26,8 @@ public class MenuController : MonoBehaviour
     private void Start()
     {
         HideAllContent();
-        inventoryContent.SetActive(true);
-        print("inventory open");
+        inventoryContent.SetActive(false);
+        //print("inventory open");
         // 绑定按钮事件
         inventoryBtn.onClick.AddListener(() => ShowContent(inventoryContent));
         questBtn.onClick.AddListener(() => ShowContent(questContent));

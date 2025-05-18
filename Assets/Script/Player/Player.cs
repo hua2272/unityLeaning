@@ -9,6 +9,7 @@ public class Player : Entity
     public bool isBusy { get; private set; }
     public SkillManager skill { get; private set; }
     public GameObject sword { get; private set; }
+    public DialogueManager dialogueManager;
     
     #region State
     public PlayerStateMachine stateMachine { get; private set; }
@@ -64,6 +65,7 @@ public class Player : Entity
         base.Start();
         skill = SkillManager.instance;
         stateMachine.Initialize(idleState);
+        dialogueManager = DialogueManager.Instance;
     }
 
     protected override void Update()
@@ -103,6 +105,17 @@ public class Player : Entity
         {
             dashDir = dashDir == 0 ? facingDir : Input.GetAxisRaw("Horizontal");
             stateMachine.ChangeState(dashState);
+        }
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            if (dialogueManager != null)
+            {
+                dialogueManager.StartDialogue(1);
+            }
+            else
+            {
+                Debug.LogError("DialogueManager.Instance is null!");
+            }
         }
     }
 

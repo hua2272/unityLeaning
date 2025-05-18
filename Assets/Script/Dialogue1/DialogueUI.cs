@@ -1,0 +1,62 @@
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+
+public class DialogueUI : MonoBehaviour
+{
+    public GameObject dialoguePanel;
+    public TextMeshProUGUI speakerText;
+    public TextMeshProUGUI dialogueText;
+    public Transform optionsPanel;
+    public GameObject optionButtonPrefab;
+
+    private DialogueManager dialogueManager;
+
+    void Start()
+    {
+        Debug.Log(">>>>>>>>>>>>>>>>DialogueUI Start() called");
+        dialogueManager = DialogueManager.Instance;
+        if (dialogueManager == null) 
+        {
+            Debug.LogError("DialogueManager not found in scene!");
+        }
+        dialogueManager.OnDialogueStart += ShowDialogue;
+        dialogueManager.OnDialogueEnd += HideDialogue;
+        dialogueManager.OnNodeUpdate += UpdateUI;
+        dialoguePanel.SetActive(false);
+    }
+
+    void ShowDialogue()
+    {
+        //Debug.Log("--------->>>>>>>>> active UI");
+        dialoguePanel.SetActive(true);
+    }
+
+    void HideDialogue()
+    {
+        dialoguePanel.SetActive(false);
+    }
+
+    void UpdateUI(DialogueNode node)
+    {
+        //Debug.Log("--------->>>>>>>>> update UI");
+        speakerText.text = node.speakerName;
+        dialogueText.text = node.dialogueText;
+        // 清除旧选项
+        foreach (Transform child in optionsPanel)
+        {
+            Destroy(child.gameObject);
+        }
+        // 创建新选项按钮
+        foreach (var option in node.options)
+        {
+            if (dialogueManager.CheckOptionConditions(option))
+            {
+                GameObject buttonObj = Instantiate(optionButtonPrefab, optionsPanel);
+                Button button = buttonObj.GetComponent<Button>();
+                button.GetComponentInChildren<TextMeshProUGUI>().text = option.optionText;
+                button.onClick.AddListener(() => dialogueManager.SelectOption(option));
+            }
+        }
+    }
+}
