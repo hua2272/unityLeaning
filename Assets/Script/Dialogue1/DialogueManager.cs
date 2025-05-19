@@ -75,7 +75,6 @@ public class DialogueManager : MonoBehaviour
             EndDialogue();
             return;
         }
-
         currentNode = dialogueLoader.LoadDialogueNode(currentNpcId, option.nextNodeId);
         OnNodeUpdate?.Invoke(currentNode);
     }

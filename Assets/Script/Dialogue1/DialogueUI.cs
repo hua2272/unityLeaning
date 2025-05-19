@@ -14,7 +14,7 @@ public class DialogueUI : MonoBehaviour
 
     void Start()
     {
-        Debug.Log(">>>>>>>>>>>>>>>>DialogueUI Start() called");
+        //Debug.Log(">>>>>>>>>>>>>>>>DialogueUI Start() called");
         dialogueManager = DialogueManager.Instance;
         if (dialogueManager == null) 
         {
