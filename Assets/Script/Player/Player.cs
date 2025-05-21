@@ -41,6 +41,7 @@ public class Player : Entity
     public float dashDuration;
     public float dashDir { get; private set;}
     
+    private PlayerNPCDetector npcDetector;
     
     protected override void Awake()
     {
@@ -66,6 +67,7 @@ public class Player : Entity
         skill = SkillManager.instance;
         stateMachine.Initialize(idleState);
         dialogueManager = DialogueManager.Instance;
+        npcDetector = GetComponent<PlayerNPCDetector>();
     }
 
     protected override void Update()
@@ -108,13 +110,18 @@ public class Player : Entity
         }
         if (Input.GetKeyDown(KeyCode.F))
         {
-            if (dialogueManager != null)
+            var closestNPC = npcDetector.GetClosestVisibleNPC();
+            if (closestNPC != null)
             {
-                dialogueManager.StartDialogue(1);
-            }
-            else
-            {
-                Debug.LogError("DialogueManager.Instance is null!");
+                Debug.Log($"与最近的NPC交互 ID: {closestNPC.npcId}");
+                if (dialogueManager != null)
+                {
+                    dialogueManager.StartDialogue(closestNPC.npcId);
+                }
+                else
+                {
+                    Debug.LogError("DialogueManager.Instance is null!");
+                }
             }
         }
     }

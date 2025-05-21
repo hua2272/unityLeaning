@@ -10,11 +10,11 @@ public class DialogueLoader : MonoBehaviour
         node.options = new List<DialogueOption>();
 
         string query = $@"
-            SELECT dn.*, do.option_id, do.option_text, do.next_node_id, 
-                   do.required_item_id, do.required_quest_progress
-            FROM dialogue_nodes dn
-            LEFT JOIN dialogue_options do ON dn.node_id = do.node_id
-            WHERE dn.npc_id = {npcId} AND dn.node_id = {nodeId}";
+            SELECT n.*, o.option_id, o.option_text, o.next_node_id, 
+                   o.required_item_id, o.required_quest_progress
+            FROM dialogue_nodes n
+            LEFT JOIN dialogue_options o ON n.node_id = o.node_id
+            WHERE n.node_id = {nodeId} AND (n.npc_id = {npcId} OR n.npc_id = 0)";
 
         IDataReader reader = DatabaseManager.Instance.ExecuteQuery(query);
         bool firstRow = true;

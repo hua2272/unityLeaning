@@ -28,6 +28,8 @@ public class Entity : MonoBehaviour
     [SerializeField] protected float wallCheckDistance;
     [SerializeField] protected LayerMask whatIsGround;
     
+    [SerializeField] public int npcId;
+    
     public int facingDir { get; private set; } = 1;
     protected bool facingRight = true;
 
