@@ -1,7 +1,22 @@
+using System;
+using System.Collections;
+using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    
+    [System.Serializable]
+    public class GameData
+    {
+        public int playerLevel;
+        public float playerHealth;
+        public Vector3 playerPosition;
+        public string[] inventoryItems;
+    }
+    public GameObject player;
+    
     public static GameManager Instance { get; private set; }
 
     private void Awake()
@@ -25,7 +40,70 @@ public class GameManager : MonoBehaviour
 
     public void LoadGame()
     {
-        Debug.Log("加载存档...");
-        // 调用 SaveSystem 加载数据
+        StartCoroutine(LoadGameCoroutine());
+    }
+
+    private IEnumerator LoadGameCoroutine()
+    {
+        SceneTransitionManager.Instance.LoadSceneWithFade("GameScene");
+        yield return null;  //等待一帧让场景开始加载
+        while (SceneManager.GetActiveScene().name != "GameScene")  //等待场景完全加载
+        {
+            yield return null;
+        }
+        player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null)  //确保玩家对象已生成
+        {
+            Debug.LogError("Player object not found in the scene!");
+            yield break;
+        }
+        string filePath = GetSavePath();
+        if (File.Exists(filePath))
+        {
+            try
+            {
+                string jsonData = File.ReadAllText(filePath);
+                GameData gameData = JsonUtility.FromJson<GameData>(jsonData);
+                if (gameData == null)
+                {
+                    Debug.LogError("Failed to parse save data!");
+                    yield break;
+                }
+                Vector3 savedPosition = new Vector3(
+                    gameData.playerPosition.x,
+                    gameData.playerPosition.y,
+                    gameData.playerPosition.z
+                );
+                player.transform.position = savedPosition;
+                Debug.Log("Player position loaded: " + savedPosition);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Error loading save file: " + e.Message);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Save file not found at: " + filePath);
+        }
+    }
+    
+    private static string GetSavePath()
+    {
+        // 获取游戏可执行文件所在目录
+        string gameDirectory = Path.GetDirectoryName(Application.dataPath);
+        // 如果是在编辑器中运行，路径会有所不同
+        if (Application.isEditor)
+        {
+            gameDirectory = Application.persistentDataPath;
+        }
+        // 创建保存目录（如果不存在）
+        string saveDirectory = Path.Combine(gameDirectory, "Saves");
+        if (!Directory.Exists(saveDirectory))
+        {
+            Directory.CreateDirectory(saveDirectory);
+        }
+        // 返回完整的保存文件路径
+        return Path.Combine(saveDirectory, "gameSave.dat");
     }
 }

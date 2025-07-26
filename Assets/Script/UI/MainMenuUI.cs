@@ -10,13 +10,12 @@ public class MainMenuUI : MonoBehaviour
         SceneTransitionManager.Instance.LoadSceneWithFade("GameScene");
     }
 
+    //todo 若没有存档文件则提示没有存档
     public void OnLoadGameClicked()
     {
         if (GameSaveManager.DoesSaveExist()) // 检查是否有存档
         {
             GameManager.Instance.LoadGame(); // 通知 GameManager 加载存档
-            //SceneLoader.Instance.LoadScene("GameScene"); // 加载游戏场景
-            SceneTransitionManager.Instance.LoadSceneWithFade("GameScene");
         }
         else
         {

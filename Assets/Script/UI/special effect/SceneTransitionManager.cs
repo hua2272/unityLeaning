@@ -45,14 +45,12 @@ public class SceneTransitionManager : MonoBehaviour
     {
         // 淡出
         yield return StartCoroutine(FadeOut());
-        
         // 加载场景
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
         while (!asyncLoad.isDone)
         {
             yield return null;
         }
-        
         // 淡入
         yield return StartCoroutine(FadeIn());
     }

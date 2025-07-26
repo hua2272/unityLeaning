@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using UnityEngine;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -13,14 +14,14 @@ public class GameSaveManager : MonoBehaviour
         public string[] inventoryItems;
     }
     
+    public Player player;
     private GameData currentGameData = new GameData(); // 当前游戏数据
     
     public void SaveGame()
     {
-        // 准备要保存的数据（这里只是示例，实际应从游戏各处获取数据）
         currentGameData.playerLevel = 5;
         currentGameData.playerHealth = 85.5f;
-        currentGameData.playerPosition = new Vector3(10.2f, 0.5f, 15.7f);
+        currentGameData.playerPosition = new Vector3(player.transform.position.x, player.transform.position.y, 0f);
         currentGameData.inventoryItems = new string[] { "Sword", "Potion", "Key" };
         string jsonData = JsonUtility.ToJson(currentGameData, prettyPrint: true);
         
@@ -36,30 +37,57 @@ public class GameSaveManager : MonoBehaviour
         }
     }
     
-    public static void SaveGame2(GameData data)
-    {
-        string jsonData = JsonUtility.ToJson(data);
-        PlayerPrefs.SetString("GameSaveData", jsonData);
-        PlayerPrefs.Save();
-    }
+    // public static void SaveGame2(GameData data)
+    // {
+    //     string jsonData = JsonUtility.ToJson(data);
+    //     PlayerPrefs.SetString("GameSaveData", jsonData);
+    //     PlayerPrefs.Save();
+    // }
 
     
-    public static GameData LoadGame()
+    // public static GameData LoadGame()
+    // {
+    //     if (PlayerPrefs.HasKey("GameSaveData"))
+    //     {
+    //         string jsonData = PlayerPrefs.GetString("GameSaveData");
+    //         return JsonUtility.FromJson<GameData>(jsonData);
+    //     }
+    //     return null;
+    // }
+    
+    
+    
+    public GameData LoadGame()
     {
-        if (PlayerPrefs.HasKey("GameSaveData"))
+        string filePath = GetSavePath();
+        if (File.Exists(filePath))
         {
-            string jsonData = PlayerPrefs.GetString("GameSaveData");
-            return JsonUtility.FromJson<GameData>(jsonData);
+            try
+            {
+                string jsonData = File.ReadAllText(filePath);
+                GameData gameData = JsonUtility.FromJson<GameData>(jsonData);
+                return gameData;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Error loading save file: " + e.Message);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Save file not found at: " + filePath);
         }
         return null;
     }
     
     public static bool DoesSaveExist()
     {
-        return PlayerPrefs.HasKey("GameSaveData");
+        //return PlayerPrefs.HasKey("GameSaveData");
+        //todo 保存路径优化
+        return File.Exists(GetSavePath());
     }
     
-    private string GetSavePath()
+    private static string GetSavePath()
     {
         // 获取游戏可执行文件所在目录
         string gameDirectory = Path.GetDirectoryName(Application.dataPath);

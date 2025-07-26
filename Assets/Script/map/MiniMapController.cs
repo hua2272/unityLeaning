@@ -51,15 +51,17 @@ public class MiniMapController : MonoBehaviour
         isFullMapActive = !isFullMapActive;
         if (isFullMapActive)
         {
-            // 进入大地图时暂停跟随
+            // 进入大地图时暂停跟随，且玩家无法移动
             mapCamera.GetComponent<MapCameraController>().followPlayer = false;
+            player.enabled = false;
             // 调整相机范围以显示整个地图
             mapCamera.orthographicSize = fullMapSize / 2f;
             fullMapPanel.SetActive(true);
         }
         else
         {
-            // 返回小地图时恢复跟随
+            // 返回小地图时恢复跟随，且恢复移动
+            player.enabled = true;
             mapCamera.GetComponent<MapCameraController>().followPlayer = true;
             // 恢复小地图范围
             mapCamera.orthographicSize = miniMapSize / 2f;
