@@ -74,7 +74,8 @@ public class Player : Entity
     {
         base.Update();
         stateMachine.currentState.Update();
-        CheckForDashInput();
+        Check4DashInput();
+        Check4Talk();
     }
 
     public void AssignNewSword(GameObject _newSword)
@@ -97,7 +98,7 @@ public class Player : Entity
 
     public void AnimationTrigger() => stateMachine.currentState.AnimationFinishTrigger();
 
-    private void CheckForDashInput()
+    private void Check4DashInput()
     {
         if (isWallDetected())
         {
@@ -108,6 +109,10 @@ public class Player : Entity
             dashDir = dashDir == 0 ? facingDir : Input.GetAxisRaw("Horizontal");
             stateMachine.ChangeState(dashState);
         }
+    }
+
+    private void Check4Talk()
+    {
         if (Input.GetKeyDown(KeyCode.F))
         {
             var closestNPC = npcDetector.GetClosestVisibleNPC();
