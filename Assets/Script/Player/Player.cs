@@ -43,6 +43,13 @@ public class Player : Entity
     
     private PlayerNPCDetector npcDetector;
     
+    [Header("屏幕震动设置")]
+    public float minShakeDuration = 0.1f;
+    public float maxShakeDuration = 0.5f;
+    public float minShakeMagnitude = 0.05f;
+    public float maxShakeMagnitude = 0.2f;
+    private CameraShake cameraShake;
+    
     protected override void Awake()
     {
         base.Awake();
@@ -68,6 +75,7 @@ public class Player : Entity
         stateMachine.Initialize(idleState);
         dialogueManager = DialogueManager.Instance;
         npcDetector = GetComponent<PlayerNPCDetector>();
+        cameraShake = Camera.main.GetComponent<CameraShake>();
     }
 
     protected override void Update()
@@ -76,6 +84,22 @@ public class Player : Entity
         stateMachine.currentState.Update();
         Check4DashInput();
         Check4Talk();
+    }
+    
+    public override void DamageEffect()
+    {
+        base.DamageEffect();
+        // 计算震动强度和持续时间（基于伤害值）
+        //float normalizedDamage = Mathf.Clamp01(damage / maxHealth);
+        float normalizedDamage = 0.5f;
+        float shakeDuration = Mathf.Lerp(minShakeDuration, maxShakeDuration, normalizedDamage);
+        float shakeMagnitude = Mathf.Lerp(minShakeMagnitude, maxShakeMagnitude, normalizedDamage);
+    
+        // 触发屏幕震动
+        if (cameraShake != null)
+        {
+            cameraShake.TriggerShake(shakeDuration, shakeMagnitude);
+        }
     }
 
     public void AssignNewSword(GameObject _newSword)

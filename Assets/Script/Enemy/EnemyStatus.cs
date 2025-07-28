@@ -16,7 +16,7 @@ public class EnemyStatus : CharacterState
     public override void TakeDamage(int damage)
     {
         base.TakeDamage(damage);
-        enemy.DanmageEffect();
+        enemy.DamageEffect();
     }
 
     public override void Die()

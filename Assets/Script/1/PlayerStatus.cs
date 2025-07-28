@@ -15,7 +15,7 @@ public class PlayerStatus : CharacterState
     public override void TakeDamage(int damage)
     {
         base.TakeDamage(damage);
-        player.DanmageEffect();
+        player.DamageEffect();
     }
 
     public override void Die()
