@@ -10,6 +10,7 @@ public class Player : Entity
     public SkillManager skill { get; private set; }
     public GameObject sword { get; private set; }
     public DialogueManager dialogueManager;
+    [SerializeField] private DeathMenuController deathMenu;
     
     #region State
     public PlayerStateMachine stateMachine { get; private set; }
@@ -159,5 +160,7 @@ public class Player : Entity
     {
         base.Die();
         stateMachine.ChangeState(deadState);
+        //Time.timeScale = 0f; // 暂停游戏
+        deathMenu.ShowDeathMenu();
     }
 }
