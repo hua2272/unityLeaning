@@ -9,7 +9,12 @@ public class PlayerSpawner : MonoBehaviour
         // 只在当前场景没有玩家时生成
         if (GameObject.FindGameObjectWithTag("Player") == null)
         {
+            Debug.Log("--------->>>>>>>>spawnplayer");
             SpawnPlayer();
+        }
+        else
+        {
+            Debug.Log("nobody--------->>>>>>>>");
         }
     }
 

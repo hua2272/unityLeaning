@@ -10,6 +10,7 @@ public class SceneLoader : MonoBehaviour
     [SerializeField] private float transitionTime = 1f;
     [SerializeField] private string nextSceneName; // 目标场景名
     
+    private bool playerInRange;
     private bool isTransitioning = false;
     // 玩家状态数据
     public Vector3 spawnPosition;
@@ -73,13 +74,32 @@ public class SceneLoader : MonoBehaviour
         }
     }
     
+    // private void OnTriggerStay2D(Collider2D collision)
+    // {
+    //     //if (collision.CompareTag("Player") && Input.GetKeyDown(KeyCode.F)) // 确保碰撞对象是玩家
+    //     if (collision.CompareTag("Player")) // 确保碰撞对象是玩家
+    //     {
+    //         spawnPosition = GameObject.FindGameObjectWithTag("SpawnPoint").transform.position;  // 重生点的位置
+    //         LoadScene(nextSceneName); // 切换场景
+    //     }
+    // }
+    
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        //if (collision.CompareTag("Player") && Input.GetKeyDown(KeyCode.F)) // 确保碰撞对象是玩家
-        if (collision.CompareTag("Player")) // 确保碰撞对象是玩家
+        if (collision.CompareTag("Player")) playerInRange = true;
+    }
+    
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player")) playerInRange = false;
+    }
+    
+    private void Update()
+    {
+        if (playerInRange && Input.GetKeyDown(KeyCode.F))
         {
-            spawnPosition = GameObject.FindGameObjectWithTag("SpawnPoint").transform.position;  // 重生点的位置
-            LoadScene(nextSceneName); // 切换场景
+            spawnPosition = GameObject.FindGameObjectWithTag("SpawnPoint").transform.position;
+            LoadScene(nextSceneName);
         }
     }
 }
