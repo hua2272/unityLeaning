@@ -4,7 +4,7 @@ using System.Collections;
 
 public class SceneLoader : MonoBehaviour
 {
-    public static SceneLoader Instance { get; private set; }
+    //public static SceneLoader Instance { get; private set; }
 
     [SerializeField] private Animator transitionAnimator;
     [SerializeField] private float transitionTime = 1f;
@@ -19,13 +19,13 @@ public class SceneLoader : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
+        /*if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
         Instance = this;
-        DontDestroyOnLoad(gameObject); // 跨场景持久化
+        DontDestroyOnLoad(gameObject); // 跨场景持久化*/
     }
 
     public void LoadScene(string sceneName)

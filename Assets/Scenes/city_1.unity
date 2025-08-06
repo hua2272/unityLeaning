@@ -10211,7 +10211,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1342457156
 Transform:
   m_ObjectHideFlags: 0
@@ -10220,8 +10220,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1342457155}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 36.333, y: -5.588, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -877.2354, y: -647.933, z: 5.0601454}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -10230,7 +10230,7 @@ Transform:
   - {fileID: 2077833636}
   - {fileID: 132965369}
   - {fileID: 962726079}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1645992358}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1366013562
 PrefabInstance:
@@ -11205,7 +11205,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1645992358
 Transform:
   m_ObjectHideFlags: 0
@@ -11223,6 +11223,7 @@ Transform:
   - {fileID: 585522375}
   - {fileID: 104917612}
   - {fileID: 293100003}
+  - {fileID: 1342457156}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1677362928
@@ -11636,7 +11637,7 @@ GameObject:
   - component: {fileID: 1697678276}
   - component: {fileID: 1697678279}
   m_Layer: 5
-  m_Name: door
+  m_Name: door1
   m_TagString: SpawnPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11651,8 +11652,8 @@ Transform:
   m_GameObject: {fileID: 1697678274}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -21.84, y: -2.51, z: 0}
-  m_LocalScale: {x: 2.677551, y: 4.5871906, z: 1}
+  m_LocalPosition: {x: -21.5715, y: -2.7997, z: 0}
+  m_LocalScale: {x: 2.1405287, y: 4.0082808, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 926729487}
@@ -11672,7 +11673,7 @@ MonoBehaviour:
   transitionAnimator: {fileID: 0}
   transitionTime: 1
   nextSceneName: church
-  spawnPosition: {x: 0, y: 0, z: 0}
+  spawnPosition: {x: 6, y: -2, z: 0}
   playerHealth: 0
   playerScore: 0
 --- !u!61 &1697678277
@@ -11762,7 +11763,7 @@ SpriteRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.30980393, g: 0.23137257, b: 0.23137257, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -14575,7 +14576,6 @@ SceneRoots:
   - {fileID: 1085764286}
   - {fileID: 942119512}
   - {fileID: 735536998}
-  - {fileID: 1342457156}
   - {fileID: 1230273213}
   - {fileID: 455888477}
   - {fileID: 1335408445}

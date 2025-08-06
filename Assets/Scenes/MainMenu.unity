@@ -284,6 +284,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ebc7dc2745af51439a808639fd8c038, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  spawnPosition: {x: 0, y: 0, z: 0}
+  targetScene: 
 --- !u!4 &147188781
 Transform:
   m_ObjectHideFlags: 0
@@ -876,6 +879,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   transitionAnimator: {fileID: 0}
   transitionTime: 1
+  nextSceneName: city_1
+  spawnPosition: {x: 0, y: 0, z: 0}
+  playerHealth: 0
+  playerScore: 0
 --- !u!4 &727090723
 Transform:
   m_ObjectHideFlags: 0

@@ -16,20 +16,63 @@ public class GameManager : MonoBehaviour
         public string[] inventoryItems;
     }
     public GameObject player;
-    
     public static GameManager Instance { get; private set; }
+    
+    public Vector3 spawnPosition;
+    public string targetScene;
 
     private void Awake()
     {
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject); // 避免重复创建
+            return;
         }
-        else
+        
+        Instance = this; // 初始化单例
+        DontDestroyOnLoad(gameObject); // 跨场景不销毁
+        
+        // 添加场景加载事件监听
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+    
+    // 添加场景加载完成后的处理
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log($"场景 {scene.name} 加载完成");
+        
+        // 设置玩家位置（如果是从传送门进入）
+        if (scene.name == targetScene)
         {
-            Instance = this; // 初始化单例
-            DontDestroyOnLoad(gameObject); // 跨场景不销毁
+            player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                player.transform.position = spawnPosition;
+                Debug.Log($"玩家位置已设置到: {spawnPosition}");
+            }
         }
+        
+        // 清理不属于当前场景的传送门
+        CleanUpPortals(scene.name);
+    }
+    
+    // 清理不属于当前场景的传送门
+    private void CleanUpPortals(string currentScene)
+    {
+        SceneLoader[] allPortals = FindObjectsOfType<SceneLoader>();
+        foreach (SceneLoader portal in allPortals)
+        {
+            if (portal.gameObject.scene.name != currentScene)
+            {
+                Destroy(portal.gameObject);
+            }
+        }
+    }
+    
+    // 确保在销毁时移除事件监听
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     public void StartNewGame()

@@ -652,7 +652,7 @@ MonoBehaviour:
   transitionAnimator: {fileID: 0}
   transitionTime: 1
   nextSceneName: city_1
-  spawnPosition: {x: 0, y: 0, z: 0}
+  spawnPosition: {x: -21, y: -2, z: 0}
   playerHealth: 0
   playerScore: 0
 --- !u!114 &670735022
