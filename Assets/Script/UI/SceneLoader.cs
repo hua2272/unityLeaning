@@ -4,7 +4,6 @@ using System.Collections;
 
 public class SceneLoader : MonoBehaviour
 {
-    //public static SceneLoader Instance { get; private set; }
 
     [SerializeField] private Animator transitionAnimator;
     [SerializeField] private float transitionTime = 1f;
@@ -16,17 +15,6 @@ public class SceneLoader : MonoBehaviour
     public Vector3 spawnPosition;
     public int playerHealth;
     public int playerScore;
-
-    private void Awake()
-    {
-        /*if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
-        DontDestroyOnLoad(gameObject); // 跨场景持久化*/
-    }
 
     public void LoadScene(string sceneName)
     {
@@ -74,15 +62,6 @@ public class SceneLoader : MonoBehaviour
         }
     }
     
-    // private void OnTriggerStay2D(Collider2D collision)
-    // {
-    //     //if (collision.CompareTag("Player") && Input.GetKeyDown(KeyCode.F)) // 确保碰撞对象是玩家
-    //     if (collision.CompareTag("Player")) // 确保碰撞对象是玩家
-    //     {
-    //         spawnPosition = GameObject.FindGameObjectWithTag("SpawnPoint").transform.position;  // 重生点的位置
-    //         LoadScene(nextSceneName); // 切换场景
-    //     }
-    // }
     
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -98,8 +77,8 @@ public class SceneLoader : MonoBehaviour
     {
         if (playerInRange && Input.GetKeyDown(KeyCode.F))
         {
-            spawnPosition = GameObject.FindGameObjectWithTag("SpawnPoint").transform.position;
             LoadScene(nextSceneName);
+            
         }
     }
 }

@@ -160,7 +160,7 @@ public class Player : Entity
     {
         base.Die();
         stateMachine.ChangeState(deadState);
-        //Time.timeScale = 0f; // 暂停游戏
+        //Time.timeScale = 0f; // TODO 清除页面
         deathMenu.ShowDeathMenu();
     }
 }

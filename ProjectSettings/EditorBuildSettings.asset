@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/church.unity
     guid: 5017d2085274deb4fa166ae50ad9ccec
+  - enabled: 1
+    path: Assets/Scenes/harbor.unity
+    guid: 9285ef546bee9834cbbf146149e5880b
   m_configObjects: {}

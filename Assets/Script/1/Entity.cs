@@ -120,6 +120,6 @@ public class Entity : MonoBehaviour
 
     public virtual void Die()
     {
-        
+        // todo 敌人停止攻击
     }
 }
