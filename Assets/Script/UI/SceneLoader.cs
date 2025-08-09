@@ -1,67 +1,67 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using System.Collections.Generic;
 
 public class SceneLoader : MonoBehaviour
 {
-
     [SerializeField] private Animator transitionAnimator;
     [SerializeField] private float transitionTime = 1f;
-    [SerializeField] private string nextSceneName; // 目标场景名
+    [SerializeField] private string nextSceneName;
+    [SerializeField] private Vector3 spawnPosition;
     
     private bool playerInRange;
     private bool isTransitioning = false;
-    // 玩家状态数据
-    public Vector3 spawnPosition;
-    public int playerHealth;
-    public int playerScore;
+
+    // 使用字典保存每个场景的出生位置
+    public static Dictionary<string, Vector3> sceneSpawnPositions = new Dictionary<string, Vector3>();
+    
+    // 当前场景的玩家状态
+    private Vector3 currentSpawnPosition;
+
+    private void Start()
+    {
+        // 初始化当前出生位置
+        currentSpawnPosition = spawnPosition;
+    }
 
     public void LoadScene(string sceneName)
     {
+        // 保存当前场景的出生位置
+        if (!sceneSpawnPositions.ContainsKey(SceneManager.GetActiveScene().name))
+        {
+            sceneSpawnPositions.Add(SceneManager.GetActiveScene().name, currentSpawnPosition);
+        }
+        
+        // 保存目标位置到字典
+        sceneSpawnPositions[sceneName] = spawnPosition;
+        
         StartCoroutine(LoadSceneWithTransition(sceneName));
     }
 
     private IEnumerator LoadSceneWithTransition(string sceneName)
     {
+        isTransitioning = true;
         
-        if (transitionAnimator != null) // 播放转场动画（如果有）
+        if (transitionAnimator != null)
             transitionAnimator.SetTrigger("Start");
+        
         yield return new WaitForSeconds(transitionTime);
         
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName); // 异步加载场景
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+        asyncLoad.allowSceneActivation = false;
+        
         while (!asyncLoad.isDone)
         {
-            if (asyncLoad.progress >= 0.9f) // 加载进度到90%时等待
+            if (asyncLoad.progress >= 0.9f)
             {
                 asyncLoad.allowSceneActivation = true;
             }
             yield return null;
         }
+        
         isTransitioning = false;
-        
-        
-        EnsurePlayerExists(); // 确保新场景的玩家生成// 加载完成后的逻辑（如初始化游戏）
-        Debug.Log($"场景 {sceneName} 加载完成！");
     }
-    
-    private void EnsurePlayerExists()
-    {
-        // 检查新场景是否有玩家
-        if (GameObject.FindGameObjectWithTag("Player") == null)
-        {
-            PlayerSpawner spawner = FindObjectOfType<PlayerSpawner>();
-            if (spawner != null)
-            {
-                spawner.SpawnPlayer();
-                Debug.Log("已在新场景生成玩家");
-            }
-            else
-            {
-                Debug.LogError("未找到PlayerSpawner！");
-            }
-        }
-    }
-    
     
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -75,10 +75,9 @@ public class SceneLoader : MonoBehaviour
     
     private void Update()
     {
-        if (playerInRange && Input.GetKeyDown(KeyCode.F))
+        if (playerInRange && Input.GetKeyDown(KeyCode.F) && !isTransitioning)
         {
             LoadScene(nextSceneName);
-            
         }
     }
 }

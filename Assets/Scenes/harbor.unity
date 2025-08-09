@@ -1184,10 +1184,10 @@ GameObject:
   - component: {fileID: 1858361053}
   - component: {fileID: 1858361057}
   - component: {fileID: 1858361056}
-  - component: {fileID: 1858361055}
   - component: {fileID: 1858361054}
+  - component: {fileID: 1858361058}
   m_Layer: 5
-  m_Name: door2
+  m_Name: door
   m_TagString: SpawnPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1223,22 +1223,7 @@ MonoBehaviour:
   transitionAnimator: {fileID: 0}
   transitionTime: 1
   nextSceneName: city_1
-  spawnPosition: {x: -21, y: -2, z: 0}
-  playerHealth: 0
-  playerScore: 0
---- !u!114 &1858361055
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1858361052}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad1ff22a7b0b87644b900b48541eb582, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 5074527078382093757, guid: 190de48efe9354f49b83ec53c4b5436f, type: 3}
+  spawnPosition: {x: 8, y: 7, z: 0}
 --- !u!61 &1858361056
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1336,6 +1321,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1858361058
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1858361052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3db650b9931be2244968bd356cbfa137, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 1455405207}
 --- !u!1 &1861089615
 GameObject:
   m_ObjectHideFlags: 0
