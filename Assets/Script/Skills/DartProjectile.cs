@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DartProjectile : MonoBehaviour
 {
-[Header("Dart Settings")]
+    [Header("Dart Settings")]
     public float speed = 25f;
     public float maxDistance = 8f;
     public int damage = 15;
@@ -12,21 +10,21 @@ public class DartProjectile : MonoBehaviour
     private Vector3 startPosition;
     private bool hasHit = false;
     private FeiLeiShen_Skill skill;
-    private Player player;
-    private SpriteRenderer spriteRenderer;
+    private Player player; // 添加玩家引用
 
     public void Initialize(FeiLeiShen_Skill skillRef, Player playerRef)
     {
         skill = skillRef;
-        player = playerRef;
+        player = playerRef; // 存储玩家引用
         startPosition = transform.position;
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        
+        Debug.Log($"飞镖初始化: 技能引用={(skill != null ? "有效" : "无效")}, 玩家引用={(player != null ? "有效" : "无效")}");
     }
 
     void Start()
     {
         // 设置初始方向
-        float direction = transform.localScale.x > 0 ? 1 : -1;
+        float direction = Mathf.Sign(transform.localScale.x);
         transform.localScale = new Vector3(direction, 1, 1);
     }
 
@@ -48,6 +46,8 @@ public class DartProjectile : MonoBehaviour
     {
         if (hasHit) return;
         
+        Debug.Log($"飞镖碰撞: {other.gameObject.name}");
+        
         // 检查敌人碰撞
         if (skill != null && ((1 << other.gameObject.layer) & skill.enemyLayer) != 0)
         {
@@ -58,19 +58,36 @@ public class DartProjectile : MonoBehaviour
 
     private void HandleEnemyHit(Transform enemy)
     {
-        // todo 伤害敌人 
-
+        Debug.Log($"命中敌人: {enemy.name}");
+        
         // 计算敌人身后的位置
         Vector3 behindPosition = CalculateBehindPosition(enemy);
+        Debug.Log($"计算瞬移位置: {behindPosition}");
         
         // 触发玩家瞬移
-        skill?.TriggerTeleport(behindPosition);
+        if (skill != null)
+        {
+            skill.TriggerTeleport(behindPosition);
+        }
+        else
+        {
+            Debug.LogError("技能引用为空，无法触发瞬移");
+        }
         Destroy(gameObject);
     }
 
     private void HandleMiss()
     {
-        skill?.TriggerTeleport(transform.position);
+        Debug.Log("飞镖未命中目标");
+        
+        if (skill != null)
+        {
+            skill.TriggerTeleport(transform.position);
+        }
+        else
+        {
+            Debug.LogError("技能引用为空，无法触发瞬移");
+        }
         Destroy(gameObject);
     }
 
