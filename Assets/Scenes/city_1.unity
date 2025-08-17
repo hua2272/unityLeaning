@@ -7613,6 +7613,7 @@ GameObject:
   - component: {fileID: 942119513}
   - component: {fileID: 942119514}
   - component: {fileID: 942119515}
+  - component: {fileID: 942119516}
   m_Layer: 0
   m_Name: SkillManager
   m_TagString: Untagged
@@ -7696,6 +7697,25 @@ MonoBehaviour:
   dotsParent: {fileID: 1812894680}
   numberOfDots: 20
   spaceBetweenDots: 0.07
+--- !u!114 &942119516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 942119510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecaf48d7139d982438128d6b726344ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  coolDown: 0
+  dartPrefab: {fileID: 7643144968393520632, guid: b62951004799e0d4cac0af1cd6bfd69d, type: 3}
+  throwPoint: {fileID: 1142823683}
+  throwCooldown: 1.5
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!1 &962726075
 GameObject:
   m_ObjectHideFlags: 0
