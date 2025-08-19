@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: nife
   m_EditorClassIdentifier: 
   weaponName: nife
-  icon: {fileID: 0}
+  icon: {fileID: -1409952321, guid: be55291aae08d434db3da3b59db3ab4a, type: 3}
   description: short and sharp
   weaponAnimator: {fileID: 0}

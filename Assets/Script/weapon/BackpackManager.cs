@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -29,23 +30,18 @@ public class BackpackManager : MonoBehaviour
     public void AddWeaponToUI(WeaponData weapon)
     {
         var item = Instantiate(weaponItemPrefab, weaponContainer);
-        item.GetComponent<Image>().sprite = weapon.icon;
-        
-        // 设置按钮点击事件
-        item.GetComponent<Button>().onClick.AddListener(() => EquipWeapon(weapon));
-        
-        // 设置鼠标悬停事件
-        var trigger = item.GetComponent<EventTrigger>();
-        var enterEntry = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
-        enterEntry.callback.AddListener((e) => ShowDescription(item, weapon.description));
-        trigger.triggers.Add(enterEntry);
-        
-        var exitEntry = new EventTrigger.Entry { eventID = EventTriggerType.PointerExit };
-        exitEntry.callback.AddListener((e) => HideDescription(item));
-        trigger.triggers.Add(exitEntry);
+        WeaponItemUI itemUI = item.GetComponent<WeaponItemUI>();
+        if (itemUI != null)
+        {
+            itemUI.Setup(weapon);
+        }
+        else
+        {
+            Debug.LogError("武器预制体缺少WeaponItemUI组件", item);
+        }
     }
     
-    private void EquipWeapon(WeaponData weapon)
+    public void EquipWeapon(WeaponData weapon)
     {
         PlayerEquip?.EquipWeapon(weapon);
     }
@@ -53,7 +49,7 @@ public class BackpackManager : MonoBehaviour
     private void ShowDescription(GameObject item, string text)
     {
         item.transform.GetChild(0).gameObject.SetActive(true);
-        item.transform.GetChild(0).GetComponent<Text>().text = text;
+        item.transform.GetChild(0).GetComponent<TextMeshPro>().text = text;
     }
     
     private void HideDescription(GameObject item)
