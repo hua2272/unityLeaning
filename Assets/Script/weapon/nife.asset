@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: nife
   m_EditorClassIdentifier: 
   weaponName: nife
-  icon: {fileID: -1409952321, guid: be55291aae08d434db3da3b59db3ab4a, type: 3}
-  description: short and sharp
+  icon: {fileID: -1868606538, guid: be55291aae08d434db3da3b59db3ab4a, type: 3}
+  description: sahrp
   weaponAnimator: {fileID: 0}
+  damage: 10
+  attackSpeed: 1

@@ -1,59 +1,176 @@
-using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
+using System.Collections;
 
 public class BackpackManager : MonoBehaviour
 {
     public static BackpackManager Instance { get; private set; }
-    
+
+    [Header("UI References")]
     [SerializeField] private GameObject backpackPanel;
-    [SerializeField] private Transform weaponContainer;
-    [SerializeField] private GameObject weaponItemPrefab;
+    [SerializeField] private ManualBackpackManager backpackManager;
+
+    [Header("武器加载")]
+    [SerializeField] private WeaponData[] initialWeapons;
+    [SerializeField] private bool loadWeaponsOnStart = true;
+    [SerializeField] private float loadDelay = 0.1f;
     
-    public PlayerEquipment PlayerEquip { get; set; }
-    
+    // 玩家装备引用
+    private PlayerEquipment playerEquipment;
+
     private void Awake()
     {
-        Instance = this;
-        backpackPanel.SetActive(false);
-    }
-    
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.I))
+        if (Instance == null)
         {
-            backpackPanel.SetActive(!backpackPanel.activeSelf);
-        }
-    }
-    
-    public void AddWeaponToUI(WeaponData weapon)
-    {
-        var item = Instantiate(weaponItemPrefab, weaponContainer);
-        WeaponItemUI itemUI = item.GetComponent<WeaponItemUI>();
-        if (itemUI != null)
-        {
-            itemUI.Setup(weapon);
+            Instance = this;
         }
         else
         {
-            Debug.LogError("武器预制体缺少WeaponItemUI组件", item);
+            Destroy(gameObject);
+        }
+        backpackPanel.SetActive(false);
+    }
+
+    private IEnumerator Start()
+    {
+        // 查找玩家装备
+        playerEquipment = FindObjectOfType<PlayerEquipment>();
+        
+        // 注册事件
+        if (backpackManager != null)
+        {
+            backpackManager.OnWeaponEquipped += HandleWeaponEquip;
+        }
+        
+        // 延迟加载初始武器，确保所有系统已初始化
+        yield return new WaitForSeconds(loadDelay);
+        
+        if (loadWeaponsOnStart)
+        {
+            LoadInitialWeapons();
         }
     }
-    
-    public void EquipWeapon(WeaponData weapon)
+
+    private void Update()
     {
-        PlayerEquip?.EquipWeapon(weapon);
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            ToggleBackpack();
+        }
+    }
+
+    // 加载初始武器
+    public void LoadInitialWeapons()
+    {
+        if (initialWeapons == null || initialWeapons.Length == 0)
+        {
+            Debug.LogWarning("No initial weapons configured!");
+            return;
+        }
+
+        // 为每个武器分配到指定格子
+        for (int i = 0; i < initialWeapons.Length; i++)
+        {
+            if (i < backpackManager.GetSlotCount())
+            {
+                backpackManager.AddWeaponToSlot(i, initialWeapons[i], i == 0);
+            }
+            else
+            {
+                Debug.LogWarning($"Not enough slots for all initial weapons! Slot {i} is out of range.");
+            }
+        }
+        
+        Debug.Log($"Loaded {initialWeapons.Length} initial weapons");
     }
     
-    private void ShowDescription(GameObject item, string text)
+    // 从外部加载武器（替代WeaponLoader的功能）
+    public void LoadWeapons(WeaponData[] weapons, bool clearExisting = false)
     {
-        item.transform.GetChild(0).gameObject.SetActive(true);
-        item.transform.GetChild(0).GetComponent<TextMeshPro>().text = text;
+        if (clearExisting)
+        {
+            backpackManager.ClearAllSlots();
+        }
+        
+        foreach (var weapon in weapons)
+        {
+            AddWeapon(weapon);
+        }
+    }
+
+    // 切换背包显示
+    public void ToggleBackpack()
+    {
+        bool isActive = !backpackPanel.activeSelf;
+        backpackPanel.SetActive(isActive);
+        
+        // 可选：暂停游戏当背包打开
+        Time.timeScale = isActive ? 0 : 1;
+    }
+
+    // 处理武器装备
+    private void HandleWeaponEquip(int slotIndex, WeaponData weapon)
+    {
+        // 通知玩家装备系统
+        if (playerEquipment != null)
+        {
+            playerEquipment.EquipWeapon(weapon);
+        }
+        else
+        {
+            // 重新查找玩家装备
+            playerEquipment = FindObjectOfType<PlayerEquipment>();
+            if (playerEquipment != null)
+            {
+                playerEquipment.EquipWeapon(weapon);
+            }
+            else
+            {
+                Debug.LogError("PlayerEquipment not found!");
+            }
+        }
+    }
+
+    // 添加新武器到背包
+    public void AddWeapon(WeaponData weapon)
+    {
+        int emptySlot = backpackManager.FindEmptySlot();
+        if (emptySlot >= 0)
+        {
+            backpackManager.AddWeaponToSlot(emptySlot, weapon);
+        }
+        else
+        {
+            Debug.LogWarning("No empty slots available!");
+        }
+    }
+
+    // 从背包移除武器
+    public void RemoveWeapon(int slotIndex)
+    {
+        backpackManager.RemoveWeaponFromSlot(slotIndex);
+    }
+
+    // 获取指定格子的武器
+    public WeaponData GetWeaponInSlot(int slotIndex)
+    {
+        return backpackManager.GetWeaponInSlot(slotIndex);
     }
     
-    private void HideDescription(GameObject item)
+    // 检查背包是否打开
+    public bool IsBackpackOpen()
     {
-        item.transform.GetChild(0).gameObject.SetActive(false);
+        return backpackPanel.activeSelf;
+    }
+    
+    // 设置玩家装备引用
+    public void SetPlayerEquipment(PlayerEquipment equipment)
+    {
+        playerEquipment = equipment;
+    }
+    
+    // 清空背包
+    public void ClearBackpack()
+    {
+        backpackManager.ClearAllSlots();
     }
 }
