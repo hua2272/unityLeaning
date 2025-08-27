@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerStatus : CharacterState
 {
-    
     private Player player;
     protected override void Start()
     {

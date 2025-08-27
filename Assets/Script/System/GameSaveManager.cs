@@ -10,17 +10,20 @@ public class GameSaveManager : MonoBehaviour
     {
         public int playerLevel;
         public float playerHealth;
+        public string currentWeapon;
         public Vector3 playerPosition;
         public string[] inventoryItems;
     }
     
     public Player player;
+    public PlayerEquipment playerEquipment;
     private GameData currentGameData = new GameData(); // 当前游戏数据
     
     public void SaveGame()
     {
         currentGameData.playerLevel = 5;
         currentGameData.playerHealth = 85.5f;
+        currentGameData.currentWeapon = playerEquipment.GetCurrentWeapon().weaponName;
         currentGameData.playerPosition = new Vector3(player.transform.position.x, player.transform.position.y, 0f);
         currentGameData.inventoryItems = new string[] { "Sword", "Potion", "Key" };
         string jsonData = JsonUtility.ToJson(currentGameData, prettyPrint: true);

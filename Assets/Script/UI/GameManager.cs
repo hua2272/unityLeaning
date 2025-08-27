@@ -117,6 +117,7 @@ public class GameManager : MonoBehaviour
                     gameData.playerPosition.y,
                     gameData.playerPosition.z
                 );
+                
                 player.transform.position = savedPosition;
                 Debug.Log("Player position loaded: " + savedPosition);
             }

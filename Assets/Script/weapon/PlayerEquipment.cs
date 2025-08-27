@@ -11,9 +11,12 @@ public class PlayerEquipment : MonoBehaviour
     // 事件
     public System.Action<WeaponData> OnWeaponEquipped;
     public System.Action OnWeaponUnequipped;
+    
+    private CharacterState characterState;
 
     private void Start()
     {
+        characterState = GetComponent<CharacterState>();
         // 注册到BackpackManager
         if (BackpackManager.Instance != null)
         {
@@ -63,6 +66,9 @@ public class PlayerEquipment : MonoBehaviour
             UnequipWeapon(); //如果已经有武器装备，先卸下
         }
         currentWeapon = weapon;
+        // characterState.SetWeaponAttack(weapon.damage);
+        characterState.SetWeaponAttack(weapon.damage); // 装备后更改攻击力
+        Debug.LogError("当前武器伤害：" + weapon.damage);
         isWeaponEquipped = true;
         OnWeaponEquipped?.Invoke(weapon); //触发事件
         Debug.Log($"Equipped weapon: {weapon.weaponName}");

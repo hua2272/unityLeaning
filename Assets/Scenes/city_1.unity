@@ -3811,6 +3811,7 @@ MonoBehaviour:
   damage:
     baseValue: 30
     modifiers: 
+  weaponAttack: 0
   currentHealth: 0
 --- !u!70 &473150280
 CapsuleCollider2D:
@@ -8638,12 +8639,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backpackPanel: {fileID: 2081604110}
-  backpackManager: {fileID: 124809685}
+  manualBackpackManager: {fileID: 124809685}
   initialWeapons:
   - {fileID: 11400000, guid: d9431e9d38e12f34d9584ef2d539ed23, type: 2}
   - {fileID: 11400000, guid: 715592d41e1a712478010338582686b2, type: 2}
   loadWeaponsOnStart: 1
   loadDelay: 0.1
+  playerEquipment: {fileID: 1142823689}
 --- !u!1 &962726075
 GameObject:
   m_ObjectHideFlags: 0
@@ -10118,6 +10120,7 @@ MonoBehaviour:
   damage:
     baseValue: 50
     modifiers: 
+  weaponAttack: 0
   currentHealth: 0
 --- !u!114 &1142823688
 MonoBehaviour:
@@ -12881,6 +12884,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1142823682}
+  playerEquipment: {fileID: 0}
 --- !u!1 &1645992357
 GameObject:
   m_ObjectHideFlags: 0
@@ -16001,7 +16005,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2081604111
 RectTransform:
   m_ObjectHideFlags: 0

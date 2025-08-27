@@ -21,6 +21,7 @@ public class CharacterState : MonoBehaviour
     
     [Header("Offence stats")]
     public Status damage;
+    public int weaponAttack = 0;
     
     public int currentHealth;
     public System.Action onHealthChange;
@@ -29,12 +30,19 @@ public class CharacterState : MonoBehaviour
     {
         currentHealth = GetMaxHealthValue();
     }
+    
+    // 通过方法设置值
+    public void SetWeaponAttack(int value)
+    {
+        weaponAttack = value;
+    }
 
     public virtual void DoDamage(CharacterState _targetState)
     {
         // int totalEvasion = _targetState.evasion.getValue() + _targetState.agility.getValue();
         // if (Random.Range(0, 100) < totalEvasion){}
-        int totalDamage = Mathf.Clamp(damage.getValue() + strength.getValue() - _targetState.armor.getValue(), 0, int.MaxValue); //护甲值过大会导致伤害为负数
+        
+        int totalDamage = Mathf.Clamp(weaponAttack + damage.getValue() + strength.getValue() - _targetState.armor.getValue(), 0, int.MaxValue); //护甲值过大会导致伤害为负数
         _targetState.TakeDamage(totalDamage);
     }
 

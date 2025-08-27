@@ -166,8 +166,7 @@ public class ManualBackpackManager : MonoBehaviour
     {
         if (slots.ContainsKey(slotIndex) && !slots[slotIndex].IsEmpty())
         {
-            // 装备武器
-            EquipWeapon(slotIndex, slots[slotIndex].GetWeapon());
+            // 只触发事件，告知外界用户点击了哪个槽位，不处理实际装备逻辑
             OnWeaponEquipped?.Invoke(slotIndex, slots[slotIndex].GetWeapon());
         }
     }
@@ -194,13 +193,6 @@ public class ManualBackpackManager : MonoBehaviour
         // 装备新武器
         equippedSlotIndex = slotIndex;
         slots[slotIndex].UpdateEquippedState(true);
-
-        // 通知玩家装备系统
-        PlayerEquipment equipment = FindObjectOfType<PlayerEquipment>();
-        if (equipment != null)
-        {
-            equipment.EquipWeapon(weapon);
-        }
     }
 
     // 清空所有格子
@@ -220,12 +212,21 @@ public class ManualBackpackManager : MonoBehaviour
         return slots.ContainsKey(slotIndex) ? slots[slotIndex] : null;
     }
     
-    // 用于更新特定格子的装备状态
-    public void UpdateSlotEquippedState(int slotIndex, bool equipped)
+    
+    // 提供一个公共方法，供外部（如BackpackManager）在确认装备后更新UI状态
+    public void UpdateSlotEquippedState(int slotIndex, bool isEquipped)
     {
         if (slots.ContainsKey(slotIndex))
         {
-            slots[slotIndex].UpdateEquippedState(equipped);
+            slots[slotIndex].UpdateEquippedState(isEquipped);
+            if (isEquipped)
+            {
+                equippedSlotIndex = slotIndex;
+            }
+            else if (slotIndex == equippedSlotIndex)
+            {
+                equippedSlotIndex = -1;
+            }
         }
     }
 }
