@@ -40,53 +40,11 @@ public class GameSaveManager : MonoBehaviour
         }
     }
     
-    // public static void SaveGame2(GameData data)
-    // {
-    //     string jsonData = JsonUtility.ToJson(data);
-    //     PlayerPrefs.SetString("GameSaveData", jsonData);
-    //     PlayerPrefs.Save();
-    // }
-
-    
-    // public static GameData LoadGame()
-    // {
-    //     if (PlayerPrefs.HasKey("GameSaveData"))
-    //     {
-    //         string jsonData = PlayerPrefs.GetString("GameSaveData");
-    //         return JsonUtility.FromJson<GameData>(jsonData);
-    //     }
-    //     return null;
-    // }
-    
-    
-    
-    public GameData LoadGame()
-    {
-        string filePath = GetSavePath();
-        if (File.Exists(filePath))
-        {
-            try
-            {
-                string jsonData = File.ReadAllText(filePath);
-                GameData gameData = JsonUtility.FromJson<GameData>(jsonData);
-                return gameData;
-            }
-            catch (Exception e)
-            {
-                Debug.LogError("Error loading save file: " + e.Message);
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Save file not found at: " + filePath);
-        }
-        return null;
-    }
     
     public static bool DoesSaveExist()
     {
         //return PlayerPrefs.HasKey("GameSaveData");
-        //todo 保存路径优化
+        //todo 保存路径优化（去除空格等因素）
         return File.Exists(GetSavePath());
     }
     

@@ -10,9 +10,9 @@ public class BackpackManager : MonoBehaviour
 
     [SerializeField] private ManualBackpackManager manualBackpackManager;
 
-    [Header("武器加载")] [SerializeField] private WeaponData[] initialWeapons;
+    [Header("武器加载")] 
+    [SerializeField] private WeaponData[] obtainedWeapons;
     [SerializeField] private bool loadWeaponsOnStart = true;
-    [SerializeField] private float loadDelay = 0.1f;
 
     // 玩家装备引用
     public PlayerEquipment playerEquipment;
@@ -33,18 +33,13 @@ public class BackpackManager : MonoBehaviour
 
     private IEnumerator Start()
     {
-        // 查找玩家装备
-        playerEquipment = FindObjectOfType<PlayerEquipment>();
-        
         // 注册事件
         if (manualBackpackManager != null)
         {
             manualBackpackManager.OnWeaponEquipped += HandleWeaponEquip;
         }
-        
         // 延迟加载初始武器，确保所有系统已初始化
-        yield return new WaitForSeconds(loadDelay);
-        
+        yield return new WaitForSeconds(0.1f);
         if (loadWeaponsOnStart)
         {
             LoadInitialWeapons();
@@ -62,26 +57,24 @@ public class BackpackManager : MonoBehaviour
     // 加载初始武器
     public void LoadInitialWeapons()
     {
-        if (initialWeapons == null || initialWeapons.Length == 0)
+        if (obtainedWeapons == null || obtainedWeapons.Length == 0)
         {
             Debug.LogWarning("No initial weapons configured!");
             return;
         }
-
         // 为每个武器分配到指定格子
-        for (int i = 0; i < initialWeapons.Length; i++)
+        for (int i = 0; i < obtainedWeapons.Length; i++)
         {
             if (i < manualBackpackManager.GetSlotCount())
             {
-                manualBackpackManager.AddWeaponToSlot(i, initialWeapons[i], i == 0);
+                manualBackpackManager.AddWeaponToSlot(i, obtainedWeapons[i], i == 0);
             }
             else
             {
                 Debug.LogWarning($"Not enough slots for all initial weapons! Slot {i} is out of range.");
             }
         }
-
-        Debug.Log($"Loaded {initialWeapons.Length} initial weapons");
+        Debug.Log($"Loaded {obtainedWeapons.Length} initial weapons");
     }
 
     // 从外部加载武器（替代WeaponLoader的功能）
@@ -91,7 +84,6 @@ public class BackpackManager : MonoBehaviour
         {
             manualBackpackManager.ClearAllSlots();
         }
-
         foreach (var weapon in weapons)
         {
             AddWeapon(weapon);
@@ -103,7 +95,6 @@ public class BackpackManager : MonoBehaviour
     {
         bool isActive = !backpackPanel.activeSelf;
         backpackPanel.SetActive(isActive);
-
         // 可选：暂停游戏当背包打开
         Time.timeScale = isActive ? 0 : 1;
     }
