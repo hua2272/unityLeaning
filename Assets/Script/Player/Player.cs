@@ -41,7 +41,7 @@ public class Player : Entity
     [Header("Dash Info")]
     public float dashSpeed;
     public float dashDuration;
-    public float dashDir { get; private set;}
+    public float dashDir { get; set;}
     
     private PlayerNPCDetector npcDetector;
     
@@ -85,7 +85,6 @@ public class Player : Entity
     {
         base.Update();
         stateMachine.currentState.Update();
-        Check4DashInput();
         Check4Talk();
     }
     
@@ -124,19 +123,7 @@ public class Player : Entity
     }
 
     public void AnimationTrigger() => stateMachine.currentState.AnimationFinishTrigger();
-
-    private void Check4DashInput()
-    {
-        if (isWallDetected())
-        {
-            return;
-        }
-        if (Input.GetKeyDown(KeyCode.LeftShift) && SkillManager.instance.dash.CanUseSkill())
-        {
-            dashDir = dashDir == 0 ? facingDir : Input.GetAxisRaw("Horizontal");
-            stateMachine.ChangeState(dashState);
-        }
-    }
+    
 
     private void Check4Talk()
     {

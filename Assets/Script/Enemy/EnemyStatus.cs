@@ -23,6 +23,6 @@ public class EnemyStatus : CharacterState
     {
         base.Die();
         enemy.Die();
-        GetComponent<ItemDropper>().DropItemsOnDeath();
+        // todo 掉落物品 GetComponent<ItemDropper>().DropItemsOnDeath();
     }
 }
