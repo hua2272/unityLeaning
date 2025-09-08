@@ -11,20 +11,6 @@ public class FeiLeiShen_Skill : Skill
     
     private bool canThrow = true;
     private bool isTeleporting = false;
-    public Player player; // 确保这个引用指向玩家对象
-
-    void Start()
-    {
-        // 添加调试信息
-        if (player == null) 
-        {
-            Debug.LogError("玩家引用未设置！请确保在Inspector中分配玩家引用。");
-        }
-        else
-        {
-            Debug.Log($"玩家引用已设置: {player.gameObject.name}");
-        }
-    }
 
     void Update()
     {
@@ -39,16 +25,7 @@ public class FeiLeiShen_Skill : Skill
         canThrow = false;
         GameObject dart = Instantiate(dartPrefab, throwPoint.position, Quaternion.identity);
         
-        // 使用玩家的方向
-        if (player != null)
-        {
-            dart.transform.localScale = new Vector3(player.facingDir, 1, 1);
-        }
-        else
-        {
-            Debug.LogWarning("玩家引用为空，使用默认方向");
-            dart.transform.localScale = new Vector3(1, 1, 1);
-        }
+        dart.transform.localScale = new Vector3(player.facingDir, 1, 1);
         
         DartProjectile dartScript = dart.GetComponent<DartProjectile>();
         if (dartScript != null)
@@ -64,17 +41,7 @@ public class FeiLeiShen_Skill : Skill
 
     public void TriggerTeleport(Vector3 targetPosition)
     {
-        if (isTeleporting) 
-        {
-            Debug.Log("已在瞬移中，忽略请求");
-            return;
-        }
-        
-        if (player == null)
-        {
-            Debug.LogError("无法瞬移：玩家引用为空");
-            return;
-        }
+        if (isTeleporting) return; //已在瞬移中，忽略请求
         
         isTeleporting = true;
         Debug.Log($"开始瞬移到位置: {targetPosition}");
