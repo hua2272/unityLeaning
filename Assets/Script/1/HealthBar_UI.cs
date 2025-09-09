@@ -29,7 +29,7 @@ public class HealthBar_UI : MonoBehaviour
         slider.value = characterState.currentHealth;
     }
 
-    private void FlipUI() => transform.Rotate(0, 180, 0); //角色翻转时防止血条翻转，所以再翻转一次233333
+    private void FlipUI() => transform.Rotate(0, 180, 0); //角色翻转时防止血条翻转，所以再翻转一次
 
     private void OnDestroy() //取消事件订阅
     {

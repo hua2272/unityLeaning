@@ -24,7 +24,7 @@ public class CharacterState : MonoBehaviour
     public int weaponAttack = 0;
     
     public int currentHealth;
-    public System.Action onHealthChange;
+    public System.Action onHealthChange = () => { }; //事件未被订阅时为Null会报错，该写法可省略Null判断
 
     protected virtual void Start()
     {
@@ -48,20 +48,10 @@ public class CharacterState : MonoBehaviour
 
     public virtual void TakeDamage(int _damage)
     {
-        DecreaseHealth(_damage);
-        if (currentHealth < 0)
-        {
+        currentHealth -= _damage; //计算生命值
+        onHealthChange();         //触发事件，更新血条UI
+        if (currentHealth < 0) 
             Die();
-        }
-    }
-
-    protected virtual void DecreaseHealth(int _damage)
-    {
-        currentHealth -= _damage;
-        if (onHealthChange != null)
-        {
-            onHealthChange();
-        }
     }
 
     public virtual void Die()
