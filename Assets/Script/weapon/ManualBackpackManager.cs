@@ -23,12 +23,8 @@ public class ManualBackpackManager : MonoBehaviour
     private void InitializeSlots()
     {
         if (isInitialized) return;
-        
         slots.Clear();
-        // 获取所有子对象中的WeaponSlotUI组件
         WeaponSlotUI[] slotComponents = GetComponentsInChildren<WeaponSlotUI>(true);
-        
-        Debug.Log($"Found {slotComponents.Length} weapon slot UI components in {gameObject.name}");
 
         foreach (WeaponSlotUI slot in slotComponents)
         {
@@ -43,11 +39,8 @@ public class ManualBackpackManager : MonoBehaviour
             slot.Initialize();
             slot.OnSlotClicked.AddListener(HandleSlotClick);
             slot.OnSlotHovered.AddListener(HandleSlotHover);
-
             slots.Add(index, slot);
-            Debug.Log($"Initialized slot {index}: {slot.gameObject.name}");
         }
-        Debug.Log($"Total slots initialized: {slots.Count}");
         isInitialized = true;
     }
     
@@ -183,6 +176,20 @@ public class ManualBackpackManager : MonoBehaviour
             {
                 equippedSlotIndex = -1;
             }
+        }
+    }
+    
+    // 添加新武器到背包
+    public void AddWeapon(WeaponData weapon)
+    {
+        int emptySlot = FindEmptySlot();
+        if (emptySlot >= 0)
+        {
+            AddWeaponToSlot(emptySlot, weapon);
+        }
+        else
+        {
+            Debug.LogWarning("No empty slots available!");
         }
     }
 }

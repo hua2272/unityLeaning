@@ -89,27 +89,6 @@ public class BackpackManager : MonoBehaviour
         }
     }
 
-    // 添加新武器到背包
-    public void AddWeapon(WeaponData weapon)
-    {
-        int emptySlot = manualBackpackManager.FindEmptySlot();
-        if (emptySlot >= 0)
-        {
-            manualBackpackManager.AddWeaponToSlot(emptySlot, weapon);
-        }
-        else
-        {
-            Debug.LogWarning("No empty slots available!");
-        }
-    }
-    
-
-    // 获取指定格子的武器
-    public WeaponData GetWeaponInSlot(int slotIndex)
-    {
-        return manualBackpackManager.GetWeaponInSlot(slotIndex);
-    }
-
     // 设置玩家装备引用
     public void SetPlayerEquipment(PlayerEquipment equipment)
     {
