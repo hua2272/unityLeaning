@@ -49,7 +49,7 @@ public class CharacterState : MonoBehaviour
     public virtual void TakeDamage(int _damage)
     {
         currentHealth -= _damage; //计算生命值
-        onHealthChange();         //触发事件，更新血条UI
+        onHealthChange?.Invoke(); //触发事件，更新血条UI
         if (currentHealth < 0) 
             Die();
     }
