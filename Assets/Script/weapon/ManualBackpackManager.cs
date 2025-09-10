@@ -25,7 +25,6 @@ public class ManualBackpackManager : MonoBehaviour
         if (isInitialized) return;
         
         slots.Clear();
-
         // 获取所有子对象中的WeaponSlotUI组件
         WeaponSlotUI[] slotComponents = GetComponentsInChildren<WeaponSlotUI>(true);
         
@@ -34,24 +33,20 @@ public class ManualBackpackManager : MonoBehaviour
         foreach (WeaponSlotUI slot in slotComponents)
         {
             int index = slot.GetSlotIndex();
-
             // 检查索引是否重复
             if (slots.ContainsKey(index))
             {
                 Debug.LogError($"Duplicate slot index found: {index}");
                 continue;
             }
-
             // 初始化格子
             slot.Initialize();
             slot.OnSlotClicked.AddListener(HandleSlotClick);
             slot.OnSlotHovered.AddListener(HandleSlotHover);
 
             slots.Add(index, slot);
-
             Debug.Log($"Initialized slot {index}: {slot.gameObject.name}");
         }
-
         Debug.Log($"Total slots initialized: {slots.Count}");
         isInitialized = true;
     }
@@ -92,23 +87,6 @@ public class ManualBackpackManager : MonoBehaviour
         {
             equippedSlotIndex = slotIndex;
         }
-
-        return true;
-    }
-
-    // 从格子移除武器
-    public bool RemoveWeaponFromSlot(int slotIndex)
-    {
-        if (!slots.ContainsKey(slotIndex) || slots[slotIndex].IsEmpty())
-            return false;
-            
-        slots[slotIndex].ClearSlot();
-
-        // 如果移除的是当前装备的武器
-        if (slotIndex == equippedSlotIndex)
-        {
-            equippedSlotIndex = -1;
-        }
         return true;
     }
 
@@ -119,22 +97,6 @@ public class ManualBackpackManager : MonoBehaviour
             return null;
 
         return slots[slotIndex].GetWeapon();
-    }
-
-    // 获取所有武器
-    public Dictionary<int, WeaponData> GetAllWeapons()
-    {
-        Dictionary<int, WeaponData> weapons = new Dictionary<int, WeaponData>();
-
-        foreach (var pair in slots)
-        {
-            if (!pair.Value.IsEmpty())
-            {
-                weapons.Add(pair.Key, pair.Value.GetWeapon());
-            }
-        }
-
-        return weapons;
     }
 
     // 获取空格子索引
@@ -204,12 +166,6 @@ public class ManualBackpackManager : MonoBehaviour
         }
 
         equippedSlotIndex = -1;
-    }
-
-    // 获取指定格子的UI组件
-    public WeaponSlotUI GetSlotUI(int slotIndex)
-    {
-        return slots.ContainsKey(slotIndex) ? slots[slotIndex] : null;
     }
     
     

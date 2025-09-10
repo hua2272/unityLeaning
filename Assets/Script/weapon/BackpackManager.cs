@@ -50,11 +50,13 @@ public class BackpackManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.I))
         {
-            ToggleBackpack();
+            bool isActive = !backpackPanel.activeSelf;
+            backpackPanel.SetActive(isActive);
+            Time.timeScale = isActive ? 0 : 1;  //可选：暂停游戏当背包打开
         }
     }
 
-    // 加载初始武器
+    // 初始化背包武器
     public void LoadInitialWeapons()
     {
         if (obtainedWeapons == null || obtainedWeapons.Length == 0)
@@ -77,28 +79,6 @@ public class BackpackManager : MonoBehaviour
         Debug.Log($"Loaded {obtainedWeapons.Length} initial weapons");
     }
 
-    // 从外部加载武器（替代WeaponLoader的功能）
-    public void LoadWeapons(WeaponData[] weapons, bool clearExisting = false)
-    {
-        if (clearExisting)
-        {
-            manualBackpackManager.ClearAllSlots();
-        }
-        foreach (var weapon in weapons)
-        {
-            AddWeapon(weapon);
-        }
-    }
-
-    // 切换背包显示
-    public void ToggleBackpack()
-    {
-        bool isActive = !backpackPanel.activeSelf;
-        backpackPanel.SetActive(isActive);
-        // 可选：暂停游戏当背包打开
-        Time.timeScale = isActive ? 0 : 1;
-    }
-
     // 处理武器装备
     private void HandleWeaponEquip(int slotIndex, WeaponData weapon)
     {
@@ -106,10 +86,6 @@ public class BackpackManager : MonoBehaviour
         if (playerEquipment != null)
         {
             playerEquipment.EquipWeapon(weapon);
-        }
-        else
-        {
-            Debug.LogError("PlayerEquipment not found!");
         }
     }
 
@@ -126,12 +102,7 @@ public class BackpackManager : MonoBehaviour
             Debug.LogWarning("No empty slots available!");
         }
     }
-
-    // 从背包移除武器
-    public void RemoveWeapon(int slotIndex)
-    {
-        manualBackpackManager.RemoveWeaponFromSlot(slotIndex);
-    }
+    
 
     // 获取指定格子的武器
     public WeaponData GetWeaponInSlot(int slotIndex)
@@ -139,21 +110,9 @@ public class BackpackManager : MonoBehaviour
         return manualBackpackManager.GetWeaponInSlot(slotIndex);
     }
 
-    // 检查背包是否打开
-    public bool IsBackpackOpen()
-    {
-        return backpackPanel.activeSelf;
-    }
-
     // 设置玩家装备引用
     public void SetPlayerEquipment(PlayerEquipment equipment)
     {
         playerEquipment = equipment;
-    }
-
-    // 清空背包
-    public void ClearBackpack()
-    {
-        manualBackpackManager.ClearAllSlots();
     }
 }

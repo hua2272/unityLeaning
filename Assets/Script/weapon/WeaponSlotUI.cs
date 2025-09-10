@@ -23,17 +23,13 @@ public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     // 当前武器和状态
     private WeaponData currentWeapon;
     private bool isEquipped = false;
-
-    // 初始化方法
+    
     public void Initialize()
     {
         ClearSlot();
-        // 添加点击事件监听
+        // 按钮添加点击事件监听
         Button button = GetComponent<Button>();
-        if (button != null)
-        {
-            button.onClick.AddListener(() => OnSlotClicked.Invoke(slotIndex));
-        }
+        button.onClick.AddListener(() => OnSlotClicked.Invoke(slotIndex));
     }
 
     // 设置武器到格子 - 从WeaponData自动获取所有信息
@@ -44,13 +40,11 @@ public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
             ClearSlot();
             return;
         }
-
         currentWeapon = weapon;
         isEquipped = equipped;
 
         // 从WeaponData自动设置所有UI内容
         UpdateUIFromWeaponData();
-
         Debug.Log($"Set weapon {weapon.weaponName} to slot {slotIndex}");
     }
 
@@ -111,7 +105,6 @@ public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         // 隐藏装备指示器
         if (equippedIndicator != null)
             equippedIndicator.SetActive(false);
-
     }
 
     // 悬停事件 - 显示描述
@@ -146,22 +139,10 @@ public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         return slotIndex;
     }
 
-    // 设置格子索引（用于编辑器）
-    public void SetSlotIndex(int index)
-    {
-        slotIndex = index;
-    }
-
     // 检查是否为空
     public bool IsEmpty()
     {
         return currentWeapon == null;
-    }
-
-    // 检查是否装备
-    public bool IsEquipped()
-    {
-        return isEquipped;
     }
     
     // 更新装备状态
