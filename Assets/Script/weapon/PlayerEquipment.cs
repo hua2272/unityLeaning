@@ -17,29 +17,25 @@ public class PlayerEquipment : MonoBehaviour
     private void Start()
     {
         characterState = GetComponent<CharacterState>();
-        // 注册到WeaponSlotsManager
+        StartCoroutine(Register4WeaponSlotsManager()); //使用协程将自身注册到WeaponSlotsManager
+        
+    }
+    
+    private IEnumerator Register4WeaponSlotsManager()
+    {
         if (WeaponSlotsManager.Instance != null)
         {
             WeaponSlotsManager.Instance.SetPlayerEquipment(this);
+            yield break; //直接退出协程
         }
-        else
-        {
-            // 如果WeaponSlotsManager尚未初始化，等待并重试
-            StartCoroutine(RegisterWeaponSlotsManager());
-        }
-    }
-    
-    // 使用协程等待WeaponSlotsManager初始化
-    private IEnumerator RegisterWeaponSlotsManager()
-    {
-        int maxAttempts = 50;
-        int attempts = 0;
         
         // 等待直到WeaponSlotsManager实例可用
+        int maxAttempts = 50;
+        int attempts = 0;
         while (WeaponSlotsManager.Instance == null && attempts < maxAttempts)
         {
             attempts++;
-            yield return null; // 等待下一帧
+            yield return null; //等待下一帧
         }
         if (WeaponSlotsManager.Instance != null)
         {
@@ -47,7 +43,7 @@ public class PlayerEquipment : MonoBehaviour
         }
     }
 
-    // 装备武器
+    // 装备武器（先卸下已经有装备
     public void EquipWeapon(WeaponData weapon)
     {
         if (weapon == null)
@@ -57,7 +53,7 @@ public class PlayerEquipment : MonoBehaviour
         }
         if (isWeaponEquipped)
         {
-            UnequipWeapon(); //如果已经有武器装备，先卸下
+            UnequipWeapon();
         }
         currentWeapon = weapon;
         // characterState.SetWeaponAttack(weapon.damage);
@@ -73,9 +69,8 @@ public class PlayerEquipment : MonoBehaviour
     {
         if (!isWeaponEquipped)
         {
-            return; // 没有装备武器，直接返回
+            return;
         }
-        // 触发事件
         OnWeaponUnequipped?.Invoke();
         Debug.Log($"Unequipped weapon: {currentWeapon.weaponName}");
         // 清除当前武器引用
