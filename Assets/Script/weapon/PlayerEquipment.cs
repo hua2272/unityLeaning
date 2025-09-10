@@ -17,39 +17,33 @@ public class PlayerEquipment : MonoBehaviour
     private void Start()
     {
         characterState = GetComponent<CharacterState>();
-        // 注册到BackpackManager
-        if (BackpackManager.Instance != null)
+        // 注册到WeaponSlotsManager
+        if (WeaponSlotsManager.Instance != null)
         {
-            BackpackManager.Instance.SetPlayerEquipment(this);
+            WeaponSlotsManager.Instance.SetPlayerEquipment(this);
         }
         else
         {
-            // 如果BackpackManager尚未初始化，等待并重试
-            StartCoroutine(RegisterWithBackpackManager());
+            // 如果WeaponSlotsManager尚未初始化，等待并重试
+            StartCoroutine(RegisterWeaponSlotsManager());
         }
     }
     
-    // 使用协程等待BackpackManager初始化
-    private IEnumerator RegisterWithBackpackManager()
+    // 使用协程等待WeaponSlotsManager初始化
+    private IEnumerator RegisterWeaponSlotsManager()
     {
         int maxAttempts = 50;
         int attempts = 0;
         
-        // 等待直到BackpackManager实例可用
-        while (BackpackManager.Instance == null && attempts < maxAttempts)
+        // 等待直到WeaponSlotsManager实例可用
+        while (WeaponSlotsManager.Instance == null && attempts < maxAttempts)
         {
             attempts++;
             yield return null; // 等待下一帧
         }
-        
-        if (BackpackManager.Instance != null)
+        if (WeaponSlotsManager.Instance != null)
         {
-            BackpackManager.Instance.SetPlayerEquipment(this);
-            Debug.Log("PlayerEquipment registered with BackpackManager");
-        }
-        else
-        {
-            Debug.LogError("Failed to register with BackpackManager - instance not found after " + maxAttempts + " attempts");
+            WeaponSlotsManager.Instance.SetPlayerEquipment(this);
         }
     }
 
@@ -96,12 +90,6 @@ public class PlayerEquipment : MonoBehaviour
         return currentWeapon;
     }
 
-    // 检查是否有武器装备
-    public bool IsWeaponEquipped()
-    {
-        return isWeaponEquipped;
-    }
-
     // 切换武器装备状态
     public void ToggleWeapon()
     {
@@ -119,13 +107,13 @@ public class PlayerEquipment : MonoBehaviour
     public void SwitchWeapon(int slotIndex, WeaponData weapon)
     {
         // 通知BackpackManager更新装备状态
-        if (BackpackManager.Instance != null)
+        if (WeaponSlotsManager.Instance != null)
         {
-            // 这里需要获取ManualBackpackManager的引用
-            ManualBackpackManager backpackManager = FindObjectOfType<ManualBackpackManager>();
-            if (backpackManager != null)
+            // 这里需要获取weaponSlotsManager的引用
+            WeaponSlotsManager weaponSlotsManager = FindObjectOfType<WeaponSlotsManager>();
+            if (weaponSlotsManager != null)
             {
-                backpackManager.UpdateSlotEquippedState(slotIndex, true);
+                weaponSlotsManager.UpdateSlotEquippedState(slotIndex, true);
             }
         }
         // 装备武器

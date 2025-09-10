@@ -1,9 +1,11 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class ManualBackpackManager : MonoBehaviour
+public class WeaponSlotsManager : MonoBehaviour
 {
+    public static WeaponSlotsManager Instance { get; private set; }
     // 所有格子的引用
     private Dictionary<int, WeaponSlotUI> slots = new Dictionary<int, WeaponSlotUI>();
     private bool isInitialized = false;
@@ -13,10 +15,48 @@ public class ManualBackpackManager : MonoBehaviour
 
     // 事件
     public System.Action<int, WeaponData> OnWeaponEquipped;
+    
+    [Header("武器加载")] 
+    [SerializeField] private WeaponData[] obtainedWeapons;
+    [SerializeField] private bool loadWeaponsOnStart = true;
+    
+    public PlayerEquipment playerEquipment;
 
     private void Awake()
     {
         InitializeSlots();
+    }
+    
+    private void Start()
+    {
+        OnWeaponEquipped += HandleWeaponEquip;
+        if (loadWeaponsOnStart)
+        {
+            LoadInitialWeapons();
+        }
+    }
+    
+    // 初始化背包武器
+    public void LoadInitialWeapons()
+    {
+        if (obtainedWeapons == null || obtainedWeapons.Length == 0)
+        {
+            Debug.LogWarning("No initial weapons configured!");
+            return;
+        }
+        // 为每个武器分配到指定格子
+        for (int i = 0; i < obtainedWeapons.Length; i++)
+        {
+            if (i < GetSlotCount())
+            {
+                AddWeaponToSlot(i, obtainedWeapons[i], i == 0);
+            }
+            else
+            {
+                Debug.LogWarning($"Not enough slots for all initial weapons! Slot {i} is out of range.");
+            }
+        }
+        Debug.Log($"Loaded {obtainedWeapons.Length} initial weapons");
     }
 
     // 初始化所有格子
@@ -179,6 +219,16 @@ public class ManualBackpackManager : MonoBehaviour
         }
     }
     
+    // 处理武器装备
+    private void HandleWeaponEquip(int slotIndex, WeaponData weapon)
+    {
+        // 通知玩家装备系统
+        if (playerEquipment != null)
+        {
+            playerEquipment.EquipWeapon(weapon);
+        }
+    }
+    
     // 添加新武器到背包
     public void AddWeapon(WeaponData weapon)
     {
@@ -191,5 +241,11 @@ public class ManualBackpackManager : MonoBehaviour
         {
             Debug.LogWarning("No empty slots available!");
         }
+    }
+    
+    // 设置玩家装备引用
+    public void SetPlayerEquipment(PlayerEquipment equipment)
+    {
+        playerEquipment = equipment;
     }
 }

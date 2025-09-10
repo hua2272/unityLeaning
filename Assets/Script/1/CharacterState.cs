@@ -9,10 +9,10 @@ using Range = UnityEngine.SocialPlatforms.Range;
 public class CharacterState : MonoBehaviour
 {
     [Header("Major stats")]
-    public Status strength; //物伤加点
-    public Status agility; //敏捷加点
-    public Status intelligence; //法术加点
-    public Status vitality; //生命值加点
+    public Status strength;         //物伤加点
+    public Status agility;          //敏捷加点
+    public Status intelligence;     //法术加点
+    public Status vitality;         //生命值加点
     
     [Header("Defense stats")]
     public Status maxHealth;

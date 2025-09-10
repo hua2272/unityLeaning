@@ -1729,6 +1729,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a593577a1eb0a343ad97613bd1898f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  obtainedWeapons:
+  - {fileID: 11400000, guid: d9431e9d38e12f34d9584ef2d539ed23, type: 2}
+  - {fileID: 11400000, guid: 715592d41e1a712478010338582686b2, type: 2}
+  loadWeaponsOnStart: 1
+  playerEquipment: {fileID: 1142823689}
 --- !u!1 &142323046
 GameObject:
   m_ObjectHideFlags: 0
@@ -3489,7 +3494,6 @@ GameObject:
   - component: {fileID: 473150278}
   - component: {fileID: 473150279}
   - component: {fileID: 473150280}
-  - component: {fileID: 473150281}
   m_Layer: 7
   m_Name: Enemy_Skeleton
   m_TagString: Untagged
@@ -3668,18 +3672,6 @@ CapsuleCollider2D:
   m_Offset: {x: -0.016867094, y: -0.24668899}
   m_Size: {x: 0.930624, y: 1.5271562}
   m_Direction: 0
---- !u!114 &473150281
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 473150273}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e693b61c87afe1740acf443cafc63573, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &498712445
 GameObject:
   m_ObjectHideFlags: 0
@@ -7334,11 +7326,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backpackPanel: {fileID: 2081604110}
-  manualBackpackManager: {fileID: 124809685}
-  obtainedWeapons:
-  - {fileID: 11400000, guid: d9431e9d38e12f34d9584ef2d539ed23, type: 2}
-  - {fileID: 11400000, guid: 229a25f3194ebc34398489ab638d3a97, type: 2}
-  loadWeaponsOnStart: 1
   playerEquipment: {fileID: 1142823689}
 --- !u!1 &973337088
 GameObject:
