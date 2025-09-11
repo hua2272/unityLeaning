@@ -84,19 +84,6 @@ public class PlayerEquipment : MonoBehaviour
         //todo 从存档文件读取，放入内存后读取内存
         return currentWeapon;
     }
-
-    // 切换武器装备状态
-    public void ToggleWeapon()
-    {
-        if (isWeaponEquipped)
-        {
-            UnequipWeapon();
-        }
-        else if (currentWeapon != null)
-        {
-            EquipWeapon(currentWeapon);
-        }
-    }
     
     // 在PlayerEquipment中添加方法，用于处理武器切换
     public void SwitchWeapon(int slotIndex, WeaponData weapon)

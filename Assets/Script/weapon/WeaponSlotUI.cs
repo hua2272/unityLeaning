@@ -7,11 +7,11 @@ using UnityEngine.UI;
 public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("UI References - 这些需要在编辑器中设置")]
-    [SerializeField] private Image iconImage;           // 武器图标显示
-    [SerializeField] private TextMeshProUGUI nameText;  // 武器名称显示
-    [SerializeField] private TextMeshProUGUI descriptionText; // 武器描述显示
-    [SerializeField] private GameObject emptyIndicator; // 空格子指示器
-    [SerializeField] private GameObject equippedIndicator; // 装备状态指示器
+    [SerializeField] private Image iconImage;                   //武器图标
+    [SerializeField] private TextMeshProUGUI nameText;          //武器名称
+    [SerializeField] private TextMeshProUGUI descriptionText;   //武器描述
+    [SerializeField] private GameObject emptyIndicator;         //空格子指示器
+    [SerializeField] private GameObject equippedIndicator;      //装备状态指示器
 
     [Header("格子设置")]
     [SerializeField] private int slotIndex = 0; // 手动设置的格子编号

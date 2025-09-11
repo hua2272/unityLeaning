@@ -25,10 +25,6 @@ public class WeaponSlotsManager : MonoBehaviour
     private void Awake()
     {
         InitializeSlots();
-    }
-    
-    private void Start()
-    {
         OnWeaponEquipped += HandleWeaponEquip;
         if (loadWeaponsOnStart)
         {
@@ -56,7 +52,6 @@ public class WeaponSlotsManager : MonoBehaviour
                 Debug.LogWarning($"Not enough slots for all initial weapons! Slot {i} is out of range.");
             }
         }
-        Debug.Log($"Loaded {obtainedWeapons.Length} initial weapons");
     }
 
     // 初始化所有格子
@@ -84,9 +79,9 @@ public class WeaponSlotsManager : MonoBehaviour
         isInitialized = true;
     }
     
+    // 取消事件订阅，防止内存泄漏
     private void OnDestroy()
     {
-        // 取消事件订阅，防止内存泄漏
         foreach (var slot in slots.Values)
         {
             if (slot != null)
@@ -188,17 +183,6 @@ public class WeaponSlotsManager : MonoBehaviour
         // 装备新武器
         equippedSlotIndex = slotIndex;
         slots[slotIndex].UpdateEquippedState(true);
-    }
-
-    // 清空所有格子
-    public void ClearAllSlots()
-    {
-        foreach (var pair in slots)
-        {
-            pair.Value.ClearSlot();
-        }
-
-        equippedSlotIndex = -1;
     }
     
     
