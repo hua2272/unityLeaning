@@ -152,24 +152,6 @@ public class WeaponSlotsManager : MonoBehaviour
         slots[slotIndex].UpdateEquippedState(true);
     }
     
-    
-    // 提供一个公共方法，供外部（如BackpackManager）在确认装备后更新UI状态
-    public void UpdateSlotEquippedState(int slotIndex, bool isEquipped)
-    {
-        if (slots.ContainsKey(slotIndex))
-        {
-            slots[slotIndex].UpdateEquippedState(isEquipped);
-            if (isEquipped)
-            {
-                equippedSlotIndex = slotIndex;
-            }
-            else if (slotIndex == equippedSlotIndex)
-            {
-                equippedSlotIndex = -1;
-            }
-        }
-    }
-    
     // 处理武器装备
     private void HandleWeaponEquip(int slotIndex, WeaponData weapon)
     {
@@ -190,11 +172,5 @@ public class WeaponSlotsManager : MonoBehaviour
                 AddWeaponToSlot(pair.Key, weapon);
             }
         }
-    }
-    
-    // 设置玩家装备引用
-    public void SetPlayerEquipment(PlayerEquipment equipment)
-    {
-        playerEquipment = equipment;
     }
 }

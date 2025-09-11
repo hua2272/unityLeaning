@@ -17,30 +17,6 @@ public class PlayerEquipment : MonoBehaviour
     private void Start()
     {
         characterState = GetComponent<CharacterState>();
-        StartCoroutine(Register4WeaponSlotsManager()); //使用协程将自身注册到WeaponSlotsManager
-        
-    }
-    
-    private IEnumerator Register4WeaponSlotsManager()
-    {
-        if (WeaponSlotsManager.Instance != null)
-        {
-            WeaponSlotsManager.Instance.SetPlayerEquipment(this);
-            yield break; //直接退出协程
-        }
-        
-        // 等待直到WeaponSlotsManager实例可用
-        int maxAttempts = 50;
-        int attempts = 0;
-        while (WeaponSlotsManager.Instance == null && attempts < maxAttempts)
-        {
-            attempts++;
-            yield return null; //等待下一帧
-        }
-        if (WeaponSlotsManager.Instance != null)
-        {
-            WeaponSlotsManager.Instance.SetPlayerEquipment(this);
-        }
     }
 
     // 装备武器（先卸下已经有装备
@@ -83,22 +59,5 @@ public class PlayerEquipment : MonoBehaviour
     {
         //todo 从存档文件读取，放入内存后读取内存
         return currentWeapon;
-    }
-    
-    // 在PlayerEquipment中添加方法，用于处理武器切换
-    public void SwitchWeapon(int slotIndex, WeaponData weapon)
-    {
-        // 通知BackpackManager更新装备状态
-        if (WeaponSlotsManager.Instance != null)
-        {
-            // 这里需要获取weaponSlotsManager的引用
-            WeaponSlotsManager weaponSlotsManager = FindObjectOfType<WeaponSlotsManager>();
-            if (weaponSlotsManager != null)
-            {
-                weaponSlotsManager.UpdateSlotEquippedState(slotIndex, true);
-            }
-        }
-        // 装备武器
-        EquipWeapon(weapon);
     }
 }
