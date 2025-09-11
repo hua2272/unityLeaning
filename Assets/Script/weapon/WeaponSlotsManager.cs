@@ -43,7 +43,7 @@ public class WeaponSlotsManager : MonoBehaviour
         // 为每个武器分配到指定格子
         for (int i = 0; i < obtainedWeapons.Length; i++)
         {
-            if (i < GetSlotCount())
+            if (i < slots.Count)
             {
                 AddWeaponToSlot(i, obtainedWeapons[i], i == 0);
             }
@@ -118,39 +118,6 @@ public class WeaponSlotsManager : MonoBehaviour
         return true;
     }
 
-    // 获取指定格子的武器
-    public WeaponData GetWeaponInSlot(int slotIndex)
-    {
-        if (!slots.ContainsKey(slotIndex))
-            return null;
-
-        return slots[slotIndex].GetWeapon();
-    }
-
-    // 获取空格子索引
-    public int FindEmptySlot()
-    {
-        foreach (var pair in slots)
-        {
-            if (pair.Value.IsEmpty())
-            {
-                return pair.Key;
-            }
-        }
-        return -1;
-    }
-
-    // 获取所有格子数量
-    public int GetSlotCount()
-    {
-        // 如果尚未初始化，先初始化
-        if (!isInitialized)
-        {
-            InitializeSlots();
-        }
-        return slots.Count;
-    }
-
     // 事件处理
     private void HandleSlotClick(int slotIndex)
     {
@@ -216,14 +183,12 @@ public class WeaponSlotsManager : MonoBehaviour
     // 添加新武器到背包
     public void AddWeapon(WeaponData weapon)
     {
-        int emptySlot = FindEmptySlot();
-        if (emptySlot >= 0)
+        foreach (var pair in slots)
         {
-            AddWeaponToSlot(emptySlot, weapon);
-        }
-        else
-        {
-            Debug.LogWarning("No empty slots available!");
+            if (pair.Value.IsEmpty())
+            {
+                AddWeaponToSlot(pair.Key, weapon);
+            }
         }
     }
     
