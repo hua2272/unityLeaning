@@ -18,39 +18,13 @@ public class WeaponSlotsManager : MonoBehaviour
     
     [Header("武器加载")] 
     [SerializeField] private WeaponData[] obtainedWeapons;
-    [SerializeField] private bool loadWeaponsOnStart = true;
 
     private void Awake()
     {
         InitializeSlots();
-        if (loadWeaponsOnStart)
-        {
-            LoadInitialWeapons();
-        }
+        LoadInitialWeapons();
     }
     
-    // 初始化背包武器
-    public void LoadInitialWeapons()
-    {
-        if (obtainedWeapons == null || obtainedWeapons.Length == 0)
-        {
-            Debug.LogWarning("No initial weapons configured!");
-            return;
-        }
-        // 为每个武器分配到指定格子
-        for (int i = 0; i < obtainedWeapons.Length; i++)
-        {
-            if (i < slots.Count)
-            {
-                AddWeaponToSlot(i, obtainedWeapons[i], i == 0);
-            }
-            else
-            {
-                Debug.LogWarning($"Not enough slots for all initial weapons! Slot {i} is out of range.");
-            }
-        }
-    }
-
     // 初始化所有格子
     private void InitializeSlots()
     {
@@ -74,6 +48,22 @@ public class WeaponSlotsManager : MonoBehaviour
             slots.Add(index, slot);
         }
         isInitialized = true;
+    }
+    
+    // 初始化背包武器，为每个武器分配到指定格子
+    public void LoadInitialWeapons()
+    {
+        if (obtainedWeapons == null || obtainedWeapons.Length == 0)
+        {
+            return;
+        }
+        for (int i = 0; i < obtainedWeapons.Length; i++)
+        {
+            if (i < slots.Count)
+            {
+                AddWeaponToSlot(i, obtainedWeapons[i], i == 0);
+            }
+        }
     }
     
     // 取消事件订阅，防止内存泄漏
@@ -149,7 +139,7 @@ public class WeaponSlotsManager : MonoBehaviour
         slots[slotIndex].UpdateEquippedState(true);
     }
     
-    // 添加新武器到背包
+    // 添加新武器到背包 TODO 校验武器是否重复，重复则不拾起
     public void AddWeapon(WeaponData weapon)
     {
         foreach (var pair in slots)
