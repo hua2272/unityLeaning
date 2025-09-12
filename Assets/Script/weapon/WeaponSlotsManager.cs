@@ -19,13 +19,10 @@ public class WeaponSlotsManager : MonoBehaviour
     [Header("武器加载")] 
     [SerializeField] private WeaponData[] obtainedWeapons;
     [SerializeField] private bool loadWeaponsOnStart = true;
-    
-    public PlayerEquipment playerEquipment;
 
     private void Awake()
     {
         InitializeSlots();
-        OnWeaponEquipped += HandleWeaponEquip;
         if (loadWeaponsOnStart)
         {
             LoadInitialWeapons();
@@ -150,12 +147,6 @@ public class WeaponSlotsManager : MonoBehaviour
         // 装备新武器
         equippedSlotIndex = slotIndex;
         slots[slotIndex].UpdateEquippedState(true);
-    }
-    
-    // 处理武器装备
-    private void HandleWeaponEquip(int slotIndex, WeaponData weapon)
-    {
-        playerEquipment.EquipWeapon(weapon);
     }
     
     // 添加新武器到背包

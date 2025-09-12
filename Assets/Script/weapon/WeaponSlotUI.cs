@@ -27,7 +27,6 @@ public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public void Initialize()
     {
         ClearSlot();
-        // 按钮添加点击事件监听
         Button button = GetComponent<Button>();
         button.onClick.AddListener(() => OnSlotClicked.Invoke(slotIndex));
     }
@@ -42,10 +41,7 @@ public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         }
         currentWeapon = weapon;
         isEquipped = equipped;
-
-        // 从WeaponData自动设置所有UI内容
         UpdateUIFromWeaponData();
-        Debug.Log($"Set weapon {weapon.weaponName} to slot {slotIndex}");
     }
 
     // 从WeaponData更新UI内容
