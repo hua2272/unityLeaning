@@ -10,7 +10,7 @@ public class WeaponSlotsManager : MonoBehaviour
     private Dictionary<int, WeaponSlotUI> slots = new Dictionary<int, WeaponSlotUI>();
     private bool isInitialized = false;
 
-    // 当前装备的武器索引
+    // 已装备的武器索引
     private int equippedSlotIndex = -1;
 
     // 事件
@@ -80,29 +80,14 @@ public class WeaponSlotsManager : MonoBehaviour
     }
 
     // 添加武器到指定格子
-    public bool AddWeaponToSlot(int slotIndex, WeaponData weapon, bool equip = false)
+    public void AddWeaponToSlot(int slotIndex, WeaponData weapon, bool equip = false)
     {
-        if (!slots.ContainsKey(slotIndex))
-        {
-            Debug.LogWarning($"Slot {slotIndex} not found!");
-            return false;
-        }
-
-        if (!slots[slotIndex].IsEmpty())
-        {
-            Debug.LogWarning($"Slot {slotIndex} is already occupied!");
-            return false;
-        }
-
-        // 设置武器到格子
-        slots[slotIndex].SetWeapon(weapon, equip);
-
-        // 如果是装备状态，更新装备索引
-        if (equip)
-        {
+        if (!slots.ContainsKey(slotIndex)) return;
+        if (!slots[slotIndex].IsEmpty()) return;
+        
+        slots[slotIndex].SetWeapon(weapon, equip);           // 设置武器到格子
+        if (equip)                                           // 如果是装备状态，更新装备索引
             equippedSlotIndex = slotIndex;
-        }
-        return true;
     }
 
     // 事件处理

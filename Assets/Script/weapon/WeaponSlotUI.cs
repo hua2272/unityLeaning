@@ -20,9 +20,9 @@ public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public UnityEvent<int> OnSlotClicked;
     public UnityEvent<int> OnSlotHovered;
 
-    // 当前武器和状态
-    private WeaponData currentWeapon;
-    private bool isEquipped = false;
+    
+    private WeaponData currentWeapon;                           //当前格子的武器
+    private bool isEquipped = false;                            //当前格子的武器是否装备
     
     public void Initialize()
     {
