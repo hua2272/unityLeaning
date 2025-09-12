@@ -42,7 +42,7 @@ public class WeaponSlotsManager : MonoBehaviour
                 continue;
             }
             // 初始化格子
-            slot.Initialize();
+            slot.ClearSlot();
             slot.OnSlotClicked.AddListener(HandleSlotClick);
             slot.OnSlotHovered.AddListener(HandleSlotHover);
             slots.Add(index, slot);

@@ -23,15 +23,8 @@ public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     
     private WeaponData currentWeapon;                           //当前格子的武器
     private bool isEquipped = false;                            //当前格子的武器是否装备
-    
-    public void Initialize()
-    {
-        ClearSlot();
-        Button button = GetComponent<Button>();
-        button.onClick.AddListener(() => OnSlotClicked.Invoke(slotIndex));
-    }
 
-    // 设置武器到格子 - 从WeaponData自动获取所有信息
+    //从WeaponData获取武器信息并设置到格子
     public void SetWeapon(WeaponData weapon, bool equipped = false)
     {
         if (weapon == null)
@@ -41,40 +34,26 @@ public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         }
         currentWeapon = weapon;
         isEquipped = equipped;
-        UpdateUIFromWeaponData();
-    }
-
-    // 从WeaponData更新UI内容
-    private void UpdateUIFromWeaponData()
-    {
-        // 设置武器图标
-        if (iconImage != null && currentWeapon.icon != null)
+        
+        if (iconImage != null && currentWeapon.icon != null)         //设置武器图标
         {
             iconImage.sprite = currentWeapon.icon;
             iconImage.gameObject.SetActive(true);
             iconImage.preserveAspect = true;
         }
-
-        // 设置武器名称
         if (nameText != null)
         {
-            nameText.text = currentWeapon.weaponName;
+            nameText.text = currentWeapon.weaponName;                      //设置武器名称
             nameText.gameObject.SetActive(true);
         }
-
-        // 设置武器描述
-        if (descriptionText != null)
+        if (descriptionText != null)                                    //设置武器描述（默认隐藏，悬停时显示
         {
             descriptionText.text = currentWeapon.description;
-            descriptionText.gameObject.SetActive(false); // 默认隐藏，悬停时显示
+            descriptionText.gameObject.SetActive(false);
         }
-
-        // 隐藏空指示器
-        if (emptyIndicator != null)
+        if (emptyIndicator != null)                                    //隐藏空指示器
             emptyIndicator.SetActive(false);
-
-        // 显示或隐藏装备指示器
-        if (equippedIndicator != null)
+        if (equippedIndicator != null)                                 //显示或隐藏装备指示器
             equippedIndicator.SetActive(isEquipped);
     }
 
