@@ -14,7 +14,7 @@ public class WeaponSlotsManager : MonoBehaviour
     private int equippedSlotIndex = -1;
 
     // 事件
-    public System.Action<int, WeaponData> OnWeaponEquipped;
+    public System.Action<int, WeaponData> OnWeaponEquipped = (index, weapon) => { };
     
     [Header("武器加载")] 
     [SerializeField] private WeaponData[] obtainedWeapons;
@@ -155,11 +155,7 @@ public class WeaponSlotsManager : MonoBehaviour
     // 处理武器装备
     private void HandleWeaponEquip(int slotIndex, WeaponData weapon)
     {
-        // 通知玩家装备系统
-        if (playerEquipment != null)
-        {
-            playerEquipment.EquipWeapon(weapon);
-        }
+        playerEquipment.EquipWeapon(weapon);
     }
     
     // 添加新武器到背包

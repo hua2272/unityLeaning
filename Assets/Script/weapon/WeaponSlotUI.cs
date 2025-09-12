@@ -14,7 +14,7 @@ public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     [SerializeField] private GameObject equippedIndicator;      //装备状态指示器
 
     [Header("格子设置")]
-    [SerializeField] private int slotIndex = 0; // 手动设置的格子编号
+    [SerializeField] private int slotIndex = 0;                 //手动设置的格子编号
 
     [Header("事件")]
     public UnityEvent<int> OnSlotClicked;
