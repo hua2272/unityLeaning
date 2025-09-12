@@ -34,11 +34,10 @@ public class WeaponSlotsManager : MonoBehaviour
 
         foreach (WeaponSlotUI slot in slotComponents)
         {
-            int index = slot.GetSlotIndex();
-            // 检查索引是否重复
+            int index = slot.GetSlotId();
             if (slots.ContainsKey(index))
             {
-                Debug.LogError($"Duplicate slot index found: {index}");
+                Debug.LogError($"Duplicate slot index found: {index}");  //跳过重复的id
                 continue;
             }
             // 初始化格子
@@ -96,7 +95,7 @@ public class WeaponSlotsManager : MonoBehaviour
         if (slots.ContainsKey(slotIndex) && !slots[slotIndex].IsEmpty())
         {
             // 只触发事件，告知外界用户点击了哪个槽位，不处理实际装备逻辑
-            OnWeaponEquipped?.Invoke(slotIndex, slots[slotIndex].GetWeapon());
+            OnWeaponEquipped?.Invoke(slotIndex, slots[slotIndex].GetCurrentWeapon());
         }
     }
 
@@ -106,7 +105,7 @@ public class WeaponSlotsManager : MonoBehaviour
         if (slotIndex >= 0 && slots.ContainsKey(slotIndex) && !slots[slotIndex].IsEmpty())
         {
             // 显示武器信息
-            Debug.Log($"Hovering over weapon: {slots[slotIndex].GetWeapon().weaponName}");
+            Debug.Log($"Hovering over weapon: {slots[slotIndex].GetCurrentWeapon().weaponName}");
         }
     }
 

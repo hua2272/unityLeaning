@@ -14,7 +14,7 @@ public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     [SerializeField] private GameObject equippedIndicator;      //装备状态指示器
 
     [Header("格子设置")]
-    [SerializeField] private int slotIndex = 0;                 //手动设置的格子编号
+    [SerializeField] private int slotId = 0;                    //手动设置的格子编号
 
     [Header("事件")]
     public UnityEvent<int> OnSlotClicked;
@@ -89,7 +89,7 @@ public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         {
             descriptionText.gameObject.SetActive(true);
         }
-        OnSlotHovered.Invoke(slotIndex);
+        OnSlotHovered.Invoke(slotId);
     }
 
     // 悬停结束 - 隐藏描述
@@ -103,15 +103,15 @@ public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     }
 
     // 获取当前武器
-    public WeaponData GetWeapon()
+    public WeaponData GetCurrentWeapon()
     {
         return currentWeapon;
     }
 
     // 获取格子索引
-    public int GetSlotIndex()
+    public int GetSlotId()
     {
-        return slotIndex;
+        return slotId;
     }
 
     // 检查是否为空
