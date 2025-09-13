@@ -124,8 +124,8 @@ public class GameManager : MonoBehaviour
                 currentWeapon = GameObject.FindGameObjectWithTag(gameDataCurrentWeapon);
                 WeaponData weaponData = currentWeapon.GetComponent<WeaponData>();
                 GameObject weaponEquip = GameObject.FindGameObjectWithTag("..");
-                PlayerEquipment playerEquipment = weaponEquip.GetComponent<PlayerEquipment>();
-                playerEquipment.EquipWeapon(weaponData);
+                // PlayerEquipment playerEquipment = weaponEquip.GetComponent<PlayerEquipment>();
+                // playerEquipment.EquipWeapon(weaponData);
 
                 player.transform.position = savedPosition;
                 Debug.Log("Player position loaded: " + savedPosition);

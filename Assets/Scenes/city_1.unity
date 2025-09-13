@@ -1045,7 +1045,7 @@ MonoBehaviour:
   descriptionText: {fileID: 1378090102}
   emptyIndicator: {fileID: 1345918298}
   equippedIndicator: {fileID: 1030688275}
-  slotIndex: 0
+  slotId: 0
   OnSlotClicked:
     m_PersistentCalls:
       m_Calls:
@@ -1729,11 +1729,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a593577a1eb0a343ad97613bd1898f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterState: {fileID: 1142823687}
   obtainedWeapons:
   - {fileID: 11400000, guid: d9431e9d38e12f34d9584ef2d539ed23, type: 2}
   - {fileID: 11400000, guid: 715592d41e1a712478010338582686b2, type: 2}
-  loadWeaponsOnStart: 1
-  playerEquipment: {fileID: 1142823689}
 --- !u!1 &142323046
 GameObject:
   m_ObjectHideFlags: 0
@@ -2461,7 +2460,7 @@ MonoBehaviour:
   descriptionText: {fileID: 1473210529}
   emptyIndicator: {fileID: 1969895439}
   equippedIndicator: {fileID: 1818440371}
-  slotIndex: 1
+  slotId: 1
   OnSlotClicked:
     m_PersistentCalls:
       m_Calls:
@@ -7326,7 +7325,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   backpackPanel: {fileID: 2081604110}
-  playerEquipment: {fileID: 1142823689}
 --- !u!1 &973337088
 GameObject:
   m_ObjectHideFlags: 0
@@ -8068,7 +8066,6 @@ GameObject:
   - component: {fileID: 1142823686}
   - component: {fileID: 1142823687}
   - component: {fileID: 1142823688}
-  - component: {fileID: 1142823689}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -8271,18 +8268,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   showDebug: 1
---- !u!114 &1142823689
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1142823681}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4b9eae537d928246b86bb23dba67906, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1175407237
 GameObject:
   m_ObjectHideFlags: 0
@@ -10530,7 +10515,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1142823682}
-  playerEquipment: {fileID: 1142823689}
+  playerEquipment: {fileID: 0}
 --- !u!1 &1645992357
 GameObject:
   m_ObjectHideFlags: 0
@@ -12553,7 +12538,7 @@ MonoBehaviour:
   descriptionText: {fileID: 703748667}
   emptyIndicator: {fileID: 1175769848}
   equippedIndicator: {fileID: 35998055}
-  slotIndex: 2
+  slotId: 2
   OnSlotClicked:
     m_PersistentCalls:
       m_Calls:

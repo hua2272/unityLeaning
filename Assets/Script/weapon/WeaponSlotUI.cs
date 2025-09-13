@@ -4,7 +4,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [Header("UI References - 这些需要在编辑器中设置")]
     [SerializeField] private Image iconImage;                   //武器图标
@@ -89,7 +89,7 @@ public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         {
             descriptionText.gameObject.SetActive(true);
         }
-        OnSlotHovered.Invoke(slotId);
+        OnSlotHovered?.Invoke(slotId);
     }
 
     // 悬停结束 - 隐藏描述
@@ -99,7 +99,15 @@ public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         {
             descriptionText.gameObject.SetActive(false);
         }
-        OnSlotHovered.Invoke(-1);
+        OnSlotHovered?.Invoke(-1);
+    }
+    
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (currentWeapon != null)
+        {
+            OnSlotClicked?.Invoke(slotId);
+        }
     }
 
     // 获取当前武器

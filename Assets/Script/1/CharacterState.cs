@@ -8,6 +8,8 @@ using Range = UnityEngine.SocialPlatforms.Range;
 
 public class CharacterState : MonoBehaviour
 {
+    public static CharacterState instance { get; private set; }
+    
     [Header("Major stats")]
     public Status strength;         //物伤加点
     public Status agility;          //敏捷加点
@@ -24,32 +26,29 @@ public class CharacterState : MonoBehaviour
     public int weaponAttack = 0;
     
     public int currentHealth;
-    public System.Action onHealthChange = () => { }; //事件未被订阅时为Null会报错，该写法可省略Null判断
+    public System.Action onHealthChange = () => { };    //事件未被订阅时为Null会报错，该写法可省略Null判断
 
     protected virtual void Start()
     {
         currentHealth = GetMaxHealthValue();
     }
     
-    // 通过方法设置值
     public void SetWeaponAttack(int value)
     {
+        Debug.Log("ttttttt+"+ value);
         weaponAttack = value;
     }
 
     public virtual void DoDamage(CharacterState _targetState)
     {
-        // int totalEvasion = _targetState.evasion.getValue() + _targetState.agility.getValue();
-        // if (Random.Range(0, 100) < totalEvasion){}
-        
         int totalDamage = Mathf.Clamp(weaponAttack + damage.getValue() + strength.getValue() - _targetState.armor.getValue(), 0, int.MaxValue); //护甲值过大会导致伤害为负数
         _targetState.TakeDamage(totalDamage);
     }
 
     public virtual void TakeDamage(int _damage)
     {
-        currentHealth -= _damage; //计算生命值
-        onHealthChange?.Invoke(); //触发事件，更新血条UI
+        currentHealth -= _damage;       //计算生命值
+        onHealthChange?.Invoke();       //触发订阅事件（更新血条
         if (currentHealth < 0) 
             Die();
     }

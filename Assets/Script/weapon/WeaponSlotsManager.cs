@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,16 +6,10 @@ using UnityEngine.Events;
 
 public class WeaponSlotsManager : MonoBehaviour
 {
-    public static WeaponSlotsManager Instance { get; private set; }
-    // 所有格子的引用
-    private Dictionary<int, WeaponSlotUI> slots = new Dictionary<int, WeaponSlotUI>();
+    private Dictionary<int, WeaponSlotUI> slots = new Dictionary<int, WeaponSlotUI>();  //所有格子的引用
     private bool isInitialized = false;
-
-    // 已装备的武器索引
-    private int equippedSlotIndex = -1;
-
-    // 事件
-    public System.Action<int, WeaponData> OnWeaponEquipped = (index, weapon) => { };
+    private int equippedSlotId = -1;                                                 //已装备的武器索引
+    public CharacterState characterState;                                              //玩家数值
     
     [Header("武器加载")] 
     [SerializeField] private WeaponData[] obtainedWeapons;
@@ -86,16 +81,24 @@ public class WeaponSlotsManager : MonoBehaviour
         
         slots[slotIndex].SetWeapon(weapon, equip);           // 设置武器到格子
         if (equip)                                           // 如果是装备状态，更新装备索引
-            equippedSlotIndex = slotIndex;
+            equippedSlotId = slotIndex;
     }
 
     // 事件处理
-    private void HandleSlotClick(int slotIndex)
+    private void HandleSlotClick(int slotId)
     {
-        if (slots.ContainsKey(slotIndex) && !slots[slotIndex].IsEmpty())
+        Debug.LogError("========1:" + slotId);
+        if (slots.ContainsKey(slotId) && !slots[slotId].IsEmpty())
         {
-            // 只触发事件，告知外界用户点击了哪个槽位，不处理实际装备逻辑
-            OnWeaponEquipped?.Invoke(slotIndex, slots[slotIndex].GetCurrentWeapon());
+            if (equippedSlotId >= 0 && equippedSlotId != slotId)
+            {
+                slots[equippedSlotId].UpdateEquippedState(false);           //卸下之前的武器
+            }
+            slots[slotId].UpdateEquippedState(true);                        //装备现在的武器
+            WeaponData currentWeapon = slots[slotId].GetCurrentWeapon();
+            characterState.SetWeaponAttack(currentWeapon.damage);
+            equippedSlotId = slotId;
+            Debug.LogError("当前武器伤害：" + currentWeapon.damage);
         }
     }
 
@@ -107,20 +110,6 @@ public class WeaponSlotsManager : MonoBehaviour
             // 显示武器信息
             Debug.Log($"Hovering over weapon: {slots[slotIndex].GetCurrentWeapon().weaponName}");
         }
-    }
-
-    // 装备武器
-    private void EquipWeapon(int slotIndex, WeaponData weapon)
-    {
-        // 取消之前装备的武器
-        if (equippedSlotIndex >= 0 && equippedSlotIndex != slotIndex)
-        {
-            slots[equippedSlotIndex].UpdateEquippedState(false);
-        }
-
-        // 装备新武器
-        equippedSlotIndex = slotIndex;
-        slots[slotIndex].UpdateEquippedState(true);
     }
     
     // 添加新武器到背包 TODO 校验武器是否重复，重复则不拾起
