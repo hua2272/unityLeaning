@@ -8,8 +8,9 @@ public class WeaponSlotsManager : MonoBehaviour
 {
     private Dictionary<int, WeaponSlotUI> slots = new Dictionary<int, WeaponSlotUI>();  //所有格子的引用
     private bool isInitialized = false;
-    private int equippedSlotId = -1;                                                 //已装备的武器索引
-    public CharacterState characterState;                                              //玩家数值
+    private int equippedSlotId = -1;                                                    //已装备的武器索引
+    public CharacterState characterState;                                               //玩家数值
+    public SlotEffectsManager slotEffects;                                              //格子特效
     
     [Header("武器加载")] 
     [SerializeField] private WeaponData[] obtainedWeapons;
@@ -87,7 +88,6 @@ public class WeaponSlotsManager : MonoBehaviour
     // 事件处理
     private void HandleSlotClick(int slotId)
     {
-        Debug.LogError("========1:" + slotId);
         if (slots.ContainsKey(slotId) && !slots[slotId].IsEmpty())
         {
             if (equippedSlotId >= 0 && equippedSlotId != slotId)
@@ -98,6 +98,7 @@ public class WeaponSlotsManager : MonoBehaviour
             WeaponData currentWeapon = slots[slotId].GetCurrentWeapon();
             characterState.SetWeaponAttack(currentWeapon.damage);
             equippedSlotId = slotId;
+            slotEffects.PlaySound();                                        //目前声音播放不会覆盖前面未结束的声音
             Debug.LogError("当前武器伤害：" + currentWeapon.damage);
         }
     }
