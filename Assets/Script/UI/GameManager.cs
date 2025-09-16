@@ -4,11 +4,10 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour
+public class GameLoadManager : MonoBehaviour
 {
     
-    [System.Serializable]
-    public class GameData
+    [Serializable] public class GameData
     {
         public int playerLevel;
         public float playerHealth;
@@ -18,7 +17,7 @@ public class GameManager : MonoBehaviour
     }
     public GameObject player;
     public GameObject currentWeapon;
-    public static GameManager Instance { get; private set; }
+    public static GameLoadManager Instance { get; private set; }
     
     public Vector3 spawnPosition;
     public string targetScene;
@@ -27,14 +26,11 @@ public class GameManager : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject); // 避免重复创建
+            Destroy(gameObject);
             return;
         }
-        
-        Instance = this; // 初始化单例
-        DontDestroyOnLoad(gameObject); // 跨场景不销毁
-        
-        // 添加场景加载事件监听
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
     
@@ -55,16 +51,10 @@ public class GameManager : MonoBehaviour
         }
         
         // 清理不属于当前场景的传送门
-        CleanUpPortals(scene.name);
-    }
-    
-    // 清理不属于当前场景的传送门
-    private void CleanUpPortals(string currentScene)
-    {
         SceneLoader[] allPortals = FindObjectsOfType<SceneLoader>();
         foreach (SceneLoader portal in allPortals)
         {
-            if (portal.gameObject.scene.name != currentScene)
+            if (portal.gameObject.scene.name != scene.name)
             {
                 Destroy(portal.gameObject);
             }
@@ -91,13 +81,13 @@ public class GameManager : MonoBehaviour
     private IEnumerator LoadGameCoroutine()
     {
         SceneTransitionManager.Instance.LoadSceneWithFade("GameScene");
-        yield return null;  //等待一帧让场景开始加载
-        while (SceneManager.GetActiveScene().name != "GameScene")  //等待场景完全加载
+        yield return null;                                                              //等待一帧让场景开始加载
+        while (SceneManager.GetActiveScene().name != "GameScene")                       //等待场景完全加载
         {
             yield return null;
         }
         player = GameObject.FindGameObjectWithTag("Player");
-        if (player == null)  //确保玩家对象已生成
+        if (player == null)                                                          //确保玩家对象已生成
         {
             Debug.LogError("Player object not found in the scene!");
             yield break;

@@ -10873,8 +10873,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1142823682}
-  weaponSlotsManager: {fileID: 0}
-  weaponSlotUI: {fileID: 0}
+  weaponSlotsManager: {fileID: 124809685}
+  weaponSlotUI: {fileID: 64992758}
 --- !u!1 &1645992357
 GameObject:
   m_ObjectHideFlags: 0

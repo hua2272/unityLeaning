@@ -35,7 +35,7 @@ public class GameSaveManager : MonoBehaviour
             File.WriteAllText(savePath, jsonData);
             Debug.Log("游戏保存成功: " + savePath);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Debug.LogError("保存游戏失败: " + e.Message);
         }

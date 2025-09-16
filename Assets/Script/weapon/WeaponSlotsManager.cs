@@ -80,8 +80,8 @@ public class WeaponSlotsManager : MonoBehaviour
         if (!slots.ContainsKey(slotIndex)) return;
         if (!slots[slotIndex].IsEmpty()) return;
         
-        slots[slotIndex].SetWeapon(weapon, equip);           // 设置武器到格子
-        if (equip)                                           // 如果是装备状态，更新装备索引
+        slots[slotIndex].SetWeapon(weapon, equip);                          // 设置武器到格子
+        if (equip)                                                          // 如果是装备状态，更新装备索引
             equippedSlotId = slotIndex;
     }
 
@@ -136,5 +136,16 @@ public class WeaponSlotsManager : MonoBehaviour
             }
         }
         return weaponNameList.ToArray();
+    }
+    
+    private void EquipWeaponWithName(String weaponName)
+    {
+        foreach (WeaponData weapon in obtainedWeapons)
+        {
+            if (weapon.weaponName.Equals(weaponName))
+            {
+                
+            }
+        }
     }
 }
