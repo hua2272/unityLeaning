@@ -124,4 +124,17 @@ public class WeaponSlotsManager : MonoBehaviour
             }
         }
     }
+
+    public string[] GetObtainedWeaponsName()
+    {
+        List<string> weaponNameList = new List<string>();
+        foreach (WeaponData weapon in obtainedWeapons)
+        {
+            if (weapon != null)
+            {
+                weaponNameList.Add(weapon.weaponName);
+            }
+        }
+        return weaponNameList.ToArray();
+    }
 }

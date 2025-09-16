@@ -16,15 +16,17 @@ public class GameSaveManager : MonoBehaviour
     }
     
     public Player player;
-    private GameData currentGameData = new GameData(); // 当前游戏数据
+    public WeaponSlotsManager weaponSlotsManager;
+    public WeaponSlotUI weaponSlotUI;
+    private GameData currentGameData = new GameData();
     
     public void SaveGame()
     {
         currentGameData.playerLevel = 5;
         currentGameData.playerHealth = 85.5f;
-        // currentGameData.currentWeapon = playerEquipment.GetCurrentWeapon().weaponName;
         currentGameData.playerPosition = new Vector3(player.transform.position.x, player.transform.position.y, 0f);
-        currentGameData.inventoryItems = new string[] { "Sword", "Potion", "Key" };
+        currentGameData.currentWeapon = weaponSlotUI.GetCurrentWeapon().weaponName;
+        currentGameData.inventoryItems = weaponSlotsManager.GetObtainedWeaponsName();
         string jsonData = JsonUtility.ToJson(currentGameData, prettyPrint: true);
         
         string savePath = GetSavePath();
@@ -49,20 +51,16 @@ public class GameSaveManager : MonoBehaviour
     
     private static string GetSavePath()
     {
-        // 获取游戏可执行文件所在目录
-        string gameDirectory = Path.GetDirectoryName(Application.dataPath);
-        // 如果是在编辑器中运行，路径会有所不同
-        if (Application.isEditor)
+        string gameDirectory = Path.GetDirectoryName(Application.dataPath);     //获取游戏可执行文件所在目录
+        if (Application.isEditor)                                               //如果是在编辑器中运行，路径会有所不同
         {
             gameDirectory = Application.persistentDataPath;
         }
-        // 创建保存目录（如果不存在）
-        string saveDirectory = Path.Combine(gameDirectory, "Saves");
+        string saveDirectory = Path.Combine(gameDirectory, "Saves");            //创建保存目录（如果不存在
         if (!Directory.Exists(saveDirectory))
         {
             Directory.CreateDirectory(saveDirectory);
         }
-        // 返回完整的保存文件路径
-        return Path.Combine(saveDirectory, "gameSave.dat");
+        return Path.Combine(saveDirectory, "gameSave.dat");                     //返回完整的保存文件路径
     }
 }
