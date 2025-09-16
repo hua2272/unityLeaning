@@ -25,7 +25,7 @@ public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     private bool isEquipped = false;                            //当前格子的武器是否装备
 
     //从WeaponData获取武器信息并设置到格子
-    public void SetWeapon(WeaponData weapon, bool equipped = false)
+    public void SetWeapon(WeaponData weapon, bool equip = false)
     {
         if (weapon == null)
         {
@@ -33,7 +33,7 @@ public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
             return;
         }
         currentWeapon = weapon;
-        isEquipped = equipped;
+        isEquipped = equip;
         
         if (iconImage != null && currentWeapon.icon != null)         //设置武器图标
         {

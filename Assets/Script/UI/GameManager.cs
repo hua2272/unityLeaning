@@ -6,17 +6,16 @@ using UnityEngine.SceneManagement;
 
 public class GameLoadManager : MonoBehaviour
 {
-    
     [Serializable] public class GameData
     {
         public int playerLevel;
         public float playerHealth;
-        public string currentWeapon;
+        public int equippedSlotId;
         public Vector3 playerPosition;
         public string[] inventoryItems;
     }
+    
     public GameObject player;
-    public GameObject currentWeapon;
     public static GameLoadManager Instance { get; private set; }
     
     public Vector3 spawnPosition;
@@ -109,15 +108,13 @@ public class GameLoadManager : MonoBehaviour
                     gameData.playerPosition.y,
                     gameData.playerPosition.z
                 );
-                string gameDataCurrentWeapon = gameData.currentWeapon;
-                Debug.Log("存档中读取到已装备的武器: " + gameDataCurrentWeapon);
-                currentWeapon = GameObject.FindGameObjectWithTag(gameDataCurrentWeapon);
-                WeaponData weaponData = currentWeapon.GetComponent<WeaponData>();
-                GameObject weaponEquip = GameObject.FindGameObjectWithTag("..");
-                // PlayerEquipment playerEquipment = weaponEquip.GetComponent<PlayerEquipment>();
-                // playerEquipment.EquipWeapon(weaponData);
-
                 player.transform.position = savedPosition;
+                
+                Debug.Log("存档中读取到已装备的武器: " + gameData.equippedSlotId);
+                GameObject weaponSlotsObj = GameObject.FindGameObjectWithTag("WeaponSlotsManager");
+                WeaponSlotsManager weaponSlotsManager = weaponSlotsObj.GetComponent<WeaponSlotsManager>();
+                weaponSlotsManager.HandleSlotClick(gameData.equippedSlotId);
+                
                 Debug.Log("Player position loaded: " + savedPosition);
             }
             catch (Exception e)

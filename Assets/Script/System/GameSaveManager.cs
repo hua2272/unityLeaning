@@ -5,12 +5,11 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public class GameSaveManager : MonoBehaviour
 {
-    [System.Serializable]
-    public class GameData
+    [Serializable] public class GameData
     {
         public int playerLevel;
         public float playerHealth;
-        public string currentWeapon;
+        public int equippedSlotId;
         public Vector3 playerPosition;
         public string[] inventoryItems;
     }
@@ -25,7 +24,7 @@ public class GameSaveManager : MonoBehaviour
         currentGameData.playerLevel = 5;
         currentGameData.playerHealth = 85.5f;
         currentGameData.playerPosition = new Vector3(player.transform.position.x, player.transform.position.y, 0f);
-        currentGameData.currentWeapon = weaponSlotUI.GetCurrentWeapon().weaponName;
+        currentGameData.equippedSlotId = weaponSlotsManager.equippedSlotId;
         currentGameData.inventoryItems = weaponSlotsManager.GetObtainedWeaponsName();
         string jsonData = JsonUtility.ToJson(currentGameData, prettyPrint: true);
         

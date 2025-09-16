@@ -8,7 +8,7 @@ public class WeaponSlotsManager : MonoBehaviour
 {
     private Dictionary<int, WeaponSlotUI> slots = new Dictionary<int, WeaponSlotUI>();  //所有格子的引用
     private bool isInitialized = false;
-    private int equippedSlotId = -1;                                                    //已装备的武器索引
+    public int equippedSlotId { get; private set; } = 0;                                //已装备的武器索引
     public CharacterState characterState;                                               //玩家数值
     public SlotEffectsManager slotEffects;                                              //格子特效
     
@@ -33,10 +33,9 @@ public class WeaponSlotsManager : MonoBehaviour
             int index = slot.GetSlotId();
             if (slots.ContainsKey(index))
             {
-                Debug.LogError($"Duplicate slot index found: {index}");  //跳过重复的id
+                Debug.LogError($"Duplicate slot index found: {index}");                  //跳过重复的id
                 continue;
             }
-            // 初始化格子
             slot.ClearSlot();
             slot.OnSlotClicked.AddListener(HandleSlotClick);
             slot.OnSlotHovered.AddListener(HandleSlotHover);
@@ -56,7 +55,7 @@ public class WeaponSlotsManager : MonoBehaviour
         {
             if (i < slots.Count)
             {
-                AddWeaponToSlot(i, obtainedWeapons[i], i == 0);
+                AddWeaponToSlot(i, obtainedWeapons[i], i == equippedSlotId);
             }
         }
     }
@@ -80,13 +79,13 @@ public class WeaponSlotsManager : MonoBehaviour
         if (!slots.ContainsKey(slotIndex)) return;
         if (!slots[slotIndex].IsEmpty()) return;
         
-        slots[slotIndex].SetWeapon(weapon, equip);                          // 设置武器到格子
-        if (equip)                                                          // 如果是装备状态，更新装备索引
+        slots[slotIndex].SetWeapon(weapon, equip);                          //设置武器到格子
+        if (equip)                                                          //如果是装备状态，更新装备索引
             equippedSlotId = slotIndex;
     }
 
     // 事件处理
-    private void HandleSlotClick(int slotId)
+    public void HandleSlotClick(int slotId)
     {
         if (slots.ContainsKey(slotId) && !slots[slotId].IsEmpty())
         {
@@ -136,16 +135,5 @@ public class WeaponSlotsManager : MonoBehaviour
             }
         }
         return weaponNameList.ToArray();
-    }
-    
-    private void EquipWeaponWithName(String weaponName)
-    {
-        foreach (WeaponData weapon in obtainedWeapons)
-        {
-            if (weapon.weaponName.Equals(weaponName))
-            {
-                
-            }
-        }
     }
 }

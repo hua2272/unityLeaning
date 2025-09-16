@@ -4,7 +4,6 @@ using UnityEngine;
 public class WeaponData : ScriptableObject
 {
     public string weaponName;
-    public bool isEquipped = false;
     public Sprite icon;
     [TextArea] public string description;
 
