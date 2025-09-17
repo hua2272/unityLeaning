@@ -69,15 +69,33 @@ public class GameLoadManager : MonoBehaviour
     public void StartNewGame()
     {
         Debug.Log("初始化新游戏...");
-        // 这里可以重置玩家数据、关卡状态等
+        // TODO 重置玩家数据、关卡状态等
+        SceneTransitionManager.Instance.LoadSceneWithFade("GameScene");
     }
 
     public void LoadGame()
     {
-        StartCoroutine(LoadGameCoroutine());
+        // todo 多存档管理
+        if (GameSaveManager.DoesSaveExist())
+        {
+            StartCoroutine(LoadGameCoroutine(GameSaveManager.GetSavePath()));
+        }
+        else
+        {
+            Debug.LogWarning("Save file not found");
+        }
+    }
+    
+    public void OnQuitClicked()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 
-    private IEnumerator LoadGameCoroutine()
+    private IEnumerator LoadGameCoroutine(string filePath)
     {
         SceneTransitionManager.Instance.LoadSceneWithFade("GameScene");
         yield return null;                                                              //等待一帧让场景开始加载
@@ -91,59 +109,33 @@ public class GameLoadManager : MonoBehaviour
             Debug.LogError("Player object not found in the scene!");
             yield break;
         }
-        string filePath = GetSavePath();
-        if (File.Exists(filePath))
+        try
         {
-            try
+            string jsonData = File.ReadAllText(filePath);
+            GameData gameData = JsonUtility.FromJson<GameData>(jsonData);
+            if (gameData == null)
             {
-                string jsonData = File.ReadAllText(filePath);
-                GameData gameData = JsonUtility.FromJson<GameData>(jsonData);
-                if (gameData == null)
-                {
-                    Debug.LogError("Failed to parse save data!");
-                    yield break;
-                }
-                Vector3 savedPosition = new Vector3(
-                    gameData.playerPosition.x,
-                    gameData.playerPosition.y,
-                    gameData.playerPosition.z
-                );
-                player.transform.position = savedPosition;
-                
-                Debug.Log("存档中读取到已装备的武器: " + gameData.equippedSlotId);
-                GameObject weaponSlotsObj = GameObject.FindGameObjectWithTag("WeaponSlotsManager");
-                WeaponSlotsManager weaponSlotsManager = weaponSlotsObj.GetComponent<WeaponSlotsManager>();
-                weaponSlotsManager.HandleSlotClick(gameData.equippedSlotId);
-                
-                Debug.Log("Player position loaded: " + savedPosition);
+                Debug.LogError("Failed to parse save data!");
+                yield break;
             }
-            catch (Exception e)
-            {
-                Debug.LogError("Error loading save file: " + e.Message);
-            }
+
+            Vector3 savedPosition = new Vector3(
+                gameData.playerPosition.x,
+                gameData.playerPosition.y,
+                gameData.playerPosition.z
+            );
+            player.transform.position = savedPosition;
+
+            Debug.Log("存档中读取到已装备的武器: " + gameData.equippedSlotId);
+            GameObject weaponSlotsObj = GameObject.FindGameObjectWithTag("WeaponSlotsManager");
+            WeaponSlotsManager weaponSlotsManager = weaponSlotsObj.GetComponent<WeaponSlotsManager>();
+            weaponSlotsManager.HandleSlotClick(gameData.equippedSlotId);
+
+            Debug.Log("Player position loaded: " + savedPosition);
         }
-        else
+        catch (Exception e)
         {
-            Debug.LogWarning("Save file not found at: " + filePath);
+            Debug.LogError("Error loading save file: " + e.Message);
         }
-    }
-    
-    private static string GetSavePath()
-    {
-        // 获取游戏可执行文件所在目录
-        string gameDirectory = Path.GetDirectoryName(Application.dataPath);
-        // 如果是在编辑器中运行，路径会有所不同
-        if (Application.isEditor)
-        {
-            gameDirectory = Application.persistentDataPath;
-        }
-        // 创建保存目录（如果不存在）
-        string saveDirectory = Path.Combine(gameDirectory, "Saves");
-        if (!Directory.Exists(saveDirectory))
-        {
-            Directory.CreateDirectory(saveDirectory);
-        }
-        // 返回完整的保存文件路径
-        return Path.Combine(saveDirectory, "gameSave.dat");
     }
 }

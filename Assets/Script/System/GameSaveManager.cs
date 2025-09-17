@@ -43,13 +43,12 @@ public class GameSaveManager : MonoBehaviour
     
     public static bool DoesSaveExist()
     {
-        //return PlayerPrefs.HasKey("GameSaveData");
-        //todo 保存路径优化（去除空格等因素）
         return File.Exists(GetSavePath());
     }
     
-    private static string GetSavePath()
+    public static string GetSavePath()
     {
+        //todo 保存路径优化（去除空格等因素）
         string gameDirectory = Path.GetDirectoryName(Application.dataPath);     //获取游戏可执行文件所在目录
         if (Application.isEditor)                                               //如果是在编辑器中运行，路径会有所不同
         {
