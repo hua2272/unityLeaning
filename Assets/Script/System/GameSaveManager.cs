@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using UnityEngine;
 using System.Runtime.Serialization.Formatters.Binary;
+using UnityEngine.SceneManagement;
 
 public class GameSaveManager : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class GameSaveManager : MonoBehaviour
         public int playerLevel;
         public float playerHealth;
         public int equippedSlotId;
+        public string scene;
         public Vector3 playerPosition;
         public string[] inventoryItems;
     }
@@ -25,6 +27,7 @@ public class GameSaveManager : MonoBehaviour
         currentGameData.playerHealth = 85.5f;
         currentGameData.playerPosition = new Vector3(player.transform.position.x, player.transform.position.y, 0f);
         currentGameData.equippedSlotId = weaponSlotsManager.equippedSlotId;
+        currentGameData.scene = SceneManager.GetActiveScene().name;
         currentGameData.inventoryItems = weaponSlotsManager.GetObtainedWeaponsName();
         string jsonData = JsonUtility.ToJson(currentGameData, prettyPrint: true);
         

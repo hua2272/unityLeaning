@@ -17,7 +17,7 @@ public class WeaponSlotsManager : MonoBehaviour
     [Header("武器加载")] 
     [SerializeField] private WeaponData[] obtainedWeapons;
 
-    private void Awake()
+    public void Awake()
     {
         InitializeSlots();
         LoadInitialWeapons();

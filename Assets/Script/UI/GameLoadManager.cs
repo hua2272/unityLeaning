@@ -12,6 +12,7 @@ public class GameLoadManager : MonoBehaviour
         public int playerLevel;
         public float playerHealth;
         public int equippedSlotId;
+        public string scene;
         public Vector3 playerPosition;
         public string[] inventoryItems;
     }
@@ -97,14 +98,21 @@ public class GameLoadManager : MonoBehaviour
 #endif
     }
 
-    //todo
-    //1 加载的地区要根据存档读取，现在暂时写死。
-    //2 FindGameObjectWithTag方法只能读取已激活的组件（包括父级），但是背包面板默认不激活导致无法找到该类无法装备存档中的武器
+    //todo FindObjectOfType方法查询效率低，后期优化
     private IEnumerator LoadGameCoroutine(string filePath)
     {
-        SceneTransitionManager.Instance.LoadSceneWithFade("city_1");
+        string jsonData = File.ReadAllText(filePath);
+        GameData gameData = JsonUtility.FromJson<GameData>(jsonData);
+        if (gameData == null)
+        {
+            Debug.LogError("Failed to parse save data!");
+            yield break;
+        }
+        string scene = gameData.scene;
+
+        SceneTransitionManager.Instance.LoadSceneWithFade(scene);
         yield return null;                                                              //等待一帧让场景开始加载
-        while (SceneManager.GetActiveScene().name != "city_1")                       //等待场景完全加载
+        while (SceneManager.GetActiveScene().name != scene)                             //等待场景完全加载
         {
             yield return null;
         }
@@ -114,27 +122,15 @@ public class GameLoadManager : MonoBehaviour
             Debug.LogError("Player object not found in the scene!");
             yield break;
         }
-        
-        string jsonData = File.ReadAllText(filePath);
-        GameData gameData = JsonUtility.FromJson<GameData>(jsonData);
-        if (gameData == null)
-        {
-            Debug.LogError("Failed to parse save data!");
-            yield break;
-        }
-
-        Vector3 savedPosition = new Vector3(
-            gameData.playerPosition.x,
-            gameData.playerPosition.y,
-            gameData.playerPosition.z
-        );
-        player.transform.position = savedPosition;
+        player.transform.position = new Vector3(gameData.playerPosition.x, gameData.playerPosition.y, gameData.playerPosition.z);
 
         Debug.Log("存档中读取到已装备的武器: " + gameData.equippedSlotId);
-        weaponSlotsObj = GameObject.FindGameObjectWithTag("WeaponSlotsManager");
-        WeaponSlotsManager weaponSlotsManager = weaponSlotsObj.GetComponent<WeaponSlotsManager>();
-        weaponSlotsManager.HandleSlotClick(gameData.equippedSlotId);
-
-        Debug.Log("Player position loaded: " + savedPosition);
+        WeaponSlotsManager weaponSlotsManager = FindObjectOfType<WeaponSlotsManager>(true);
+        if (weaponSlotsManager != null)
+        {
+            Debug.Log($"找到WeaponSlotsManager: {weaponSlotsManager.name}");
+            weaponSlotsManager.Awake();
+            weaponSlotsManager.HandleSlotClick(gameData.equippedSlotId);
+        }
     }
 }
