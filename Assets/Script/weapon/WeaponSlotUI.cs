@@ -15,10 +15,9 @@ public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     [Header("格子设置")]
     [SerializeField] private int slotId = 0;                    //手动设置的格子编号
-
-    [Header("事件")]
-    public UnityEvent<int> OnSlotClicked;
-    public UnityEvent<int> OnSlotHovered;
+    
+    [HideInInspector] public UnityEvent<int> OnSlotClicked;
+    [HideInInspector] public UnityEvent<int> OnSlotHovered;
 
     
     private WeaponData currentWeapon;                           //当前格子的武器

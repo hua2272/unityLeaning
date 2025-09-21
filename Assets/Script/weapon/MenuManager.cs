@@ -1,12 +1,11 @@
 using UnityEngine;
 using System.Collections;
 
-public class BackpackManager : MonoBehaviour
+public class MenuManager : MonoBehaviour
 {
-    public static BackpackManager Instance { get; private set; }
-
-    [Header("UI References")] [SerializeField]
-    private GameObject backpackPanel;
+    public static MenuManager Instance { get; private set; }
+    
+    [SerializeField] private GameObject panel;
 
     private void Awake()
     {
@@ -18,15 +17,15 @@ public class BackpackManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        backpackPanel.SetActive(false);
+        panel.SetActive(false);
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.I))
         {
-            bool isActive = !backpackPanel.activeSelf;
-            backpackPanel.SetActive(isActive);
+            bool isActive = !panel.activeSelf;
+            panel.SetActive(isActive);
             Time.timeScale = isActive ? 0 : 1;  //可选：暂停游戏当背包打开
         }
     }
