@@ -16,9 +16,9 @@ MonoBehaviour:
   description: test health
   lockedSprite: {fileID: 1864297879, guid: be55291aae08d434db3da3b59db3ab4a, type: 3}
   unlockedSprite: {fileID: -613494815, guid: be55291aae08d434db3da3b59db3ab4a, type: 3}
-  maxLevel: 4
+  maxLevel: 3
   requiredPoints: 1
   requiredSkills: []
   requiredSkillLevel: 0
-  currentLevel: 0
-  isUnlocked: 0
+  isLocked: 0
+  currentLevel: 4
