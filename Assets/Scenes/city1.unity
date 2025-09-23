@@ -1966,7 +1966,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 192423684}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -3485,6 +3485,12 @@ MonoBehaviour:
   extraStamina:
     baseValue: 0
     modifiers: 
+  experiencePoints:
+    baseValue: 0
+    modifiers: 
+  skillPoints:
+    baseValue: 0
+    modifiers: 
   armor:
     baseValue: 0
     modifiers: 
@@ -4087,7 +4093,7 @@ GameObject:
   m_Component:
   - component: {fileID: 632504522}
   m_Layer: 5
-  m_Name: LevelIcon
+  m_Name: levelIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4943,9 +4949,10 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 778540992}
+  - {fileID: 1446201753}
   - {fileID: 632504522}
   - {fileID: 192423685}
-  - {fileID: 778540992}
   m_Father: {fileID: 1959471838}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -4965,15 +4972,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fae38556484b6f4bb1f0b3d3b35f137, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skillData: {fileID: 11400000, guid: 46bebb31e204b6e40b978032d21c1c34, type: 2}
-  skillTreeManager: {fileID: 0}
-  skillButton: {fileID: 0}
   currentSkillIcon: {fileID: 778540993}
-  levelLockedIcon:
-  - {fileID: 915220815}
-  - {fileID: 174826273}
-  - {fileID: 1172545483}
-  levelUnlockedIcon: {fileID: 192423686}
+  skillName: health
+  description: healthTest
+  maxLevel: 4
+  requiredPoints: 1
   OnNodeClicked:
     m_PersistentCalls:
       m_Calls: []
@@ -5484,7 +5487,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 649132855, guid: be55291aae08d434db3da3b59db3ab4a, type: 3}
+  m_Sprite: {fileID: 1864297879, guid: be55291aae08d434db3da3b59db3ab4a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -7958,15 +7961,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health:
-    baseValue: 0
+    baseValue: 100
     modifiers: 
   stamina:
-    baseValue: 0
+    baseValue: 100
     modifiers: 
   extraHealth:
     baseValue: 0
     modifiers: 
   extraStamina:
+    baseValue: 0
+    modifiers: 
+  experiencePoints:
+    baseValue: 0
+    modifiers: 
+  skillPoints:
     baseValue: 0
     modifiers: 
   armor:
@@ -9746,6 +9755,81 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1446201752
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1446201753}
+  - component: {fileID: 1446201755}
+  - component: {fileID: 1446201754}
+  m_Layer: 5
+  m_Name: skillUnlockedIcon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1446201753
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1446201752}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 726903228}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1446201754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1446201752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: -613494815, guid: be55291aae08d434db3da3b59db3ab4a, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1446201755
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1446201752}
+  m_CullTransparentMesh: 1
 --- !u!1 &1470208379
 GameObject:
   m_ObjectHideFlags: 0

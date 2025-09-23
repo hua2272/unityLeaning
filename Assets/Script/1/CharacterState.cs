@@ -15,6 +15,8 @@ public class CharacterState : MonoBehaviour
     public Status stamina;                      //耐力
     public Status extraHealth;
     public Status extraStamina;
+    public Status experiencePoints;             //经验点
+    public Status skillPoints;                  //技能点
     
     [Header("Defense / Offence")]
     public Status armor;
