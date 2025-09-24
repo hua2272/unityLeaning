@@ -7,17 +7,8 @@ using UnityEngine.EventSystems;
 
 public class SkillNodeUI : MonoBehaviour, IPointerClickHandler
 {
-    //public SkillTreeManager  skillTreeManager;
-    
-    public Image currentSkillIcon;
-    //public Image[] levelLockedIcon;
-    //public Image levelUnlockedIcon;
-    
-    
     public string skillName;
     public string description;
-    //public Sprite lockedSprite;                         // 未解锁时的灰色图标
-    //public Sprite unlockedSprite;                       // 解锁后的彩色图标
     public int maxLevel = 4;                            // 最大等级
     public int currentLevel { get; set; } = 0;                        //当前等级
     public int requiredPoints = 1;                      // 每次升级需要的点数
@@ -40,16 +31,15 @@ public class SkillNodeUI : MonoBehaviour, IPointerClickHandler
     // 更新UI显示
     public void UpdateUI()
     {
-        // transform.Find("skillUnlockedIcon").gameObject.SetActive(false);
-        // transform.Find("skillUnlockedIcon").gameObject.SetActive(false);
         if (currentLevel == 0)
         {
-            GameObject o = transform.Find("levelIcon").gameObject;
-            transform.Find("levelIcon").gameObject.SetActive(true);
+            transform.Find("skillIcon").gameObject.SetActive(true);
+            transform.Find("skillUnlockedIcon").gameObject.SetActive(false);
         }
         else
         {
             transform.Find("skillUnlockedIcon").gameObject.SetActive(true);
+            transform.Find("skillIcon").gameObject.SetActive(false);
         }
         for (int i = 1; i < currentLevel; i++)                                               //更新等级指示器
         {

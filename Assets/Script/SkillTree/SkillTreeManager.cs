@@ -16,7 +16,10 @@ public class SkillTreeManager : MonoBehaviour
         isInitialized = true;
     }
     
-    // 尝试解锁或升级技能
+    //todo
+    //1 技能升级时触发实际功能，增加血量，耐力等
+    //2 添加技能解锁的条件，技能点消耗，前置技能校验
+    //3 技能升级时添加特效（由下往上填充），提示音；升级失败或无法升级时点击图片触发提示音
     private void TryUnlockOrUpgradeSkill()
     {
         if (skillNodeUI.currentLevel > skillNodeUI.maxLevel || skillNodeUI.requiredPoints > availableSkillPoints) return;
