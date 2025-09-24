@@ -7,7 +7,6 @@ public class Player : Entity
 {
     public bool isBusy { get; private set; }
     public SkillManager skill { get; private set; }
-    public MenuManager menu { get; private set; }
     public GameObject sword { get; private set; }
     public DialogueManager dialogueManager;
     [SerializeField] private DeathMenuController deathMenu;
@@ -73,7 +72,6 @@ public class Player : Entity
     {
         base.Start();
         skill = SkillManager.instance;
-        //menu = MenuManager.Instance;
         stateMachine.Initialize(idleState);
         dialogueManager = DialogueManager.Instance;
         npcDetector = GetComponent<PlayerNPCDetector>();

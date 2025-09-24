@@ -1,16 +1,24 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SkillTreeManager : MonoBehaviour
 {
     private bool isInitialized = false;
     public int availableSkillPoints = 10; 								//可用的技能点
-    public SkillNodeUI skillNodeUI;
+    private SkillNodeUI skillNodeUI;
+    private Player player;
+    public Dictionary<string, int> unlockedSkills = new Dictionary<string, int>();
 
     
     void Awake()
     {
         if (isInitialized) return;
+        
+        player = PlayerManager.instance.player;
+        PlayerStatus playerStatus = player.GetComponent<PlayerStatus>();
+        int value = playerStatus.skillPoints.getValue();
+        Debug.Log("Skill Points: " + value);
         skillNodeUI = GetComponentInChildren<SkillNodeUI>();
         skillNodeUI.OnNodeClicked.AddListener(TryUnlockOrUpgradeSkill);
         isInitialized = true;
@@ -22,10 +30,35 @@ public class SkillTreeManager : MonoBehaviour
     //3 技能升级时添加特效（由下往上填充），提示音；升级失败或无法升级时点击图片触发提示音
     private void TryUnlockOrUpgradeSkill()
     {
-        if (skillNodeUI.currentLevel > skillNodeUI.maxLevel || skillNodeUI.requiredPoints > availableSkillPoints) return;
-        Debug.Log("TryUnlockOrUpgradeSkill, lv: " + skillNodeUI.currentLevel);
-        availableSkillPoints -= skillNodeUI.requiredPoints;
+        if (skillNodeUI.currentLevel >= skillNodeUI.maxLevel)
+        {
+            //todo 添加音效
+            Debug.Log("已最大级");
+            return;
+        }
+        
+        int upgradeCost = skillNodeUI.upgradeCosts[skillNodeUI.currentLevel];
+        if (upgradeCost > availableSkillPoints)
+        {
+            //todo 添加音效
+            Debug.Log("技能点不够");
+            return;
+        }
+
+        List<string> requiredSkills = skillNodeUI.requiredSkills;
+        if (requiredSkills.Count > 0 && !requiredSkills.All(skill => unlockedSkills.ContainsKey(skill)))
+        {
+            //todo 添加音效
+            Debug.Log("前置技能未解锁");
+            return;
+        }
+
+
+        availableSkillPoints -= upgradeCost;
         skillNodeUI.currentLevel++;
+        Debug.Log("LV: " + skillNodeUI.currentLevel);
+        Debug.Log("cost: " + upgradeCost);
         skillNodeUI.UpdateUI();
+        unlockedSkills[skillNodeUI.skillName] = skillNodeUI.currentLevel;               //索引器，key存在则更新value，不存在则新增
     }
 }

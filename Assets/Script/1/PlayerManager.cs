@@ -12,10 +12,20 @@ public class PlayerManager : MonoBehaviour
         if (instance != null)
         {
             Destroy(instance.gameObject);
+            //Destroy(gameObject);
         }
         else
         {
             instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+    }
+    
+    private void OnDestroy()
+    {
+        if (instance == this)
+        {
+            instance = null;
         }
     }
 }

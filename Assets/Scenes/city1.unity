@@ -4930,7 +4930,6 @@ GameObject:
   m_Component:
   - component: {fileID: 726903228}
   - component: {fileID: 726903230}
-  - component: {fileID: 726903232}
   m_Layer: 5
   m_Name: Node1
   m_TagString: Untagged
@@ -4976,18 +4975,11 @@ MonoBehaviour:
   skillName: health
   description: healthTest
   maxLevel: 4
-  requiredPoints: 1
+  upgradeCosts: 01000000020000000400000005000000
+  requiredSkills: []
   OnNodeClicked:
     m_PersistentCalls:
       m_Calls: []
---- !u!222 &726903232
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 726903227}
-  m_CullTransparentMesh: 1
 --- !u!1 &735536995
 GameObject:
   m_ObjectHideFlags: 0
@@ -7984,7 +7976,7 @@ MonoBehaviour:
     baseValue: 0
     modifiers: 
   skillPoints:
-    baseValue: 0
+    baseValue: 100
     modifiers: 
   armor:
     baseValue: 0
@@ -11746,8 +11738,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10e057b9150bd5446a789fd494e97eb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  availableSkillPoints: 10
-  skillNodeUI: {fileID: 726903230}
+  availableSkillPoints: 100
 --- !u!1 &1969895439
 GameObject:
   m_ObjectHideFlags: 0
@@ -12490,11 +12481,11 @@ SceneRoots:
   - {fileID: 1645992358}
   - {fileID: 1956940237}
   - {fileID: 1142823683}
+  - {fileID: 1085764286}
   - {fileID: 473150274}
   - {fileID: 926729487}
   - {fileID: 860163267}
   - {fileID: 23064363}
-  - {fileID: 1085764286}
   - {fileID: 942119512}
   - {fileID: 735536998}
   - {fileID: 1230273213}
