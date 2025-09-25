@@ -8,11 +8,13 @@ public class SkillTreeManager : MonoBehaviour
     public Dictionary<string, int> unlockedSkills = new Dictionary<string, int>();
     private SkillNodeUI skillNodeUI;
     private PlayerStatus playerStatus;
+    private SkillManager skillManager;
     
     void Awake()
     {
         if (isInitialized) return;
 
+        skillManager = SkillManager.instance;
         playerStatus = PlayerManager.instance.playerStatus;
         Debug.Log("Skill Points: " + playerStatus.skillPoints.getValue());
         skillNodeUI = GetComponentInChildren<SkillNodeUI>();
@@ -35,6 +37,7 @@ public class SkillTreeManager : MonoBehaviour
 
         int availableSkillPoints = playerStatus.skillPoints.getValue();
         int upgradeCost = skillNodeUI.upgradeCosts[skillNodeUI.currentLevel];
+        int upgradeEffect = skillNodeUI.upgradeEffect[skillNodeUI.currentLevel];
         if (upgradeCost > availableSkillPoints)
         {
             //todo 添加音效
@@ -51,9 +54,22 @@ public class SkillTreeManager : MonoBehaviour
         }
         playerStatus.skillPoints.setValue(availableSkillPoints - upgradeCost);
         skillNodeUI.currentLevel++;
-        Debug.Log("LV: " + skillNodeUI.currentLevel);
-        Debug.Log("cost: " + upgradeCost);
+        
         skillNodeUI.UpdateUI();
-        unlockedSkills[skillNodeUI.skillName] = skillNodeUI.currentLevel;               //索引器，key存在则更新value，不存在则新增
+        string skillName = skillNodeUI.skillName;
+        switch (skillName)
+        {
+            case "health":
+                playerStatus.health.setValue(upgradeEffect); //todo 残血时升级自动满血需要更新UI。bug:血量更新不真实需要测试
+                break;
+            case "dash":
+                skillManager.UpgradeSkill("dash", skillNodeUI.currentLevel);
+                break;
+        }
+        
+        Debug.Log("LV: " + skillNodeUI.currentLevel);
+        Debug.Log("effect: " + upgradeEffect);
+        Debug.Log("cost: " + upgradeCost);
+        unlockedSkills[skillName] = skillNodeUI.currentLevel;               //索引器，key存在则更新value，不存在则新增
     }
 }

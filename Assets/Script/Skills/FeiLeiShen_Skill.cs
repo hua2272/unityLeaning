@@ -4,6 +4,7 @@ using UnityEngine;
 public class FeiLeiShen_Skill : Skill
 {
     [Header("Skill Settings")]
+    public int skillLevel;
     public GameObject dartPrefab;
     public Transform throwPoint;
     public float throwCooldown = 1.5f;

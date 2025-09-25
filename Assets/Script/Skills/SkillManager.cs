@@ -19,6 +19,15 @@ public class SkillManager : MonoBehaviour
         else
         {
             instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+    }
+    
+    private void OnDestroy()
+    {
+        if (instance == this)
+        {
+            instance = null;
         }
     }
 
@@ -27,5 +36,18 @@ public class SkillManager : MonoBehaviour
         dash = GetComponent<Dash_Skill>();
         sword = GetComponent<Sword_Skill>();
         feiLeiShen = GetComponent<FeiLeiShen_Skill>();
+    }
+
+    public void UpgradeSkill(string skillName, int level)
+    {
+        switch (skillName)
+        {
+            case "dash":
+                dash.skillLevel = level;
+                break;
+            case "feiLeiShen":
+                feiLeiShen.skillLevel = level;
+                break;
+        }
     }
 }

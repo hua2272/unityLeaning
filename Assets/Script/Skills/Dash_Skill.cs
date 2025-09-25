@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Dash_Skill : Skill
 {
+    [Header("Skill info")]
+    public int skillLevel;
+    
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.LeftShift))

@@ -4976,6 +4976,7 @@ MonoBehaviour:
   description: healthTest
   maxLevel: 4
   upgradeCosts: 01000000020000000400000005000000
+  upgradeEffect: 010000000200000003000000
   requiredSkills: []
   OnNodeClicked:
     m_PersistentCalls:
@@ -6984,6 +6985,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coolDown: 1
+  skillLevel: 0
 --- !u!114 &942119515
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7017,6 +7019,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coolDown: 0
+  skillLevel: 0
   dartPrefab: {fileID: 7643144968393520632, guid: b62951004799e0d4cac0af1cd6bfd69d, type: 3}
   throwPoint: {fileID: 1142823683}
   throwCooldown: 1.5
