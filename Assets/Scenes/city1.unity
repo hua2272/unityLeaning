@@ -7654,6 +7654,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1142823682}
+  playerStatus: {fileID: 1142823687}
 --- !u!4 &1085764286
 Transform:
   m_ObjectHideFlags: 0
@@ -7976,7 +7977,7 @@ MonoBehaviour:
     baseValue: 0
     modifiers: 
   skillPoints:
-    baseValue: 100
+    baseValue: 25
     modifiers: 
   armor:
     baseValue: 0
@@ -11738,7 +11739,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10e057b9150bd5446a789fd494e97eb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  availableSkillPoints: 100
 --- !u!1 &1969895439
 GameObject:
   m_ObjectHideFlags: 0

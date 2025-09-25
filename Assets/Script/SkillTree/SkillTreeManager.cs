@@ -5,20 +5,16 @@ using UnityEngine;
 public class SkillTreeManager : MonoBehaviour
 {
     private bool isInitialized = false;
-    public int availableSkillPoints = 10; 								//可用的技能点
-    private SkillNodeUI skillNodeUI;
-    private Player player;
     public Dictionary<string, int> unlockedSkills = new Dictionary<string, int>();
-
+    private SkillNodeUI skillNodeUI;
+    private PlayerStatus playerStatus;
     
     void Awake()
     {
         if (isInitialized) return;
-        
-        player = PlayerManager.instance.player;
-        PlayerStatus playerStatus = player.GetComponent<PlayerStatus>();
-        int value = playerStatus.skillPoints.getValue();
-        Debug.Log("Skill Points: " + value);
+
+        playerStatus = PlayerManager.instance.playerStatus;
+        Debug.Log("Skill Points: " + playerStatus.skillPoints.getValue());
         skillNodeUI = GetComponentInChildren<SkillNodeUI>();
         skillNodeUI.OnNodeClicked.AddListener(TryUnlockOrUpgradeSkill);
         isInitialized = true;
@@ -36,7 +32,8 @@ public class SkillTreeManager : MonoBehaviour
             Debug.Log("已最大级");
             return;
         }
-        
+
+        int availableSkillPoints = playerStatus.skillPoints.getValue();
         int upgradeCost = skillNodeUI.upgradeCosts[skillNodeUI.currentLevel];
         if (upgradeCost > availableSkillPoints)
         {
@@ -52,9 +49,7 @@ public class SkillTreeManager : MonoBehaviour
             Debug.Log("前置技能未解锁");
             return;
         }
-
-
-        availableSkillPoints -= upgradeCost;
+        playerStatus.skillPoints.setValue(availableSkillPoints - upgradeCost);
         skillNodeUI.currentLevel++;
         Debug.Log("LV: " + skillNodeUI.currentLevel);
         Debug.Log("cost: " + upgradeCost);

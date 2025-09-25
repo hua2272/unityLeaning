@@ -12,6 +12,11 @@ public class Status
     {
         return baseValue;
     }
+    
+    public void setValue(int value)
+    {
+        baseValue = value;
+    }
 
     public void AddModifier(int _modifier)
     {
