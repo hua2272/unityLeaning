@@ -7,7 +7,6 @@ public class SkillTreeManager : MonoBehaviour
     public static SkillTreeManager instance;
     private bool isInitialized = false;
     public Dictionary<string, int> unlockedSkills = new Dictionary<string, int>();
-    private SkillNodeUI skillNodeUI;
     private PlayerStatus playerStatus;
     private SkillManager skillManager;
     
@@ -37,9 +36,13 @@ public class SkillTreeManager : MonoBehaviour
         if (isInitialized) return;
         skillManager = SkillManager.instance;
         playerStatus = PlayerManager.instance.playerStatus;
-        Debug.Log("Skill Points: " + playerStatus.skillPoints.getValue());
-        skillNodeUI = GetComponentInChildren<SkillNodeUI>();
-        skillNodeUI.OnNodeClicked.AddListener(TryUnlockOrUpgradeSkill);
+        
+        // 获取所有子节点的SkillNodeUI组件
+        SkillNodeUI[] nodes = GetComponentsInChildren<SkillNodeUI>();
+        foreach (SkillNodeUI node in nodes)
+        {
+            node.OnNodeClicked.AddListener(() => TryUnlockOrUpgradeSkill(node));
+        }
         isInitialized = true;
     }
     
@@ -47,7 +50,7 @@ public class SkillTreeManager : MonoBehaviour
     //1 技能升级时触发实际功能，增加血量，耐力等
     //2 添加技能解锁的条件，技能点消耗，前置技能校验
     //3 技能升级时添加特效（由下往上填充），提示音；升级失败或无法升级时点击图片触发提示音
-    private void TryUnlockOrUpgradeSkill()
+    private void TryUnlockOrUpgradeSkill(SkillNodeUI skillNodeUI)
     {
         if (skillNodeUI.currentLevel >= skillNodeUI.maxLevel)
         {
