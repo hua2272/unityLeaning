@@ -4976,7 +4976,7 @@ MonoBehaviour:
   description: healthTest
   maxLevel: 4
   upgradeCosts: 01000000020000000400000005000000
-  upgradeEffect: 010000000200000003000000
+  upgradeEffect: 6e000000700000007300000078000000
   requiredSkills: []
   OnNodeClicked:
     m_PersistentCalls:
@@ -10359,7 +10359,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 1142823682}
   weaponSlotsManager: {fileID: 124809685}
-  weaponSlotUI: {fileID: 64992758}
 --- !u!1 &1645992357
 GameObject:
   m_ObjectHideFlags: 0

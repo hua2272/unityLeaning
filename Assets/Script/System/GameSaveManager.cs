@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Xml;
 using UnityEngine.SceneManagement;
 
 public class GameSaveManager : MonoBehaviour
@@ -9,26 +11,54 @@ public class GameSaveManager : MonoBehaviour
     [Serializable] public class GameData
     {
         public int playerLevel;
-        public float playerHealth;
+        public int playerHealth;
         public int equippedSlotId;
         public string scene;
         public Vector3 playerPosition;
         public string[] inventoryItems;
+        public SerializableDictionary unlockedSkills;       //JsonUtility无法解析字典类型
+    }
+    
+    [Serializable] public class SerializableDictionary
+    {
+        [Serializable] public class KeyValuePair
+        {
+            public string key;
+            public int value;
+        }
+        public List<KeyValuePair> items = new List<KeyValuePair>();
     }
     
     public Player player;
     public WeaponSlotsManager weaponSlotsManager;
-    public WeaponSlotUI weaponSlotUI;
+    private SkillTreeManager skillTreeManager;
+    private PlayerStatus playerStatus;
     private GameData currentGameData = new GameData();
-    
+
+    private void Awake()
+    {
+        playerStatus = PlayerManager.instance.playerStatus;
+        skillTreeManager = SkillTreeManager.instance;
+    }
+
     public void SaveGame()
     {
+        currentGameData.unlockedSkills = new SerializableDictionary();
+        foreach (var kvp in skillTreeManager.unlockedSkills)
+        {
+            currentGameData.unlockedSkills.items.Add(new SerializableDictionary.KeyValuePair 
+            { 
+                key = kvp.Key, 
+                value = kvp.Value 
+            });
+        }
         currentGameData.playerLevel = 5;
-        currentGameData.playerHealth = 85.5f;
+        currentGameData.playerHealth = playerStatus.health.getValue();
         currentGameData.playerPosition = new Vector3(player.transform.position.x, player.transform.position.y, 0f);
         currentGameData.equippedSlotId = weaponSlotsManager.equippedSlotId;
         currentGameData.scene = SceneManager.GetActiveScene().name;
         currentGameData.inventoryItems = weaponSlotsManager.GetObtainedWeaponsName();
+        
         string jsonData = JsonUtility.ToJson(currentGameData, prettyPrint: true);
         
         string savePath = GetSavePath();

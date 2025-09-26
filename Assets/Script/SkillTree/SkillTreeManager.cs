@@ -4,16 +4,37 @@ using UnityEngine;
 
 public class SkillTreeManager : MonoBehaviour
 {
+    public static SkillTreeManager instance;
     private bool isInitialized = false;
     public Dictionary<string, int> unlockedSkills = new Dictionary<string, int>();
     private SkillNodeUI skillNodeUI;
     private PlayerStatus playerStatus;
     private SkillManager skillManager;
     
-    void Awake()
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(instance.gameObject);
+        }
+        else
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+    }
+    
+    private void OnDestroy()
+    {
+        if (instance == this)
+        {
+            instance = null;
+        }
+    }
+    
+    void Start()
     {
         if (isInitialized) return;
-
         skillManager = SkillManager.instance;
         playerStatus = PlayerManager.instance.playerStatus;
         Debug.Log("Skill Points: " + playerStatus.skillPoints.getValue());
@@ -37,7 +58,6 @@ public class SkillTreeManager : MonoBehaviour
 
         int availableSkillPoints = playerStatus.skillPoints.getValue();
         int upgradeCost = skillNodeUI.upgradeCosts[skillNodeUI.currentLevel];
-        int upgradeEffect = skillNodeUI.upgradeEffect[skillNodeUI.currentLevel];
         if (upgradeCost > availableSkillPoints)
         {
             //todo 添加音效
@@ -60,15 +80,15 @@ public class SkillTreeManager : MonoBehaviour
         switch (skillName)
         {
             case "health":
-                playerStatus.health.setValue(upgradeEffect); //todo 残血时升级自动满血需要更新UI。bug:血量更新不真实需要测试
+                playerStatus.health.setValue(skillNodeUI.upgradeEffect[skillNodeUI.currentLevel]); //todo 残血时升级自动满血需要更新UI。bug:血量更新不真实需要测试
                 break;
-            case "dash":
-                skillManager.UpgradeSkill("dash", skillNodeUI.currentLevel);
+            default:
+                skillManager.UpgradeSkill(skillName, skillNodeUI.currentLevel);
                 break;
         }
         
         Debug.Log("LV: " + skillNodeUI.currentLevel);
-        Debug.Log("effect: " + upgradeEffect);
+        Debug.Log("effect: " + skillNodeUI.upgradeEffect[skillNodeUI.currentLevel]);
         Debug.Log("cost: " + upgradeCost);
         unlockedSkills[skillName] = skillNodeUI.currentLevel;               //索引器，key存在则更新value，不存在则新增
     }
