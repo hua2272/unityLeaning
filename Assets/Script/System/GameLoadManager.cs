@@ -7,24 +7,13 @@ using UnityEngine.SceneManagement;
 public class GameLoadManager : MonoBehaviour
 {
     public static GameLoadManager Instance { get; private set; }
-    [Serializable] public class GameData
-    {
-        public int playerLevel;
-        public float playerHealth;
-        public int equippedSlotId;
-        public string scene;
-        public Vector3 playerPosition;
-        public string[] inventoryItems;
-    }
     
     public GameObject player;
-    public GameObject weaponSlotsObj;
     public Vector3 spawnPosition;
     public string targetScene;
 
     private void Awake()
     {
-        Debug.Log("GameLoadManager Awake called");
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -35,11 +24,16 @@ public class GameLoadManager : MonoBehaviour
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
     
+    // 确保在销毁时移除事件监听
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    
     // 添加场景加载完成后的处理
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         Debug.Log($"场景 {scene.name} 加载完成");
-        
         // 设置玩家位置（如果是从传送门进入）
         if (scene.name == targetScene)
         {
@@ -61,23 +55,15 @@ public class GameLoadManager : MonoBehaviour
             }
         }
     }
-    
-    // 确保在销毁时移除事件监听
-    private void OnDestroy()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
 
     public void StartNewGame()
     {
-        Debug.Log("初始化新游戏...");
         // TODO 重置玩家数据、关卡状态等
         SceneTransitionManager.Instance.LoadSceneWithFade("GameScene");
     }
 
     public void LoadGame()
     {
-        Debug.LogWarning("testload");
         // todo 多存档管理
         if (GameSaveManager.DoesSaveExist())
         {
@@ -131,6 +117,16 @@ public class GameLoadManager : MonoBehaviour
             Debug.Log($"找到WeaponSlotsManager: {weaponSlotsManager.name}");
             weaponSlotsManager.Awake();
             weaponSlotsManager.HandleSlotClick(gameData.equippedSlotId);
+        }
+        PreloadManagers();
+    }
+    
+    void PreloadManagers()
+    {
+        if (SkillTreeManager.instance == null)
+        {
+            GameObject obj = new GameObject("SkillTreeManager");
+            obj.AddComponent<SkillTreeManager>(); // 它会自动设置 DontDestroyOnLoad
         }
     }
 }

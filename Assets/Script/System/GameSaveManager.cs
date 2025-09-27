@@ -8,27 +8,6 @@ using UnityEngine.SceneManagement;
 
 public class GameSaveManager : MonoBehaviour
 {
-    [Serializable] public class GameData
-    {
-        public int playerLevel;
-        public int playerHealth;
-        public int equippedSlotId;
-        public string scene;
-        public Vector3 playerPosition;
-        public string[] inventoryItems;
-        public SerializableDictionary unlockedSkills;       //JsonUtility无法解析字典类型
-    }
-    
-    [Serializable] public class SerializableDictionary
-    {
-        [Serializable] public class KeyValuePair
-        {
-            public string key;
-            public int value;
-        }
-        public List<KeyValuePair> items = new List<KeyValuePair>();
-    }
-    
     public Player player;
     public WeaponSlotsManager weaponSlotsManager;
     private SkillTreeManager skillTreeManager;
@@ -43,19 +22,11 @@ public class GameSaveManager : MonoBehaviour
 
     public void SaveGame()
     {
-        currentGameData.unlockedSkills = new SerializableDictionary();
-        foreach (var kvp in skillTreeManager.unlockedSkills)
-        {
-            currentGameData.unlockedSkills.items.Add(new SerializableDictionary.KeyValuePair 
-            { 
-                key = kvp.Key, 
-                value = kvp.Value 
-            });
-        }
+        currentGameData.unlockedSkills = skillTreeManager.getUnLockedSkills();
         currentGameData.playerLevel = 5;
         currentGameData.playerHealth = playerStatus.health.getValue();
         currentGameData.playerPosition = new Vector3(player.transform.position.x, player.transform.position.y, 0f);
-        currentGameData.equippedSlotId = weaponSlotsManager.equippedSlotId;
+        currentGameData.equippedSlotId = weaponSlotsManager.equippedSlotId;//TODO 未初始化脚本可能得到Null，需要验证
         currentGameData.scene = SceneManager.GetActiveScene().name;
         currentGameData.inventoryItems = weaponSlotsManager.GetObtainedWeaponsName();
         

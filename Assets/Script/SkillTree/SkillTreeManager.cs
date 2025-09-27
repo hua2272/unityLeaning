@@ -6,7 +6,7 @@ public class SkillTreeManager : MonoBehaviour
 {
     public static SkillTreeManager instance;
     private bool isInitialized = false;
-    public Dictionary<string, int> unlockedSkills = new Dictionary<string, int>();
+    public GameData.SerializableDictionary unlockedSkills;
     private PlayerStatus playerStatus;
     private SkillManager skillManager;
     
@@ -36,6 +36,7 @@ public class SkillTreeManager : MonoBehaviour
         if (isInitialized) return;
         skillManager = SkillManager.instance;
         playerStatus = PlayerManager.instance.playerStatus;
+        unlockedSkills =  new GameData.SerializableDictionary();
         
         // 获取所有子节点的SkillNodeUI组件
         SkillNodeUI[] nodes = GetComponentsInChildren<SkillNodeUI>();
@@ -93,6 +94,11 @@ public class SkillTreeManager : MonoBehaviour
         Debug.Log("LV: " + skillNodeUI.currentLevel);
         Debug.Log("effect: " + skillNodeUI.upgradeEffect[skillNodeUI.currentLevel]);
         Debug.Log("cost: " + upgradeCost);
-        unlockedSkills[skillName] = skillNodeUI.currentLevel;               //索引器，key存在则更新value，不存在则新增
+        unlockedSkills.AddOrUpdate(skillName, skillNodeUI.currentLevel);
+    }
+    
+    public GameData.SerializableDictionary getUnLockedSkills()
+    {
+        return unlockedSkills;
     }
 }
