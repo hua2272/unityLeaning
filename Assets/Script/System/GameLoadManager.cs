@@ -94,11 +94,12 @@ public class GameLoadManager : MonoBehaviour
             Debug.LogError("Failed to parse save data!");
             yield break;
         }
-        string scene = gameData.scene;
-
-        SceneTransitionManager.Instance.LoadSceneWithFade(scene);
+        Debug.unityLogger.Log("--------DataPersistenceStart---------");
+        GameDataManager.instance.DataPersistence(gameData);
+        
+        SceneTransitionManager.Instance.LoadSceneWithFade(gameData.scene);
         yield return null;                                                              //等待一帧让场景开始加载
-        while (SceneManager.GetActiveScene().name != scene)                             //等待场景完全加载
+        while (SceneManager.GetActiveScene().name != gameData.scene)                    //等待场景完全加载
         {
             yield return null;
         }
@@ -117,16 +118,6 @@ public class GameLoadManager : MonoBehaviour
             Debug.Log($"找到WeaponSlotsManager: {weaponSlotsManager.name}");
             weaponSlotsManager.Awake();
             weaponSlotsManager.HandleSlotClick(gameData.equippedSlotId);
-        }
-        PreloadManagers();
-    }
-    
-    void PreloadManagers()
-    {
-        if (SkillTreeManager.instance == null)
-        {
-            GameObject obj = new GameObject("SkillTreeManager");
-            obj.AddComponent<SkillTreeManager>(); // 它会自动设置 DontDestroyOnLoad
         }
     }
 }

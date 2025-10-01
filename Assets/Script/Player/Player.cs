@@ -66,6 +66,7 @@ public class Player : Entity
         aimSword = new PlayerAimSwordState(this, stateMachine, "AimSword");
         catchSword = new PlayerCatchSwordState(this, stateMachine, "CatchSword");
         deadState = new PlayerDeadState(this, stateMachine, "Die");
+        //DontDestroyOnLoad(gameObject);
     }
 
     protected override void Start()
