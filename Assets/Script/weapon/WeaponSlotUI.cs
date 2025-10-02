@@ -15,13 +15,13 @@ public class WeaponSlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     [Header("格子设置")]
     [SerializeField] private int slotId = 0;                    //手动设置的格子编号
+    private WeaponData currentWeapon;                           //当前格子的武器
+    private bool isEquipped = false;                            //当前格子的武器是否装备
     
     [HideInInspector] public UnityEvent<int> OnSlotClicked;
     [HideInInspector] public UnityEvent<int> OnSlotHovered;
 
-    
-    private WeaponData currentWeapon;                           //当前格子的武器
-    private bool isEquipped = false;                            //当前格子的武器是否装备
+
 
     //从WeaponData获取武器信息并设置到格子
     public void SetWeapon(WeaponData weapon, bool equip = false)

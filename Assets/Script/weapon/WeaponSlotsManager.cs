@@ -50,6 +50,11 @@ public class WeaponSlotsManager : MonoBehaviour
 
     public void Start()
     {
+        gameDataManager = GameDataManager.instance;
+        if (gameDataManager != null)
+        {
+            equippedSlotId = gameDataManager.equippedSlotId;
+        }
         InitializeSlots();
         LoadInitialWeapons();
     }
@@ -80,10 +85,7 @@ public class WeaponSlotsManager : MonoBehaviour
     // 初始化背包武器，为每个武器分配到指定格子
     public void LoadInitialWeapons()
     {
-        if (obtainedWeapons == null || obtainedWeapons.Length == 0)
-        {
-            return;
-        }
+        if (obtainedWeapons == null || obtainedWeapons.Length == 0) return;
         for (int i = 0; i < obtainedWeapons.Length; i++)
         {
             if (i < slots.Count)
@@ -94,14 +96,13 @@ public class WeaponSlotsManager : MonoBehaviour
     }
 
     // 添加武器到指定格子
-    public void AddWeaponToSlot(int slotIndex, WeaponData weapon, bool equip = false)
+    public void AddWeaponToSlot(int slotId, WeaponData weapon, bool equip = false)
     {
-        if (!slots.ContainsKey(slotIndex)) return;
-        if (!slots[slotIndex].IsEmpty()) return;
-        
-        slots[slotIndex].SetWeapon(weapon, equip);                          //设置武器到格子
-        if (equip)                                                          //如果是装备状态，更新装备索引
-            equippedSlotId = slotIndex;
+        if (!slots.ContainsKey(slotId)) return;
+        if (!slots[slotId].IsEmpty()) return;
+        slots[slotId].SetWeapon(weapon, equip);
+        if (equip) 
+            equippedSlotId = slotId;
     }
 
     // 事件处理
@@ -117,9 +118,9 @@ public class WeaponSlotsManager : MonoBehaviour
             WeaponData currentWeapon = slots[slotId].GetCurrentWeapon();
             characterState.SetWeaponAttack(currentWeapon.damage);
             equippedSlotId = slotId;
-            slotEffects.PlaySound();                                        //目前声音播放不会覆盖前面未结束的声音
             Debug.LogError("当前武器伤害：" + currentWeapon.damage);
         }
+        slotEffects.PlaySound();                                        //目前声音播放不会覆盖前面未结束的声音
     }
 
     private void HandleSlotHover(int slotIndex)

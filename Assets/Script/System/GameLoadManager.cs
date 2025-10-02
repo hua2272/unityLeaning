@@ -111,14 +111,5 @@ public class GameLoadManager : MonoBehaviour
             yield break;
         }
         player.transform.position = new Vector3(gameData.playerPosition.x, gameData.playerPosition.y, gameData.playerPosition.z);
-
-        Debug.Log("存档中读取到已装备的武器: " + gameData.equippedSlotId);
-        WeaponSlotsManager weaponSlotsManager = FindObjectOfType<WeaponSlotsManager>(true);
-        if (weaponSlotsManager != null)
-        {
-            Debug.Log($"找到WeaponSlotsManager: {weaponSlotsManager.name}");
-            weaponSlotsManager.Start();
-            weaponSlotsManager.HandleSlotClick(gameData.equippedSlotId);
-        }
     }
 }
