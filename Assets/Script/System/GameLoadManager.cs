@@ -97,6 +97,7 @@ public class GameLoadManager : MonoBehaviour
         Debug.unityLogger.Log("--------DataPersistenceStart---------");
         GameDataManager.instance.DataPersistence(gameData);
         
+        //SceneManager.LoadScene("Persistent", LoadSceneMode.Additive);
         SceneTransitionManager.Instance.LoadSceneWithFade(gameData.scene);
         yield return null;                                                              //等待一帧让场景开始加载
         while (SceneManager.GetActiveScene().name != gameData.scene)                    //等待场景完全加载
@@ -116,7 +117,7 @@ public class GameLoadManager : MonoBehaviour
         if (weaponSlotsManager != null)
         {
             Debug.Log($"找到WeaponSlotsManager: {weaponSlotsManager.name}");
-            weaponSlotsManager.Awake();
+            weaponSlotsManager.Start();
             weaponSlotsManager.HandleSlotClick(gameData.equippedSlotId);
         }
     }

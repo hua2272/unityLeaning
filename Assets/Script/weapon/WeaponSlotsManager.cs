@@ -6,6 +6,9 @@ using UnityEngine.Events;
 
 public class WeaponSlotsManager : MonoBehaviour
 {
+    public static WeaponSlotsManager instance;
+    private GameDataManager gameDataManager;
+    
     private Dictionary<int, WeaponSlotUI> slots = new Dictionary<int, WeaponSlotUI>();  //所有格子的引用
     private bool isInitialized = false;
     public int equippedSlotId { get; private set; } = 0;                                //已装备的武器索引
@@ -14,8 +17,38 @@ public class WeaponSlotsManager : MonoBehaviour
     
     [Header("武器加载")] 
     [SerializeField] private WeaponData[] obtainedWeapons;
+    
+    private void Awake()
+    {
+        Debug.Log("-------WeaponSlotsManager instance------->");
+        if (instance != null)
+        {
+            Destroy(instance.gameObject);
+        }
+        else
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+    }
+    
+    private void OnDestroy()
+    {
+        if (instance == this)
+        {
+            instance = null;
+        }
+        foreach (var slot in slots.Values)
+        {
+            if (slot != null)
+            {
+                slot.OnSlotClicked.RemoveListener(HandleSlotClick);
+                slot.OnSlotHovered.RemoveListener(HandleSlotHover);
+            }
+        }
+    }
 
-    public void Awake()
+    public void Start()
     {
         InitializeSlots();
         LoadInitialWeapons();
@@ -56,19 +89,6 @@ public class WeaponSlotsManager : MonoBehaviour
             if (i < slots.Count)
             {
                 AddWeaponToSlot(i, obtainedWeapons[i], i == equippedSlotId);
-            }
-        }
-    }
-    
-    // 取消事件订阅，防止内存泄漏
-    private void OnDestroy()
-    {
-        foreach (var slot in slots.Values)
-        {
-            if (slot != null)
-            {
-                slot.OnSlotClicked.RemoveListener(HandleSlotClick);
-                slot.OnSlotHovered.RemoveListener(HandleSlotHover);
             }
         }
     }

@@ -5,16 +5,17 @@ using UnityEngine;
 public class SkillTreeManager : MonoBehaviour
 {
     public static SkillTreeManager instance;
+    private GameDataManager gameDataManager;
+    
     private bool isInitialized = false;
     public GameData.SerializableDictionary unlockedSkills;
     private PlayerStatus playerStatus;
     private SkillManager skillManager;
-    private GameDataManager gameDataManager;
     private SkillNodeUI[] skillNodes;
     
     private void Awake()
     {
-        Debug.Log("------------->");
+        Debug.Log("-------SkillTreeManager instance------->");
         if (instance != null)
         {
             Destroy(instance.gameObject);
