@@ -83,8 +83,7 @@ public class GameLoadManager : MonoBehaviour
         Application.Quit();
 #endif
     }
-
-    //todo FindObjectOfType方法查询效率低，后期优化
+    
     private IEnumerator LoadGameCoroutine(string filePath)
     {
         string jsonData = File.ReadAllText(filePath);
@@ -104,12 +103,5 @@ public class GameLoadManager : MonoBehaviour
         {
             yield return null;
         }
-        player = GameObject.FindGameObjectWithTag("Player");
-        if (player == null)                                                          //确保玩家对象已生成
-        {
-            Debug.LogError("Player object not found in the scene!");
-            yield break;
-        }
-        player.transform.position = new Vector3(gameData.playerPosition.x, gameData.playerPosition.y, gameData.playerPosition.z);
     }
 }

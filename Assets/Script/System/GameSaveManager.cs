@@ -8,21 +8,49 @@ using UnityEngine.SceneManagement;
 
 public class GameSaveManager : MonoBehaviour
 {
+    public static GameSaveManager instance;
+
+    private GameDataManager gameDataManager;
     public Player player;
     public WeaponSlotsManager weaponSlotsManager;
-    private SkillTreeManager skillTreeManager;
+    //private SkillTreeManager skillTreeManager;
     private PlayerStatus playerStatus;
     private GameData currentGameData = new GameData();
-
+    
+    
     private void Awake()
     {
+        Debug.Log("-------GameSaveManager instance------->");
+        if (instance != null)
+        {
+            // Destroy(instance.gameObject);
+            Destroy(gameObject);
+        }
+        else
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+    }
+    
+    private void OnDestroy()
+    {
+        if (instance == this)
+        {
+            instance = null;
+        }
+    }
+
+    private void Start()
+    {
         playerStatus = PlayerManager.instance.playerStatus;
-        skillTreeManager = SkillTreeManager.instance;
+        //skillTreeManager = SkillTreeManager.instance; 
+        gameDataManager = GameDataManager.instance;
     }
 
     public void SaveGame()
     {
-        currentGameData.unlockedSkills = skillTreeManager.getUnLockedSkills();
+        currentGameData.unlockedSkills = gameDataManager.unlockedSkills;
         currentGameData.playerLevel = 5;
         currentGameData.playerHealth = playerStatus.health.getValue();
         currentGameData.playerPosition = new Vector3(player.transform.position.x, player.transform.position.y, 0f);

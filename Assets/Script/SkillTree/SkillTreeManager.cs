@@ -8,7 +8,6 @@ public class SkillTreeManager : MonoBehaviour
     private GameDataManager gameDataManager;
     
     private bool isInitialized = false;
-    public GameData.SerializableDictionary unlockedSkills;
     private PlayerStatus playerStatus;
     private SkillManager skillManager;
     private SkillNodeUI[] skillNodes;
@@ -98,7 +97,7 @@ public class SkillTreeManager : MonoBehaviour
         }
 
         List<string> requiredSkills = skillNodeUI.requiredSkills;
-        if (requiredSkills.Count > 0 && !requiredSkills.All(skill => unlockedSkills.ContainsKey(skill)))
+        if (requiredSkills.Count > 0 && !requiredSkills.All(skill => gameDataManager.unlockedSkills.ContainsKey(skill)))
         {
             //todo 添加音效
             Debug.Log("前置技能未解锁");
@@ -122,11 +121,6 @@ public class SkillTreeManager : MonoBehaviour
         Debug.Log("LV: " + skillNodeUI.currentLevel);
         Debug.Log("effect: " + skillNodeUI.upgradeEffect[skillNodeUI.currentLevel]);
         Debug.Log("cost: " + upgradeCost);
-        unlockedSkills.AddOrUpdate(skillName, skillNodeUI.currentLevel);
-    }
-    
-    public GameData.SerializableDictionary getUnLockedSkills()
-    {
-        return unlockedSkills;
+        gameDataManager.unlockedSkills.AddOrUpdate(skillName, skillNodeUI.currentLevel);
     }
 }
