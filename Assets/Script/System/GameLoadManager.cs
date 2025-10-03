@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class GameLoadManager : MonoBehaviour
 {
-    public static GameLoadManager Instance { get; private set; }
+    public static GameLoadManager instance { get; private set; }
     
     public GameObject player;
     public Vector3 spawnPosition;
@@ -14,12 +14,12 @@ public class GameLoadManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
+        if (instance != null && instance != this)
         {
             Destroy(gameObject);
             return;
         }
-        Instance = this;
+        instance = this;
         DontDestroyOnLoad(gameObject);
         SceneManager.sceneLoaded += OnSceneLoaded;
     }

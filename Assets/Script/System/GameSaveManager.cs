@@ -13,7 +13,6 @@ public class GameSaveManager : MonoBehaviour
     private GameDataManager gameDataManager;
     public Player player;
     public WeaponSlotsManager weaponSlotsManager;
-    //private SkillTreeManager skillTreeManager;
     private PlayerStatus playerStatus;
     private GameData currentGameData = new GameData();
     
@@ -44,7 +43,6 @@ public class GameSaveManager : MonoBehaviour
     private void Start()
     {
         playerStatus = PlayerManager.instance.playerStatus;
-        //skillTreeManager = SkillTreeManager.instance; 
         gameDataManager = GameDataManager.instance;
     }
 
@@ -54,7 +52,7 @@ public class GameSaveManager : MonoBehaviour
         currentGameData.playerLevel = 5;
         currentGameData.playerHealth = playerStatus.health.getValue();
         currentGameData.playerPosition = new Vector3(player.transform.position.x, player.transform.position.y, 0f);
-        currentGameData.equippedSlotId = weaponSlotsManager.equippedSlotId;//TODO 未初始化脚本可能得到Null，需要验证
+        currentGameData.equippedSlotId = gameDataManager.equippedSlotId;
         currentGameData.scene = SceneManager.GetActiveScene().name;
         currentGameData.inventoryItems = weaponSlotsManager.GetObtainedWeaponsName();
         

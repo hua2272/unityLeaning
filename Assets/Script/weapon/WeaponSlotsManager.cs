@@ -11,7 +11,7 @@ public class WeaponSlotsManager : MonoBehaviour
     
     private Dictionary<int, WeaponSlotUI> slots = new Dictionary<int, WeaponSlotUI>();  //所有格子的引用
     private bool isInitialized = false;
-    public int equippedSlotId { get; private set; } = 0;                                //已装备的武器索引
+    //public int equippedSlotId { get; private set; } = 0;                                //已装备的武器索引
     public CharacterState characterState;                                               //玩家数值
     public SlotEffectsManager slotEffects;                                              //格子特效
     
@@ -51,10 +51,10 @@ public class WeaponSlotsManager : MonoBehaviour
     public void Start()
     {
         gameDataManager = GameDataManager.instance;
-        if (gameDataManager != null)
-        {
-            equippedSlotId = gameDataManager.equippedSlotId;
-        }
+        // if (gameDataManager != null)
+        // {
+        //     equippedSlotId = gameDataManager.equippedSlotId;
+        // }
         InitializeSlots();
         LoadInitialWeapons();
     }
@@ -90,7 +90,7 @@ public class WeaponSlotsManager : MonoBehaviour
         {
             if (i < slots.Count)
             {
-                AddWeaponToSlot(i, obtainedWeapons[i], i == equippedSlotId);
+                AddWeaponToSlot(i, obtainedWeapons[i], i == gameDataManager.equippedSlotId);
             }
         }
     }
@@ -102,7 +102,7 @@ public class WeaponSlotsManager : MonoBehaviour
         if (!slots[slotId].IsEmpty()) return;
         slots[slotId].SetWeapon(weapon, equip);
         if (equip) 
-            equippedSlotId = slotId;
+            gameDataManager.equippedSlotId = slotId;
     }
 
     // 事件处理
@@ -110,17 +110,17 @@ public class WeaponSlotsManager : MonoBehaviour
     {
         if (slots.ContainsKey(slotId) && !slots[slotId].IsEmpty())
         {
-            if (equippedSlotId >= 0 && equippedSlotId != slotId)
+            if (gameDataManager.equippedSlotId >= 0 && gameDataManager.equippedSlotId != slotId)
             {
-                slots[equippedSlotId].UpdateEquippedState(false);           //卸下之前的武器
+                slots[gameDataManager.equippedSlotId].UpdateEquippedState(false);           //卸下之前的武器
             }
-            slots[slotId].UpdateEquippedState(true);                        //装备现在的武器
+            slots[slotId].UpdateEquippedState(true);                                        //装备现在的武器
             WeaponData currentWeapon = slots[slotId].GetCurrentWeapon();
             characterState.SetWeaponAttack(currentWeapon.damage);
-            equippedSlotId = slotId;
+            gameDataManager.equippedSlotId = slotId;
             Debug.LogError("当前武器伤害：" + currentWeapon.damage);
         }
-        slotEffects.PlaySound();                                        //目前声音播放不会覆盖前面未结束的声音
+        slotEffects.PlaySound();                                                            //目前声音播放不会覆盖前面未结束的声音
     }
 
     private void HandleSlotHover(int slotIndex)
