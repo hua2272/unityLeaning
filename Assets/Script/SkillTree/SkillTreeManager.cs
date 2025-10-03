@@ -46,28 +46,16 @@ public class SkillTreeManager : MonoBehaviour
         foreach (SkillNodeUI skillNode in skillNodes)
         {
             skillNode.OnNodeClicked.AddListener(() => TryUnlockOrUpgradeSkill(skillNode));
-            
-            string skillName = skillNode.skillName;
-            Debug.Log("setUnLockedSkills: " + skillName);
             // if (!skills.ContainsKey(skillName))
             // {
             //     continue;
             // }
             foreach (var unlockedSkill in gameDataManager.unlockedSkills.items)
             {
-                if (skillName.Equals(unlockedSkill.key))
+                if (skillNode.skillName.Equals(unlockedSkill.key))
                 {
-                    skillNode.currentLevel =  unlockedSkill.value;
-                    skillNode.UpdateUI();
-                    switch (skillName)
-                    {
-                        case "health":
-                            playerStatus.health.setValue(skillNode.upgradeEffect[skillNode.currentLevel]); //todo 残血时升级自动满血需要更新UI。bug:血量更新不真实需要测试
-                            break;
-                        default:
-                            skillManager.UpgradeSkill(skillName, skillNode.currentLevel);
-                            break;
-                    }
+                    skillNode.currentLevel = unlockedSkill.value;
+                    UpdateSkillNode(skillNode.skillName, skillNode);
                 }
             }
         }
@@ -105,9 +93,18 @@ public class SkillTreeManager : MonoBehaviour
         }
         playerStatus.skillPoints.setValue(availableSkillPoints - upgradeCost);
         skillNodeUI.currentLevel++;
+        UpdateSkillNode(skillNodeUI.skillName, skillNodeUI);
         
+        Debug.Log("LV: " + skillNodeUI.currentLevel);
+        Debug.Log("effect: " + skillNodeUI.upgradeEffect[skillNodeUI.currentLevel]);
+        Debug.Log("cost: " + upgradeCost);
+        gameDataManager.unlockedSkills.AddOrUpdate(skillNodeUI.skillName, skillNodeUI.currentLevel);
+    }
+
+    
+    private void UpdateSkillNode(string skillName, SkillNodeUI skillNodeUI)
+    {
         skillNodeUI.UpdateUI();
-        string skillName = skillNodeUI.skillName;
         switch (skillName)
         {
             case "health":
@@ -117,10 +114,5 @@ public class SkillTreeManager : MonoBehaviour
                 skillManager.UpgradeSkill(skillName, skillNodeUI.currentLevel);
                 break;
         }
-        
-        Debug.Log("LV: " + skillNodeUI.currentLevel);
-        Debug.Log("effect: " + skillNodeUI.upgradeEffect[skillNodeUI.currentLevel]);
-        Debug.Log("cost: " + upgradeCost);
-        gameDataManager.unlockedSkills.AddOrUpdate(skillName, skillNodeUI.currentLevel);
     }
 }
