@@ -46,7 +46,7 @@ public class SceneTransitionManager : MonoBehaviour
         // 淡出
         yield return StartCoroutine(FadeOut());
         // 加载场景 todo 初始化和读取的场景分开讨论
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
         while (!asyncLoad.isDone)
         {
             yield return null;

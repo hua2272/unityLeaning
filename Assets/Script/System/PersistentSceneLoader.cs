@@ -21,6 +21,7 @@ public class PersistentSceneLoader : MonoBehaviour
     void InitializeManagers()
     {
         // 初始化所有管理器
+        Debug.Log("-----------InitializeManagers-----------");
     }
     
     // public void LoadGame()

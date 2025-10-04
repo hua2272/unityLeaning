@@ -96,7 +96,8 @@ public class GameLoadManager : MonoBehaviour
         Debug.unityLogger.Log("--------DataPersistenceStart---------");
         GameDataManager.instance.DataPersistence(gameData);
         
-        //SceneManager.LoadScene("Persistent", LoadSceneMode.Additive);
+        // SceneManager.LoadScene("Persistent", LoadSceneMode.Additive);
+        SceneManager.LoadScene("Persistent");
         SceneTransitionManager.Instance.LoadSceneWithFade(gameData.scene);
         yield return null;                                                              //等待一帧让场景开始加载
         while (SceneManager.GetActiveScene().name != gameData.scene)                    //等待场景完全加载
