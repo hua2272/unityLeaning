@@ -21,10 +21,8 @@ public class SceneTransitionManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        
         InitializeFadeCanvas();
     }
 
@@ -43,16 +41,13 @@ public class SceneTransitionManager : MonoBehaviour
 
     private IEnumerator Transition(string sceneName)
     {
-        // 淡出
-        yield return StartCoroutine(FadeOut());
-        // 加载场景 todo 初始化和读取的场景分开讨论
+        yield return StartCoroutine(FadeOut());                                                         //淡出
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
         while (!asyncLoad.isDone)
         {
             yield return null;
         }
-        // 淡入
-        yield return StartCoroutine(FadeIn());
+        yield return StartCoroutine(FadeIn());                                                          //淡入
     }
 
     private IEnumerator FadeOut()
@@ -60,7 +55,6 @@ public class SceneTransitionManager : MonoBehaviour
         fadeImage.gameObject.SetActive(true);
         float elapsedTime = 0f;
         Color color = fadeImage.color;
-        
         while (elapsedTime < fadeDuration)
         {
             elapsedTime += Time.deltaTime;
@@ -74,7 +68,6 @@ public class SceneTransitionManager : MonoBehaviour
     {
         float elapsedTime = 0f;
         Color color = fadeImage.color;
-        
         while (elapsedTime < fadeDuration)
         {
             elapsedTime += Time.deltaTime;
@@ -82,7 +75,6 @@ public class SceneTransitionManager : MonoBehaviour
             fadeImage.color = color;
             yield return null;
         }
-        
         fadeImage.gameObject.SetActive(false);
     }
 }

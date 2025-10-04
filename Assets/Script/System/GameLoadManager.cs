@@ -93,12 +93,11 @@ public class GameLoadManager : MonoBehaviour
             Debug.LogError("Failed to parse save data!");
             yield break;
         }
-        Debug.unityLogger.Log("--------DataPersistenceStart---------");
+        Debug.Log("<color=#FF0000>--------DataPersistenceStart--------</color>");
         GameDataManager.instance.DataPersistence(gameData);
         
-        // SceneManager.LoadScene("Persistent", LoadSceneMode.Additive);
         SceneManager.LoadScene("Persistent");
-        SceneTransitionManager.Instance.LoadSceneWithFade(gameData.scene);
+        //SceneTransitionManager.Instance.LoadSceneWithFade(gameData.scene);
         yield return null;                                                              //等待一帧让场景开始加载
         while (SceneManager.GetActiveScene().name != gameData.scene)                    //等待场景完全加载
         {
