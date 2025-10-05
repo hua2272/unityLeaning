@@ -37,16 +37,14 @@ public class DialogueUI : MonoBehaviour
 
     void UpdateUI(DialogueNode node)
     {
-        //Debug.Log("--------->>>>>>>>> update UI");
         speakerText.text = node.speakerName;
         dialogueText.text = node.dialogueText;
-        // 清除旧选项
-        foreach (Transform child in optionsPanel)
+        
+        foreach (Transform child in optionsPanel)           //清除旧选项
         {
             Destroy(child.gameObject);
         }
-        // 创建新选项按钮
-        foreach (var option in node.options)
+        foreach (var option in node.options)                //创建新选项按钮
         {
             if (dialogueManager.CheckOptionConditions(option))
             {

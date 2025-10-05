@@ -88,19 +88,6 @@ public class DialogueManager : MonoBehaviour
         OnNodeUpdate?.Invoke(currentNode);
     }
 
-    public void GoBack()
-    {
-        if (nodeStack.Count > 0)
-        {
-            currentNode = nodeStack.Pop();
-            OnNodeUpdate?.Invoke(currentNode);
-        }
-        else
-        {
-            EndDialogue();
-        }
-    }
-
     public void EndDialogue()
     {
         OnDialogueEnd?.Invoke();
