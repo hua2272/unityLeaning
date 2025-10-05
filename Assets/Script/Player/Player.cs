@@ -8,7 +8,6 @@ public class Player : Entity
     public bool isBusy { get; private set; }
     public SkillManager skill { get; private set; }
     public GameObject sword { get; private set; }
-    public DialogueManager dialogueManager;
     [SerializeField] private DeathMenuController deathMenu;
     
     #region State
@@ -66,7 +65,6 @@ public class Player : Entity
         aimSword = new PlayerAimSwordState(this, stateMachine, "AimSword");
         catchSword = new PlayerCatchSwordState(this, stateMachine, "CatchSword");
         deadState = new PlayerDeadState(this, stateMachine, "Die");
-        //DontDestroyOnLoad(gameObject);
     }
 
     protected override void Start()
@@ -74,7 +72,6 @@ public class Player : Entity
         base.Start();
         skill = SkillManager.instance;
         stateMachine.Initialize(idleState);
-        dialogueManager = DialogueManager.Instance;
         npcDetector = GetComponent<PlayerNPCDetector>();
         cameraShake = Camera.main.GetComponent<CameraShake>();
     }
@@ -83,7 +80,6 @@ public class Player : Entity
     {
         base.Update();
         stateMachine.currentState.Update();
-        Check4Talk();
     }
     
     public override void DamageEffect()
@@ -97,9 +93,7 @@ public class Player : Entity
     
         // 触发屏幕震动
         if (cameraShake != null)
-        {
             cameraShake.TriggerShake(shakeDuration, shakeMagnitude);
-        }
     }
 
     public void AssignNewSword(GameObject _newSword)
@@ -121,27 +115,6 @@ public class Player : Entity
     }
 
     public void AnimationTrigger() => stateMachine.currentState.AnimationFinishTrigger();
-    
-
-    private void Check4Talk()
-    {
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            var closestNPC = npcDetector.GetClosestVisibleNPC();
-            if (closestNPC != null)
-            {
-                Debug.Log($"与最近的NPC交互 ID: {closestNPC.npcId}");
-                if (dialogueManager != null)
-                {
-                    dialogueManager.StartDialogue(closestNPC.npcId);
-                }
-                else
-                {
-                    Debug.LogError("DialogueManager.Instance is null!");
-                }
-            }
-        }
-    }
 
     public override void Die()
     {

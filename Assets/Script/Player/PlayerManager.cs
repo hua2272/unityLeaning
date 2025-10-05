@@ -8,19 +8,19 @@ public class PlayerManager : MonoBehaviour
     public static PlayerManager instance;
     public Player player;
     public PlayerStatus playerStatus;
+    public PlayerNPCDetector playerNpcDetector;
 
     private void Awake()
     {
-        Debug.Log("-------PlayerManager instance------->");
+        Debug.Log("-------PlayerManager instance------");
         if (instance != null)
         {
-            Destroy(instance.gameObject);
-            //Destroy(gameObject);
+            Destroy(gameObject);
         }
         else
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
     }
     

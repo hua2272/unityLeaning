@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 public class DialogueManager : MonoBehaviour
 {
-    public static DialogueManager Instance { get; private set; }
+    public static DialogueManager instance { get; private set; }
+    [SerializeField] private GameObject panel;
     
     public delegate void DialogueEvent();
     public delegate void NodeEvent(DialogueNode node);
@@ -13,34 +14,42 @@ public class DialogueManager : MonoBehaviour
     public event NodeEvent OnNodeUpdate;
 
     private DialogueLoader dialogueLoader;
-    //private InventorySystem inventory;
-    //private QuestSystem questSystem;
+    private PlayerManager playerManager;
     
     private int currentNpcId;
     private DialogueNode currentNode;
     private Stack<DialogueNode> nodeStack = new Stack<DialogueNode>();
 
-    // void Start()
-    // {
-    //     dialogueLoader = FindObjectOfType<DialogueLoader>();
-    //     //inventory = FindObjectOfType<InventorySystem>();
-    //     //questSystem = FindObjectOfType<QuestSystem>();
-    // }
+    void Start()
+    {
+        dialogueLoader = GetComponent<DialogueLoader>();
+        playerManager = PlayerManager.instance;
+    }
     
     private void Awake()
     {
-        if (Instance != null && Instance != this)
+        if (instance != null && instance != this)
         {
             Destroy(this);
             return;
         }
-        Instance = this;
-        if (dialogueLoader == null)
+        instance = this;
+        panel.SetActive(false);
+    }
+    
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.F))
         {
-            dialogueLoader = GetComponent<DialogueLoader>();
-            if (dialogueLoader == null)
+            bool isActive = !panel.activeSelf;
+            panel.SetActive(isActive);
+            Time.timeScale = isActive ? 0 : 1;//暂停游戏
+            
+            var closestNPC = playerManager.playerNpcDetector.GetClosestVisibleNPC();
+            if (closestNPC != null)
             {
-                Debug.LogError("DialogueLoader not found on DialogueManager GameObject!");
+                Debug.Log($"与最近的NPC交互 ID: {closestNPC.npcId}");
+                StartDialogue(closestNPC.npcId);
             }
         }
     }

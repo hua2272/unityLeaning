@@ -2462,6 +2462,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 851a9af0b0c3f434d9b55f2e7ff04810, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  panel: {fileID: 456827643}
 --- !u!114 &339590096
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2976,7 +2977,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &456827644
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3201,7 +3202,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health:
-    baseValue: 0
+    baseValue: 100
     modifiers: 
   stamina:
     baseValue: 0
@@ -3430,7 +3431,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -43.71203, y: -7.180047, z: -9.971809}
+  m_LocalPosition: {x: 11.98797, y: -7.480047, z: -9.971809}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7436,6 +7437,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 1142823682}
   playerStatus: {fileID: 1142823687}
+  playerNpcDetector: {fileID: 1142823688}
 --- !u!4 &1085764286
 Transform:
   m_ObjectHideFlags: 0
@@ -7642,7 +7644,7 @@ Transform:
   m_GameObject: {fileID: 1142823681}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -34.2, y: -5.5, z: 0}
+  m_LocalPosition: {x: 21.5, y: -5.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -8518,7 +8520,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1230273213
 Transform:
   m_ObjectHideFlags: 0
@@ -9935,7 +9937,7 @@ Transform:
   m_GameObject: {fileID: 1477930329}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -43.71203, y: -7.180047, z: -9.971809}
+  m_LocalPosition: {x: 11.98797, y: -7.480047, z: -9.971809}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

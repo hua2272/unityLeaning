@@ -14,8 +14,7 @@ public class DialogueUI : MonoBehaviour
 
     void Start()
     {
-        //Debug.Log(">>>>>>>>>>>>>>>>DialogueUI Start() called");
-        dialogueManager = DialogueManager.Instance;
+        dialogueManager = DialogueManager.instance;
         if (dialogueManager == null) 
         {
             Debug.LogError("DialogueManager not found in scene!");
@@ -28,7 +27,6 @@ public class DialogueUI : MonoBehaviour
 
     void ShowDialogue()
     {
-        //Debug.Log("--------->>>>>>>>> active UI");
         dialoguePanel.SetActive(true);
     }
 
