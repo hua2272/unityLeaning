@@ -45,7 +45,7 @@ public class SkillTreeManager : MonoBehaviour
         skillNodes = GetComponentsInChildren<SkillNodeUI>(true);
         foreach (SkillNodeUI skillNode in skillNodes)
         {
-            skillNode.OnNodeClicked.AddListener(() => TryUnlockOrUpgradeSkill(skillNode));
+            skillNode.onNodeClicked.AddListener(() => TryUnlockOrUpgradeSkill(skillNode));
             // if (!skills.ContainsKey(skillName))
             // {
             //     continue;

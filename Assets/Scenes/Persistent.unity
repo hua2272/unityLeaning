@@ -1469,7 +1469,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a593577a1eb0a343ad97613bd1898f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterState: {fileID: 1142823687}
   slotEffects: {fileID: 884808523}
   obtainedWeapons:
   - {fileID: 11400000, guid: d9431e9d38e12f34d9584ef2d539ed23, type: 2}
@@ -3207,22 +3206,10 @@ MonoBehaviour:
   stamina:
     baseValue: 0
     modifiers: 
-  extraHealth:
-    baseValue: 0
-    modifiers: 
-  extraStamina:
-    baseValue: 0
-    modifiers: 
   experiencePoints:
     baseValue: 0
     modifiers: 
-  skillPoints:
-    baseValue: 0
-    modifiers: 
   armor:
-    baseValue: 0
-    modifiers: 
-  evasion:
     baseValue: 0
     modifiers: 
   damage:
@@ -3231,8 +3218,10 @@ MonoBehaviour:
   damagesSpeed:
     baseValue: 0
     modifiers: 
-  weaponAttack: 0
   currentHealth: 0
+  onHealthChange:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!70 &473150280
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -3518,8 +3507,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 2.82, y: 3.81}
-  m_SizeDelta: {x: 233.58, y: 38.74}
+  m_AnchoredPosition: {x: 2.82, y: 4.83}
+  m_SizeDelta: {x: 233.58, y: 36.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &537220758
 MonoBehaviour:
@@ -4758,7 +4747,7 @@ MonoBehaviour:
   upgradeCosts: 01000000020000000400000005000000
   upgradeEffect: 6e000000700000007300000078000000
   requiredSkills: []
-  OnNodeClicked:
+  onNodeClicked:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &735536995
@@ -6570,7 +6559,7 @@ GameObject:
   m_Component:
   - component: {fileID: 926729487}
   m_Layer: 0
-  m_Name: ground
+  m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7775,6 +7764,9 @@ MonoBehaviour:
     modifiers: 
   weaponAttack: 0
   currentHealth: 0
+  onHealthChange:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &1142823688
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8514,7 +8506,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1230273213}
   m_Layer: 0
-  m_Name: dialogue
+  m_Name: Dialogue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10198,7 +10190,7 @@ MonoBehaviour:
   upgradeCosts: 0100000002000000
   upgradeEffect: 6e00000070000000
   requiredSkills: []
-  OnNodeClicked:
+  onNodeClicked:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &1627295129
@@ -12259,8 +12251,8 @@ SceneRoots:
   - {fileID: 1956940237}
   - {fileID: 926729487}
   - {fileID: 23064363}
-  - {fileID: 1142823683}
   - {fileID: 1085764286}
+  - {fileID: 1142823683}
   - {fileID: 473150274}
   - {fileID: 860163267}
   - {fileID: 942119512}

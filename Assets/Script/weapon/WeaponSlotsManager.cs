@@ -8,10 +8,10 @@ public class WeaponSlotsManager : MonoBehaviour
 {
     public static WeaponSlotsManager instance;
     private GameDataManager gameDataManager;
+    private PlayerManager playerManager;
     
     private Dictionary<int, WeaponSlotUI> slots = new Dictionary<int, WeaponSlotUI>();  //所有格子的引用
     private bool isInitialized = false;
-    public CharacterState characterState;                                               //玩家数值
     public SlotEffectsManager slotEffects;                                              //格子特效
     
     [Header("武器加载")] 
@@ -27,7 +27,7 @@ public class WeaponSlotsManager : MonoBehaviour
         else
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
     }
     
@@ -50,6 +50,7 @@ public class WeaponSlotsManager : MonoBehaviour
     public void Start()
     {
         gameDataManager = GameDataManager.instance;
+        playerManager = PlayerManager.instance;
         // if (gameDataManager != null)
         // {
         //     equippedSlotId = gameDataManager.equippedSlotId;
@@ -115,7 +116,7 @@ public class WeaponSlotsManager : MonoBehaviour
             }
             slots[slotId].UpdateEquippedState(true);                                        //装备现在的武器
             WeaponData currentWeapon = slots[slotId].GetCurrentWeapon();
-            characterState.SetWeaponAttack(currentWeapon.damage);
+            playerManager.playerStatus.weaponAttack = currentWeapon.damage;
             gameDataManager.equippedSlotId = slotId;
             Debug.LogError("当前武器伤害：" + currentWeapon.damage);
         }

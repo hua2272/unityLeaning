@@ -19,7 +19,7 @@ public class Enemy_SkeletonAnimationTriggers : MonoBehaviour
             if (hit.GetComponent<Player>() != null)
             {
                 PlayerStatus target = hit.GetComponent<PlayerStatus>();
-                enemy.status.DoDamage(target);
+                enemy.enemyStatus.DoDamage(target);
             }
         }
     }

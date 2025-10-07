@@ -15,7 +15,7 @@ public class SkillNodeUI : MonoBehaviour, IPointerClickHandler
     public List<int> upgradeEffect;                     //每次升级带来的效果
     public List<string> requiredSkills;                 //需要先解锁的技能列表
     
-    [HideInInspector] public UnityEvent OnNodeClicked;
+    [HideInInspector] public UnityEvent onNodeClicked;
     
     private void Start()
     {
@@ -24,7 +24,7 @@ public class SkillNodeUI : MonoBehaviour, IPointerClickHandler
     
     public void OnPointerClick(PointerEventData eventData)
     {
-        OnNodeClicked?.Invoke();
+        onNodeClicked?.Invoke();
     }
     
     // 更新UI显示
