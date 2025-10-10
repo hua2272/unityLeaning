@@ -7,6 +7,7 @@ public class PlayerState
     protected PlayerStateMachine stateMachine;
     protected Player player;
     protected Rigidbody2D rb;
+    protected PlayerEffectManager playerEffectManager;
     
     protected float xInput;
     protected float yInput;
@@ -27,6 +28,7 @@ public class PlayerState
         player.anim.SetBool(animBoolName, true);
         rb = player.rb;
         triggerCalled = false;
+        playerEffectManager = PlayerEffectManager.instance;
     }
     
     public virtual void Update()
