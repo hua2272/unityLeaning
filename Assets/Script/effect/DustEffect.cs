@@ -8,11 +8,13 @@ public class DustEffect : MonoBehaviour
     public Animator dustEffectsAnimator { get; private set; }
     private Player player;
     public Vector3 positionOffset;
+    private bool isActive = false;
 
     private void Start()
     {
         dustEffectsAnimator = GetComponent<Animator>();
         player = PlayerManager.instance.player;
+        gameObject.SetActive(false);
     }
     
     private void Update()
@@ -35,11 +37,28 @@ public class DustEffect : MonoBehaviour
 
     public void StartDust()
     {
-        dustEffectsAnimator.SetTrigger("StartDust");
+        if (!isActive)
+        {
+            gameObject.SetActive(true);
+            isActive = true;
+            dustEffectsAnimator.SetTrigger("StartDust");
+        }
     }
     
     public void StopDust()
     {
-        dustEffectsAnimator.SetTrigger("StopDust");
+        if (isActive)
+        {
+            isActive = false;
+            //dustEffectsAnimator.SetTrigger("StopDust");
+            StartCoroutine(DeactivateAfterAnimation());                                                    //延迟关闭，确保停止动画播放完成
+        }
+    }
+    
+    private IEnumerator DeactivateAfterAnimation()
+    {
+        yield return null;                                                                                       //等待一帧确保动画状态已切换
+        yield return new WaitForSeconds(dustEffectsAnimator.GetCurrentAnimatorStateInfo(0).length);     //等待当前动画播放完成
+        gameObject.SetActive(false);
     }
 }
