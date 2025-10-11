@@ -22,12 +22,22 @@ public class PlayerStatus : MonoBehaviour
     
     private Player player => GetComponent<Player>();
     
+    [Header("Health Recovery")]
     public int currentHealth;
     [HideInInspector] public UnityEvent onHealthChange;
+    
+    [Header("Stamina Recovery")]
+    public int currentStamina;
+    public float staminaRecoveryRate = 5f;                      //耐力恢复速率（每秒恢复量）
+    public float staminaRecoveryDelay = 2f;                     //停止消耗耐力后开始恢复的延迟时间
+    private float lastStaminaUseTime;                           //最后一次使用耐力的时间
+    private bool isRecoveringStamina = false;                   //是否正在恢复耐力
+    [HideInInspector] public UnityEvent onStaminaChange;
     
     public void Start()
     {
         currentHealth = health.getValue() + extraHealth.getValue();
+        StartCoroutine(StaminaRecoveryRoutine());
     }
 
     public void TakeDamage(int damage)
@@ -49,5 +59,34 @@ public class PlayerStatus : MonoBehaviour
     public void Die()
     {
         player.Die();
+    }
+    
+    
+    private IEnumerator StaminaRecoveryRoutine()                                                //耐力恢复协程
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(0.1f);                                              //每0.1秒检查一次
+            
+            if (currentStamina < stamina.getValue())
+            {
+                if (Time.time - lastStaminaUseTime >= staminaRecoveryDelay)                     //检查是否过了恢复延迟时间
+                {
+                    isRecoveringStamina = true;
+                    float recoveryAmount = staminaRecoveryRate * 0.1f;                          //计划回复量
+                    int staminaDeficit = stamina.getValue() - currentStamina;                   //当前精力值与最大精力值的差值
+                    if (staminaDeficit > 0)
+                    {
+                        int amountToRecover = Mathf.Min((int)recoveryAmount, staminaDeficit);   //取差值和计划回复量的较小值
+                        currentStamina = stamina.getValue() + amountToRecover;
+                    }
+                    onStaminaChange?.Invoke();
+                }
+            }
+            else
+            {
+                isRecoveringStamina = false;
+            }
+        }
     }
 }
