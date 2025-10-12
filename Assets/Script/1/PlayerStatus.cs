@@ -28,8 +28,8 @@ public class PlayerStatus : MonoBehaviour
     
     [Header("Stamina Recovery")]
     public int currentStamina;
-    public float staminaRecoveryRate = 5f;                      //耐力恢复速率（每秒恢复量）
-    public float staminaRecoveryDelay = 2f;                     //停止消耗耐力后开始恢复的延迟时间
+    private float staminaRecoveryRate = 2f;                      //耐力恢复速率（每秒恢复量）
+    private float staminaRecoveryDelay = 1f;                     //停止消耗耐力后开始恢复的延迟时间
     private float lastStaminaUseTime;                           //最后一次使用耐力的时间
     private bool isRecoveringStamina = false;                   //是否正在恢复耐力
     [HideInInspector] public UnityEvent onStaminaChange;
@@ -37,17 +37,17 @@ public class PlayerStatus : MonoBehaviour
     public void Start()
     {
         currentHealth = health.getValue() + extraHealth.getValue();
+        currentStamina = stamina.getValue() + extraStamina.getValue();
         StartCoroutine(StaminaRecoveryRoutine());
     }
 
     public void TakeDamage(int damage)
     {
-        currentHealth -= damage;       //计算生命值
-        onHealthChange?.Invoke();       //触发订阅事件（更新血条
-        if (currentHealth < 0) 
-            Die();
-        
+        currentHealth -= damage;
+        onHealthChange?.Invoke();
         player.DamageEffect();
+        if (currentHealth < 0) 
+            player.Die();
     }
 
     public void DoDamage(EnemyStatus enemyStatus)
@@ -55,30 +55,34 @@ public class PlayerStatus : MonoBehaviour
         int totalDamage = Mathf.Clamp(weaponAttack + damage.getValue() - enemyStatus.armor.getValue(), 0, int.MaxValue); //护甲值过大会导致伤害为负数
         enemyStatus.TakeDamage(totalDamage);
     }
-
-    public void Die()
-    {
-        player.Die();
-    }
     
+    public void UseStamina(int amount)                                                          //若不更新时间戳则会立即恢复耐力
+    {
+        if (currentStamina >= amount)
+        {
+            currentStamina -= amount;
+            lastStaminaUseTime = Time.time;
+            onStaminaChange?.Invoke();
+        }
+    }
     
     private IEnumerator StaminaRecoveryRoutine()                                                //耐力恢复协程
     {
         while (true)
         {
             yield return new WaitForSeconds(0.1f);                                              //每0.1秒检查一次
-            
-            if (currentStamina < stamina.getValue())
+            int maxStamina = stamina.getValue() + extraStamina.getValue();
+            if (currentStamina < maxStamina)
             {
                 if (Time.time - lastStaminaUseTime >= staminaRecoveryDelay)                     //检查是否过了恢复延迟时间
                 {
                     isRecoveringStamina = true;
-                    float recoveryAmount = staminaRecoveryRate * 0.1f;                          //计划回复量
-                    int staminaDeficit = stamina.getValue() - currentStamina;                   //当前精力值与最大精力值的差值
+                    float recoveryAmount = staminaRecoveryRate;                                 //计划回复量
+                    int staminaDeficit = maxStamina - currentStamina;                           //当前精力值与最大精力值的差值
                     if (staminaDeficit > 0)
                     {
-                        int amountToRecover = Mathf.Min((int)recoveryAmount, staminaDeficit);   //取差值和计划回复量的较小值
-                        currentStamina = stamina.getValue() + amountToRecover;
+                        int amountToRecover = Mathf.Min((int)recoveryAmount, staminaDeficit);   //取差值和计划回复量的较小值（禁止出现浮点数）
+                        currentStamina += amountToRecover;
                     }
                     onStaminaChange?.Invoke();
                 }

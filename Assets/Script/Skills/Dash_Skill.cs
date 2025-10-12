@@ -12,6 +12,7 @@ public class Dash_Skill : Skill
     {
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
+            player.playerStatus.UseStamina(20);
             player.dashDir = player.dashDir == 0 ? player.facingDir : Input.GetAxisRaw("Horizontal");
             player.stateMachine.ChangeState(player.dashState);
         }
