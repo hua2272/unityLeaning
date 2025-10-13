@@ -25,7 +25,7 @@ public class PlayerMoverState : PlayerGroundedState
     {
         base.Update();
         player.SetVelocity(xInput * player.moveSpeed, rb.velocity.y);
-        playerEffectManager.dustEffect.StartDust();
+        playerEffectManager.dustEffect.StartDust(player.transform.position, player.facingDir);
         
         if (xInput == 0 || player.isWallDetected())
         {

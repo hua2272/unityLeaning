@@ -7,6 +7,7 @@ public class PlayerEffectManager : MonoBehaviour
 {
     public static PlayerEffectManager instance;
     public DustEffect dustEffect;
+    public ScreenEffect screenEffect;
     
     private void Awake()
     {

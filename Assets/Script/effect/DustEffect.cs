@@ -6,39 +6,27 @@ using UnityEngine;
 public class DustEffect : MonoBehaviour
 {
     public Animator dustEffectsAnimator { get; private set; }
-    private Player player;
+    
     public Vector3 positionOffset;
     private bool isActive = false;
 
     private void Start()
     {
         dustEffectsAnimator = GetComponent<Animator>();
-        player = PlayerManager.instance.player;
-        gameObject.SetActive(false);
-    }
-    
-    private void Update()
-    {
-        // 计算偏移：水平偏移根据Player的朝向，垂直偏移不变
-        Vector3 offset = new Vector3(positionOffset.x * player.facingDir, positionOffset.y, positionOffset.z);
-        
-        // 更新位置：Player的位置加上偏移
-        transform.position = player.transform.position + offset;
-        
-        if (player.facingDir < 0)
-        {
-            transform.localScale = new Vector3(-1, 1, 1);
-        }
-        else
-        {
-            transform.localScale = Vector3.one;
-        }
     }
 
-    public void StartDust()
+    public void StartDust(Vector3 position, int facingDir)
     {
         if (!isActive)
         {
+            Vector3 offset = new Vector3(positionOffset.x * facingDir, positionOffset.y, positionOffset.z);     //计算偏移：水平偏移根据Player的朝向，垂直偏移不变
+            transform.position = position + offset;                                                             //更新位置：Player的位置加上偏移
+        
+            if (facingDir < 0)
+                transform.localScale = new Vector3(-1, 1, 1);
+            else
+                transform.localScale = Vector3.one;
+            
             gameObject.SetActive(true);
             isActive = true;
             dustEffectsAnimator.SetTrigger("StartDust");

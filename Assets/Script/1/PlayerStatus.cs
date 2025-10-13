@@ -21,6 +21,7 @@ public class PlayerStatus : MonoBehaviour
     public int weaponAttack = 0;
     
     private Player player => GetComponent<Player>();
+    private PlayerEffectManager playerEffectManager;
     
     [Header("Health Recovery")]
     public int currentHealth;
@@ -39,12 +40,14 @@ public class PlayerStatus : MonoBehaviour
         currentHealth = health.getValue() + extraHealth.getValue();
         currentStamina = stamina.getValue() + extraStamina.getValue();
         StartCoroutine(StaminaRecoveryRoutine());
+        playerEffectManager = PlayerEffectManager.instance;
     }
 
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
         onHealthChange?.Invoke();
+        playerEffectManager.screenEffect.CameraShakeEffect();
         player.DamageEffect();
         if (currentHealth < 0) 
             player.Die();

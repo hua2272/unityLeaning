@@ -27,13 +27,13 @@ public class EnemyStatus : MonoBehaviour
     
     public void DoDamage(PlayerStatus playerStatus)
     {
-        int totalDamage = Mathf.Clamp(damage.getValue() - playerStatus.armor.getValue(), 0, int.MaxValue); //护甲值过大会导致伤害为负数
+        int totalDamage = Mathf.Clamp(damage.getValue() - playerStatus.armor.getValue(), 0, int.MaxValue);
         playerStatus.TakeDamage(totalDamage);
     }
     
     public void TakeDamage(int damage)
     {
-        currentHealth -= damage;       //计算生命值
+        currentHealth -= damage;        //计算生命值
         onHealthChange?.Invoke();       //触发订阅事件（更新血条
         if (currentHealth < 0) 
             Die();

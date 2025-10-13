@@ -117,8 +117,5 @@ public class Entity : MonoBehaviour
     
     #endregion
 
-    public virtual void Die()
-    {
-        // todo 敌人停止攻击
-    }
+    public virtual void Die() {}
 }
