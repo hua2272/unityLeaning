@@ -7,8 +7,7 @@ public class EnemyStatus : MonoBehaviour
 {
     [Header("Major state")]
     public Status health;
-    public Status stamina;                      //耐力
-    public Status experiencePoints;             //经验点
+    public Status stamina;
     
     [Header("Defense / Offence")]
     public Status armor;
@@ -17,8 +16,14 @@ public class EnemyStatus : MonoBehaviour
     
     private Enemy enemy => GetComponent<Enemy>();
     
+    [Header("Health Recovery")]
     public int currentHealth;
     [HideInInspector] public UnityEvent onHealthChange;
+    
+    [Header("经验值掉落")]
+    public GameObject expOrbPrefab;
+    public int expOrbCount = 3;                                     //掉落的粒子数量
+    public int expPerOrb = 5;                                       //每个粒子的经验值
     
     public void Start()
     {
@@ -33,16 +38,27 @@ public class EnemyStatus : MonoBehaviour
     
     public void TakeDamage(int damage)
     {
-        currentHealth -= damage;        //计算生命值
-        onHealthChange?.Invoke();       //触发订阅事件（更新血条
-        if (currentHealth < 0) 
-            Die();
+        currentHealth -= damage;
+        onHealthChange?.Invoke();
         enemy.DamageEffect();
+        if (currentHealth < 0)
+        {
+            enemy.Die();
+            DropExp();
+        }
     }
 
-    public void Die()
+    void DropExp()
     {
-        enemy.Die();
-        // todo 掉落物品 GetComponent<ItemDropper>().DropItemsOnDeath();
+        if (expOrbPrefab ==null) return;
+        for (int i = 0; i < expOrbCount; i++)
+        {
+            GameObject orb = Instantiate(expOrbPrefab, transform.position, Quaternion.identity);
+            ExperienceOrb expOrb = orb.GetComponent<ExperienceOrb>();
+            if (expOrb != null)
+            {
+                expOrb.expValue = expPerOrb;
+            }
+        }
     }
 }

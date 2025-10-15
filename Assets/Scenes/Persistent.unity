@@ -3405,12 +3405,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health:
-    baseValue: 100
+    baseValue: 7
     modifiers: 
   stamina:
-    baseValue: 0
-    modifiers: 
-  experiencePoints:
     baseValue: 0
     modifiers: 
   armor:
@@ -3426,6 +3423,9 @@ MonoBehaviour:
   onHealthChange:
     m_PersistentCalls:
       m_Calls: []
+  expOrbPrefab: {fileID: 1574606414168825294, guid: da6c050853ed81e42889c86e945a800e, type: 3}
+  expOrbCount: 3
+  expPerOrb: 5
 --- !u!70 &473150280
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -7819,12 +7819,8 @@ MonoBehaviour:
   extraStamina:
     baseValue: 0
     modifiers: 
-  experiencePoints:
-    baseValue: 0
-    modifiers: 
-  skillPoints:
-    baseValue: 25
-    modifiers: 
+  experiencePoints: 0
+  skillPoints: 0
   armor:
     baseValue: 0
     modifiers: 
@@ -12343,6 +12339,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2131868993}
   m_CullTransparentMesh: 1
+--- !u!1001 &5942411961466372813
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 435810081278025427, guid: da6c050853ed81e42889c86e945a800e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 22.96
+      objectReference: {fileID: 0}
+    - target: {fileID: 435810081278025427, guid: da6c050853ed81e42889c86e945a800e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.78
+      objectReference: {fileID: 0}
+    - target: {fileID: 435810081278025427, guid: da6c050853ed81e42889c86e945a800e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 435810081278025427, guid: da6c050853ed81e42889c86e945a800e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 435810081278025427, guid: da6c050853ed81e42889c86e945a800e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 435810081278025427, guid: da6c050853ed81e42889c86e945a800e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 435810081278025427, guid: da6c050853ed81e42889c86e945a800e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 435810081278025427, guid: da6c050853ed81e42889c86e945a800e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 435810081278025427, guid: da6c050853ed81e42889c86e945a800e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 435810081278025427, guid: da6c050853ed81e42889c86e945a800e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1574606414168825294, guid: da6c050853ed81e42889c86e945a800e, type: 3}
+      propertyPath: m_Name
+      value: EXP
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: da6c050853ed81e42889c86e945a800e, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -12365,3 +12418,4 @@ SceneRoots:
   - {fileID: 1335408445}
   - {fileID: 1840562114}
   - {fileID: 1990108852}
+  - {fileID: 5942411961466372813}

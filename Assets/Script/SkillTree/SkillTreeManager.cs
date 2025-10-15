@@ -75,7 +75,7 @@ public class SkillTreeManager : MonoBehaviour
             return;
         }
 
-        int availableSkillPoints = playerStatus.skillPoints.getValue();
+        int availableSkillPoints = playerStatus.skillPoints;
         int upgradeCost = skillNodeUI.upgradeCosts[skillNodeUI.currentLevel];
         if (upgradeCost > availableSkillPoints)
         {
@@ -91,7 +91,7 @@ public class SkillTreeManager : MonoBehaviour
             Debug.Log("前置技能未解锁");
             return;
         }
-        playerStatus.skillPoints.setValue(availableSkillPoints - upgradeCost);
+        playerStatus.skillPoints = availableSkillPoints - upgradeCost;
         skillNodeUI.currentLevel++;
         UpdateSkillNode(skillNodeUI.skillName, skillNodeUI);
         
