@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -10,8 +9,8 @@ public class PlayerStatus : MonoBehaviour
     public Status stamina;                      //耐力
     public Status extraHealth;
     public Status extraStamina;
-    public int experiencePoints;             //经验点
-    public int skillPoints;                  //技能点
+    public int experiencePoints;                //经验点
+    public int skillPoints;                     //技能点
     
     [Header("Defense / Offence")]
     public Status armor;
@@ -29,10 +28,10 @@ public class PlayerStatus : MonoBehaviour
     
     [Header("Stamina Recovery")]
     public int currentStamina;
-    private float staminaRecoveryRate = 2f;                      //耐力恢复速率（每秒恢复量）
-    private float staminaRecoveryDelay = 1f;                     //停止消耗耐力后开始恢复的延迟时间
-    private float lastStaminaUseTime;                           //最后一次使用耐力的时间
-    private bool isRecoveringStamina = false;                   //是否正在恢复耐力
+    private float staminaRecoveryRate = 2f;                               //耐力恢复速率（每秒恢复量）
+    private float staminaRecoveryDelay = 1f;                              //停止消耗耐力后开始恢复的延迟时间
+    private float lastStaminaUseTime;                                     //最后一次使用耐力的时间
+    private bool isRecoveringStamina = false;                             //是否正在恢复耐力
     [HideInInspector] public UnityEvent onStaminaChange;
     
     public void Start()
@@ -94,6 +93,20 @@ public class PlayerStatus : MonoBehaviour
             {
                 isRecoveringStamina = false;
             }
+        }
+    }
+    
+    // 处理经验值获得的方法
+    public void HandleExperienceGained(int exp)
+    {
+        experiencePoints += exp;
+        Debug.Log($"获得 {exp} 经验值！");
+        // 检查并转换经验值为技能点，每1000点经验值转换为1点技能点
+        while (experiencePoints >= 1000)
+        {
+            skillPoints += 1;
+            experiencePoints -= 1000;
+            Debug.Log($"获得 1 点技能点！当前技能点: {skillPoints}");
         }
     }
 }

@@ -4,9 +4,9 @@ using UnityEngine;
 public class Player : Entity
 {
     public bool isBusy { get; private set; }
-    public SkillManager skill { get; private set; }
     public GameObject sword { get; private set; }
     [SerializeField] private DeathMenuController deathMenu;
+    public CustomInputSystem customInputSystem;
     
     #region State
     public PlayerStateMachine stateMachine { get; private set; }
@@ -61,9 +61,9 @@ public class Player : Entity
     protected override void Start()
     {
         base.Start();
-        skill = SkillManager.instance;
         stateMachine.Initialize(idleState);
         npcDetector = GetComponent<PlayerNPCDetector>();
+        customInputSystem = CustomInputSystem.instance;
     }
 
     protected override void Update()

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Events;
 using UnityEngine.Rendering.Universal;
 
 public class ExperienceOrb : MonoBehaviour
@@ -109,7 +110,7 @@ public class ExperienceOrb : MonoBehaviour
     
     void CollectExperience()
     {
-        player.playerStatus.experiencePoints += expValue;       //通知玩家获得经验值
+        player.playerStatus.HandleExperienceGained(expValue);   //通知玩家获得经验值
         PlayCollectionEffect();                                 //播放收集效果
         Destroy(gameObject);                                    //销毁粒子
     }
@@ -131,7 +132,6 @@ public class ExperienceOrb : MonoBehaviour
         
         // 自动销毁特效
         Destroy(effect, 1f);
-        Debug.Log($"获得 {expValue} 经验值！");
     }
     
     // 可视化吸引范围（仅在编辑器中显示）
