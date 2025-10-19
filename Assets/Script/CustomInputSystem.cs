@@ -41,7 +41,7 @@ public class CustomInputSystem : MonoBehaviour
     
     private Dictionary<string, InputAction> actionMap = new Dictionary<string, InputAction>();
     private float lastGamepadCheckTime;
-    private bool isRebinding = false;
+    public bool isRebinding = false;
     private string rebindingAction;
     private bool rebindingForKeyboard;
     private Coroutine rebindingCoroutine;
@@ -51,7 +51,6 @@ public class CustomInputSystem : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            Debug.Log("CustomInputSystem Awake");
             //DontDestroyOnLoad(gameObject);
             InitializeInputSystem();
         }
@@ -64,7 +63,6 @@ public class CustomInputSystem : MonoBehaviour
     void Update()
     {
         DetectInputDevice();
-        
         if (isRebinding)
         {
             ProcessRebinding();
@@ -76,29 +74,22 @@ public class CustomInputSystem : MonoBehaviour
         // 创建默认输入映射
         if (inputActions.Count == 0)
         {
-            CreateDefaultInputActions();
+            inputActions.Add(new InputAction("MoveUp", KeyCode.W, "DPadUp"));
+            inputActions.Add(new InputAction("MoveDown", KeyCode.S, "DPadDown"));
+            inputActions.Add(new InputAction("MoveLeft", KeyCode.A, "DPadLeft"));
+            inputActions.Add(new InputAction("MoveRight", KeyCode.D, "DPadRight"));
+            inputActions.Add(new InputAction("Jump", KeyCode.Space, "ButtonSouth"));
+            inputActions.Add(new InputAction("Attack", KeyCode.Mouse0, "ButtonWest"));
+            inputActions.Add(new InputAction("Interact", KeyCode.E, "ButtonEast"));
+            inputActions.Add(new InputAction("Menu", KeyCode.Escape, "ButtonStart"));
         }
-        
         // 构建快速查找字典
         foreach (var action in inputActions)
         {
             actionMap[action.actionName] = action;
         }
-        
         // 加载保存的按键设置
         LoadKeyBindings();
-    }
-    
-    void CreateDefaultInputActions()
-    {
-        inputActions.Add(new InputAction("MoveUp", KeyCode.W, "DPadUp"));
-        inputActions.Add(new InputAction("MoveDown", KeyCode.S, "DPadDown"));
-        inputActions.Add(new InputAction("MoveLeft", KeyCode.A, "DPadLeft"));
-        inputActions.Add(new InputAction("MoveRight", KeyCode.D, "DPadRight"));
-        inputActions.Add(new InputAction("Jump", KeyCode.Space, "ButtonSouth"));
-        inputActions.Add(new InputAction("Attack", KeyCode.Mouse0, "ButtonWest"));
-        inputActions.Add(new InputAction("Interact", KeyCode.E, "ButtonEast"));
-        inputActions.Add(new InputAction("Menu", KeyCode.Escape, "ButtonStart"));
     }
     
     void DetectInputDevice()
@@ -183,11 +174,15 @@ public class CustomInputSystem : MonoBehaviour
             Debug.LogWarning($"Input action '{actionName}' not found!");
             return false;
         }
-        
         var action = actionMap[actionName];
         
         if (currentDevice == InputDevice.Keyboard)
         {
+            // Debug.Log("Keyboard Input: " + actionName );
+            // if (Input.GetKey(action.currentKeyboardKey))
+            // {
+            //     Debug.Log("xxxx: " );
+            // }
             return Input.GetKey(action.currentKeyboardKey);
         }
         else
@@ -203,7 +198,6 @@ public class CustomInputSystem : MonoBehaviour
             Debug.LogWarning($"Input action '{actionName}' not found!");
             return false;
         }
-        
         var action = actionMap[actionName];
         
         if (currentDevice == InputDevice.Keyboard)
@@ -406,7 +400,7 @@ public class CustomInputSystem : MonoBehaviour
     
     #region 数据持久化
     
-    void SaveKeyBindings()
+    public void SaveKeyBindings()
     {
         foreach (var action in inputActions)
         {
@@ -416,7 +410,7 @@ public class CustomInputSystem : MonoBehaviour
         PlayerPrefs.Save();
     }
     
-    void LoadKeyBindings()
+    public void LoadKeyBindings()
     {
         foreach (var action in inputActions)
         {
