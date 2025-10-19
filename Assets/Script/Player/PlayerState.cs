@@ -33,7 +33,8 @@ public class PlayerState
     
     public virtual void Update()
     {
-        Vector2 movement = player.customInputSystem.GetMovementAxis();
+        // Vector2 movement = player.customInputSystem.GetMovementAxis();
+        Vector2 movement = CustomInputSystem.instance.GetMovementAxis();
         xInput = movement.x;
         yInput = movement.y;
         stateTimer -= Time.deltaTime;

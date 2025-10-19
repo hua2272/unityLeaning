@@ -7,7 +7,7 @@ public class CustomInputSystem : MonoBehaviour
 {
     public static CustomInputSystem instance { get; private set; }
     
-    [System.Serializable] public class InputAction
+    [Serializable] public class InputAction
     {
         public string actionName;
         public KeyCode defaultKeyboardKey;
@@ -48,6 +48,7 @@ public class CustomInputSystem : MonoBehaviour
     
     void Awake()
     {
+        Debug.unityLogger.Log("-------CustomInputSystem instance-------");
         if (instance == null)
         {
             instance = this;

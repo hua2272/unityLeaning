@@ -16,19 +16,17 @@ public class GameSaveManager : MonoBehaviour
     private PlayerStatus playerStatus;
     private GameData currentGameData = new GameData();
     
-    
     private void Awake()
     {
         Debug.Log("-------GameSaveManager instance------->");
         if (instance != null)
         {
-            // Destroy(instance.gameObject);
             Destroy(gameObject);
         }
         else
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
     }
     
