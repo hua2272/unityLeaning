@@ -7,13 +7,14 @@ public class SystemManager : MonoBehaviour
     
     [Header("UI References")]
     [SerializeField] private GameObject panel; // 总面板
-    [SerializeField] private GameObject[] tabPanels; // 各个页签对应的面板
-    [SerializeField] private Button[] tabButtons; // 页签按钮
+    [SerializeField] private GameObject mainPanel; // 主要面板
+    [SerializeField] private GameObject[] subPanels; // 二级面板
     
-    [Header("Tab Settings")]
-    [SerializeField] private int defaultTabIndex = 0; // 默认打开的页签
+    [Header("Navigation Settings")]
+    [SerializeField] private int defaultSubPanelIndex = 0; // 默认二级面板索引
     
-    private int currentTabIndex = 0;
+    private int currentSubPanelIndex = -1; // -1表示在主面板
+    private bool isInSubPanel = false;
 
     private void Awake()
     {
@@ -25,35 +26,45 @@ public class SystemManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        InitializeTabs();
+        InitializePanels();
     }
 
-    private void InitializeTabs()
+    private void InitializePanels()
     {
-        // 初始化所有页签面板为未激活状态
-        foreach (var tabPanel in tabPanels)
+        // 初始化所有面板为未激活状态
+        if (mainPanel != null)
+            mainPanel.SetActive(false);
+            
+        foreach (var subPanel in subPanels)
         {
-            if (tabPanel != null)
-                tabPanel.SetActive(false);
-        }
-        
-        // 绑定按钮点击事件
-        for (int i = 0; i < tabButtons.Length; i++)
-        {
-            int tabIndex = i; // 重要：创建局部变量避免闭包问题
-            if (tabButtons[i] != null)
-            {
-                tabButtons[i].onClick.AddListener(() => OnTabButtonClicked(tabIndex));
-            }
+            if (subPanel != null)
+                subPanel.SetActive(false);
         }
         
         panel.SetActive(false);
+        isInSubPanel = false;
+        currentSubPanelIndex = -1;
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+            HandleEscapeKey();
+        }
+    }
+
+    // 处理ESC键逻辑
+    private void HandleEscapeKey()
+    {
+        if (isInSubPanel)
+        {
+            // 如果在二级面板，返回主面板
+            ReturnToMainPanel();
+        }
+        else
+        {
+            // 如果在主面板，切换系统面板显示/隐藏
             ToggleSystemPanel();
         }
     }
@@ -65,70 +76,59 @@ public class SystemManager : MonoBehaviour
         panel.SetActive(isActive);
         Time.timeScale = isActive ? 0 : 1;
         
-        // 如果打开面板，显示默认页签
-        if (isActive && !IsAnyTabActive())
+        // 如果打开面板，显示主面板
+        if (isActive)
         {
-            SwitchTab(defaultTabIndex);
+            ShowMainPanel();
+        }
+        else
+        {
+            // 关闭面板时重置状态
+            isInSubPanel = false;
+            currentSubPanelIndex = -1;
         }
     }
 
-    // 检查是否有任何页签是激活状态
-    private bool IsAnyTabActive()
+    // 显示主面板
+    public void ShowMainPanel()
     {
-        foreach (var tabPanel in tabPanels)
+        // 隐藏所有二级面板
+        foreach (var subPanel in subPanels)
         {
-            if (tabPanel != null && tabPanel.activeSelf)
-                return true;
-        }
-        return false;
-    }
-
-    // 页签按钮点击事件
-    private void OnTabButtonClicked(int tabIndex)
-    {
-        SwitchTab(tabIndex);
-    }
-
-    // 切换页签
-    public void SwitchTab(int tabIndex)
-    {
-        if (tabIndex < 0 || tabIndex >= tabPanels.Length) return;
-        
-        // 隐藏所有页签面板
-        for (int i = 0; i < tabPanels.Length; i++)
-        {
-            if (tabPanels[i] != null)
-                tabPanels[i].SetActive(false);
+            if (subPanel != null)
+                subPanel.SetActive(false);
         }
         
-        // 显示选中的页签面板
-        if (tabPanels[tabIndex] != null)
-        {
-            tabPanels[tabIndex].SetActive(true);
-            currentTabIndex = tabIndex;
+        // 显示主面板
+        if (mainPanel != null)
+            mainPanel.SetActive(true);
             
-            // 更新按钮状态
-            UpdateTabButtonsVisual(tabIndex);
+        isInSubPanel = false;
+        currentSubPanelIndex = -1;
+    }
+
+    // 进入二级面板
+    public void EnterSubPanel(int subPanelIndex)
+    {
+        if (subPanelIndex < 0 || subPanelIndex >= subPanels.Length) return;
+        
+        // 隐藏主面板
+        if (mainPanel != null)
+            mainPanel.SetActive(false);
+        
+        // 显示指定的二级面板
+        if (subPanels[subPanelIndex] != null)
+        {
+            subPanels[subPanelIndex].SetActive(true);
+            currentSubPanelIndex = subPanelIndex;
+            isInSubPanel = true;
         }
     }
 
-    // 更新页签按钮的视觉状态
-    private void UpdateTabButtonsVisual(int activeTabIndex)
+    // 返回到主面板
+    public void ReturnToMainPanel()
     {
-        for (int i = 0; i < tabButtons.Length; i++)
-        {
-            if (tabButtons[i] != null)
-            {
-                // 改变按钮颜色来显示激活状态
-                var colors = tabButtons[i].colors;
-                colors.normalColor = (i == activeTabIndex) ? Color.white : Color.gray;
-                tabButtons[i].colors = colors;
-                
-                // 可选：改变按钮的缩放
-                tabButtons[i].transform.localScale = (i == activeTabIndex) ? 
-                    Vector3.one * 1.1f : Vector3.one;
-            }
-        }
+        ShowMainPanel();
     }
 
     // 关闭系统面板
@@ -136,11 +136,21 @@ public class SystemManager : MonoBehaviour
     {
         panel.SetActive(false);
         Time.timeScale = 1;
+        
+        // 重置状态
+        isInSubPanel = false;
+        currentSubPanelIndex = -1;
     }
 
-    // 获取当前激活的页签索引
-    public int GetCurrentTabIndex()
+    // 获取当前是否在二级面板
+    public bool IsInSubPanel()
     {
-        return currentTabIndex;
+        return isInSubPanel;
+    }
+
+    // 获取当前二级面板索引
+    public int GetCurrentSubPanelIndex()
+    {
+        return currentSubPanelIndex;
     }
 }
