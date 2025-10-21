@@ -8562,6 +8562,7 @@ GameObject:
   - component: {fileID: 904143192}
   - component: {fileID: 904143191}
   - component: {fileID: 904143190}
+  - component: {fileID: 904143193}
   m_Layer: 5
   m_Name: Button_Screen
   m_TagString: Untagged
@@ -8683,6 +8684,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 904143188}
   m_CullTransparentMesh: 1
+--- !u!114 &904143193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904143188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4824efad0ef2fe846a7fd06ef228fcdb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  optionText: {fileID: 425102887}
+  options:
+  - displayText: full screen
+  - displayText: window
+  defaultOptionIndex: 0
 --- !u!1 &907389755
 GameObject:
   m_ObjectHideFlags: 0
@@ -12479,6 +12497,8 @@ MonoBehaviour:
   subPanels:
   - {fileID: 620992316}
   defaultSubPanelIndex: 0
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  selectedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!1 &1335546926
 GameObject:
   m_ObjectHideFlags: 0
@@ -17224,6 +17244,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 735536998}
+  - {fileID: 1840562114}
   - {fileID: 1956940237}
   - {fileID: 926729487}
   - {fileID: 23064363}
@@ -17239,6 +17260,5 @@ SceneRoots:
   - {fileID: 179863628}
   - {fileID: 121268093}
   - {fileID: 1335408445}
-  - {fileID: 1840562114}
   - {fileID: 1990108852}
   - {fileID: 5942411961466372813}

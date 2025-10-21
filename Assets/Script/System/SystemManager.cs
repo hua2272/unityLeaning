@@ -26,6 +26,9 @@ public class SystemManager : MonoBehaviour
     private bool isInSubPanel = false;
     private bool navigationEnabled = true;
 
+    // 新增：选项按钮管理
+    private Dictionary<Button, OptionButton> optionButtons = new Dictionary<Button, OptionButton>();
+
     private void Awake()
     {
         if (instance == null)
@@ -38,6 +41,7 @@ public class SystemManager : MonoBehaviour
         }
         InitializePanels();
         CollectAllButtons();
+        FindAllOptionButtons();
     }
 
     private void InitializePanels()
@@ -79,6 +83,43 @@ public class SystemManager : MonoBehaviour
             else
             {
                 subPanelButtons.Add(new List<Button>());
+            }
+        }
+    }
+
+    // 新增：查找所有选项按钮
+    private void FindAllOptionButtons()
+    {
+        optionButtons.Clear();
+        
+        // 查找主面板中的选项按钮
+        if (mainPanel != null)
+        {
+            OptionButton[] options = mainPanel.GetComponentsInChildren<OptionButton>(true);
+            foreach (var option in options)
+            {
+                Button button = option.GetComponent<Button>();
+                if (button != null)
+                {
+                    optionButtons[button] = option;
+                }
+            }
+        }
+
+        // 查找二级面板中的选项按钮
+        foreach (var subPanel in subPanels)
+        {
+            if (subPanel != null)
+            {
+                OptionButton[] options = subPanel.GetComponentsInChildren<OptionButton>(true);
+                foreach (var option in options)
+                {
+                    Button button = option.GetComponent<Button>();
+                    if (button != null)
+                    {
+                        optionButtons[button] = option;
+                    }
+                }
             }
         }
     }
@@ -134,6 +175,16 @@ public class SystemManager : MonoBehaviour
             
             UpdateButtonSelection();
         }
+        else if (Input.GetKeyDown(KeyCode.A))
+        {
+            // 向左选择选项（仅对选项按钮有效）
+            HandleLeftOption();
+        }
+        else if (Input.GetKeyDown(KeyCode.D))
+        {
+            // 向右选择选项（仅对选项按钮有效）
+            HandleRightOption();
+        }
         else if (Input.GetKeyDown(KeyCode.J))
         {
             // 触发当前选中的按钮
@@ -167,11 +218,62 @@ public class SystemManager : MonoBehaviour
             
             UpdateButtonSelection();
         }
+        else if (Input.GetKeyDown(KeyCode.A))
+        {
+            // 向左选择选项（仅对选项按钮有效）
+            HandleLeftOption();
+        }
+        else if (Input.GetKeyDown(KeyCode.D))
+        {
+            // 向右选择选项（仅对选项按钮有效）
+            HandleRightOption();
+        }
         else if (Input.GetKeyDown(KeyCode.J))
         {
             // 触发当前选中的按钮
             TriggerCurrentSubButton();
         }
+    }
+
+    // 新增：处理向左选择选项
+    private void HandleLeftOption()
+    {
+        Button currentButton = GetCurrentSelectedButton();
+        if (currentButton != null && optionButtons.ContainsKey(currentButton))
+        {
+            optionButtons[currentButton].SelectPreviousOption();
+        }
+    }
+
+    // 新增：处理向右选择选项
+    private void HandleRightOption()
+    {
+        Button currentButton = GetCurrentSelectedButton();
+        if (currentButton != null && optionButtons.ContainsKey(currentButton))
+        {
+            optionButtons[currentButton].SelectNextOption();
+        }
+    }
+
+    // 新增：获取当前选中的按钮
+    private Button GetCurrentSelectedButton()
+    {
+        if (isInSubPanel)
+        {
+            if (currentSubPanelIndex >= 0 && currentSubPanelIndex < subPanelButtons.Count && 
+                currentSubButtonIndex >= 0 && currentSubButtonIndex < subPanelButtons[currentSubPanelIndex].Count)
+            {
+                return subPanelButtons[currentSubPanelIndex][currentSubButtonIndex];
+            }
+        }
+        else
+        {
+            if (currentMainButtonIndex >= 0 && currentMainButtonIndex < mainPanelButtons.Count)
+            {
+                return mainPanelButtons[currentMainButtonIndex];
+            }
+        }
+        return null;
     }
 
     // 更新按钮选择状态
@@ -181,33 +283,18 @@ public class SystemManager : MonoBehaviour
         ResetAllButtonColors();
 
         // 设置当前选中按钮的颜色
-        if (isInSubPanel)
+        Button currentButton = GetCurrentSelectedButton();
+        if (currentButton != null && currentButton.interactable)
         {
-            if (currentSubPanelIndex >= 0 && currentSubPanelIndex < subPanelButtons.Count && 
-                currentSubButtonIndex >= 0 && currentSubButtonIndex < subPanelButtons[currentSubPanelIndex].Count)
+            var colors = currentButton.colors;
+            colors.normalColor = selectedColor;
+            colors.selectedColor = selectedColor;
+            currentButton.colors = colors;
+
+            // 如果是选项按钮，高亮显示当前选项
+            if (optionButtons.ContainsKey(currentButton))
             {
-                var button = subPanelButtons[currentSubPanelIndex][currentSubButtonIndex];
-                if (button != null && button.interactable)
-                {
-                    var colors = button.colors;
-                    colors.normalColor = selectedColor;
-                    colors.selectedColor = selectedColor;
-                    button.colors = colors;
-                }
-            }
-        }
-        else
-        {
-            if (currentMainButtonIndex >= 0 && currentMainButtonIndex < mainPanelButtons.Count)
-            {
-                var button = mainPanelButtons[currentMainButtonIndex];
-                if (button != null && button.interactable)
-                {
-                    var colors = button.colors;
-                    colors.normalColor = selectedColor;
-                    colors.selectedColor = selectedColor;
-                    button.colors = colors;
-                }
+                optionButtons[currentButton].HighlightCurrentOption();
             }
         }
     }
@@ -251,7 +338,15 @@ public class SystemManager : MonoBehaviour
             var button = mainPanelButtons[currentMainButtonIndex];
             if (button != null && button.interactable)
             {
-                button.onClick.Invoke();
+                // 如果是选项按钮，确认选择
+                if (optionButtons.ContainsKey(button))
+                {
+                    optionButtons[button].ConfirmSelection();
+                }
+                else
+                {
+                    button.onClick.Invoke();
+                }
             }
         }
     }
@@ -265,7 +360,15 @@ public class SystemManager : MonoBehaviour
             var button = subPanelButtons[currentSubPanelIndex][currentSubButtonIndex];
             if (button != null && button.interactable)
             {
-                button.onClick.Invoke();
+                // 如果是选项按钮，确认选择
+                if (optionButtons.ContainsKey(button))
+                {
+                    optionButtons[button].ConfirmSelection();
+                }
+                else
+                {
+                    button.onClick.Invoke();
+                }
             }
         }
     }
