@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using System.Collections.Generic;
 
 public class SystemManager : MonoBehaviour
@@ -7,12 +8,12 @@ public class SystemManager : MonoBehaviour
     public static SystemManager instance { get; private set; }
     
     [Header("UI References")]
-    [SerializeField] private GameObject panel; // 总面板
-    [SerializeField] private GameObject mainPanel; // 主要面板
-    [SerializeField] private GameObject[] subPanels; // 二级面板
-    
+    [SerializeField] private GameObject panel;                                       // 总面板
+    [SerializeField] private GameObject mainPanel;                                   // 主要面板
+    [SerializeField] private GameObject[] subPanels;                                 // 二级面板
+                    
     [Header("Navigation Settings")]
-    [SerializeField] private int defaultSubPanelIndex = 0; // 默认二级面板索引
+    [SerializeField] private int defaultSubPanelIndex = 0;                           // 默认二级面板索引
     [SerializeField] private Color normalColor = Color.white;
     [SerializeField] private Color selectedColor = Color.yellow;
     
@@ -22,12 +23,13 @@ public class SystemManager : MonoBehaviour
     private int currentMainButtonIndex = 0;
     private int currentSubButtonIndex = 0;
     
-    private int currentSubPanelIndex = -1; // -1表示在主面板
+    private int currentSubPanelIndex = -1;                                            // -1表示在主面板
     private bool isInSubPanel = false;
     private bool navigationEnabled = true;
 
-    // 新增：选项按钮管理
-    private Dictionary<Button, OptionButton> optionButtons = new Dictionary<Button, OptionButton>();
+    // 修改：选项按钮管理 - 存储按钮对应的TextMeshPro选项列表和当前选项索引
+    private Dictionary<Button, List<TextMeshProUGUI>> optionButtons = new Dictionary<Button, List<TextMeshProUGUI>>();
+    private Dictionary<Button, int> optionCurrentIndex = new Dictionary<Button, int>();
 
     private void Awake()
     {
@@ -87,38 +89,69 @@ public class SystemManager : MonoBehaviour
         }
     }
 
-    // 新增：查找所有选项按钮
+    // 修改：查找所有选项按钮 - 现在查找带有多个TextMeshPro子对象的按钮
     private void FindAllOptionButtons()
     {
         optionButtons.Clear();
+        optionCurrentIndex.Clear();
         
         // 查找主面板中的选项按钮
         if (mainPanel != null)
         {
-            OptionButton[] options = mainPanel.GetComponentsInChildren<OptionButton>(true);
-            foreach (var option in options)
+            foreach (var button in mainPanelButtons)
             {
-                Button button = option.GetComponent<Button>();
                 if (button != null)
                 {
-                    optionButtons[button] = option;
+                    FindOptionButtonInButton(button);
                 }
             }
         }
 
         // 查找二级面板中的选项按钮
-        foreach (var subPanel in subPanels)
+        foreach (var buttonList in subPanelButtons)
         {
-            if (subPanel != null)
+            foreach (var button in buttonList)
             {
-                OptionButton[] options = subPanel.GetComponentsInChildren<OptionButton>(true);
-                foreach (var option in options)
+                if (button != null)
                 {
-                    Button button = option.GetComponent<Button>();
-                    if (button != null)
-                    {
-                        optionButtons[button] = option;
-                    }
+                    FindOptionButtonInButton(button);
+                }
+            }
+        }
+    }
+
+    // 新增：在单个按钮中查找选项
+    private void FindOptionButtonInButton(Button button)
+    {
+        // 获取按钮下所有的TextMeshProUGUI组件
+        TextMeshProUGUI[] textComponents = button.GetComponentsInChildren<TextMeshProUGUI>(true);
+        
+        // 如果有多个TextMeshPro子对象，则认为是选项按钮
+        if (textComponents.Length > 1)
+        {
+            List<TextMeshProUGUI> optionTexts = new List<TextMeshProUGUI>(textComponents);
+            optionButtons[button] = optionTexts;
+            optionCurrentIndex[button] = 0; // 默认选择第一个选项
+            
+            // 初始化选项显示状态
+            UpdateOptionButtonDisplay(button);
+        }
+    }
+
+    // 新增：更新选项按钮的显示状态
+    private void UpdateOptionButtonDisplay(Button button)
+    {
+        if (optionButtons.ContainsKey(button))
+        {
+            List<TextMeshProUGUI> options = optionButtons[button];
+            int currentIndex = optionCurrentIndex[button];
+            
+            // 激活当前选中的选项，禁用其他选项
+            for (int i = 0; i < options.Count; i++)
+            {
+                if (options[i] != null)
+                {
+                    options[i].gameObject.SetActive(i == currentIndex);
                 }
             }
         }
@@ -235,23 +268,41 @@ public class SystemManager : MonoBehaviour
         }
     }
 
-    // 新增：处理向左选择选项
+    // 修改：处理向左选择选项 - 现在循环切换TextMeshPro子对象
     private void HandleLeftOption()
     {
         Button currentButton = GetCurrentSelectedButton();
         if (currentButton != null && optionButtons.ContainsKey(currentButton))
         {
-            optionButtons[currentButton].SelectPreviousOption();
+            List<TextMeshProUGUI> options = optionButtons[currentButton];
+            int currentIndex = optionCurrentIndex[currentButton];
+            
+            // 计算新的索引（循环）
+            currentIndex--;
+            if (currentIndex < 0)
+                currentIndex = options.Count - 1;
+            
+            optionCurrentIndex[currentButton] = currentIndex;
+            UpdateOptionButtonDisplay(currentButton);
         }
     }
 
-    // 新增：处理向右选择选项
+    // 修改：处理向右选择选项 - 现在循环切换TextMeshPro子对象
     private void HandleRightOption()
     {
         Button currentButton = GetCurrentSelectedButton();
         if (currentButton != null && optionButtons.ContainsKey(currentButton))
         {
-            optionButtons[currentButton].SelectNextOption();
+            List<TextMeshProUGUI> options = optionButtons[currentButton];
+            int currentIndex = optionCurrentIndex[currentButton];
+            
+            // 计算新的索引（循环）
+            currentIndex++;
+            if (currentIndex >= options.Count)
+                currentIndex = 0;
+            
+            optionCurrentIndex[currentButton] = currentIndex;
+            UpdateOptionButtonDisplay(currentButton);
         }
     }
 
@@ -290,12 +341,6 @@ public class SystemManager : MonoBehaviour
             colors.normalColor = selectedColor;
             colors.selectedColor = selectedColor;
             currentButton.colors = colors;
-
-            // 如果是选项按钮，高亮显示当前选项
-            if (optionButtons.ContainsKey(currentButton))
-            {
-                optionButtons[currentButton].HighlightCurrentOption();
-            }
         }
     }
 
@@ -338,15 +383,7 @@ public class SystemManager : MonoBehaviour
             var button = mainPanelButtons[currentMainButtonIndex];
             if (button != null && button.interactable)
             {
-                // 如果是选项按钮，确认选择
-                if (optionButtons.ContainsKey(button))
-                {
-                    optionButtons[button].ConfirmSelection();
-                }
-                else
-                {
-                    button.onClick.Invoke();
-                }
+                button.onClick.Invoke();
             }
         }
     }
@@ -360,15 +397,7 @@ public class SystemManager : MonoBehaviour
             var button = subPanelButtons[currentSubPanelIndex][currentSubButtonIndex];
             if (button != null && button.interactable)
             {
-                // 如果是选项按钮，确认选择
-                if (optionButtons.ContainsKey(button))
-                {
-                    optionButtons[button].ConfirmSelection();
-                }
-                else
-                {
-                    button.onClick.Invoke();
-                }
+                button.onClick.Invoke();
             }
         }
     }
@@ -488,6 +517,26 @@ public class SystemManager : MonoBehaviour
         if (!enabled)
         {
             ResetAllButtonColors();
+        }
+    }
+
+    // 新增：获取选项按钮的当前选项索引
+    public int GetOptionCurrentIndex(Button button)
+    {
+        if (optionCurrentIndex.ContainsKey(button))
+        {
+            return optionCurrentIndex[button];
+        }
+        return -1;
+    }
+
+    // 新增：设置选项按钮的当前选项索引
+    public void SetOptionCurrentIndex(Button button, int index)
+    {
+        if (optionButtons.ContainsKey(button) && index >= 0 && index < optionButtons[button].Count)
+        {
+            optionCurrentIndex[button] = index;
+            UpdateOptionButtonDisplay(button);
         }
     }
 }
