@@ -20,17 +20,18 @@ public class SystemManager : MonoBehaviour
     [Header("Global Option Parameter")]
     [SerializeField] private int globalOptionIndex = 0;                              // 全局选项索引
     
-    // 按钮管理
-    private List<Button> mainPanelButtons = new List<Button>();
-    private List<List<Button>> subPanelButtons = new List<List<Button>>();
-    private int currentMainButtonIndex = 0;
-    private int currentSubButtonIndex = 0;
+    // 统一的按钮管理
+    private List<Button> allButtons = new List<Button>();
+    private int currentButtonIndex = 0;
     
-    private int currentSubPanelIndex = -1;                                            // -1表示在主面板
-    private bool isInSubPanel = false;
+    // 面板层级管理
+    private enum PanelLevel { Main, Sub }
+    private PanelLevel currentPanelLevel = PanelLevel.Main;
+    private int currentSubPanelIndex = -1;
+    
     private bool navigationEnabled = true;
 
-    // 简化：只存储每个按钮的TextMeshPro子对象列表
+    // 按钮文本管理
     private Dictionary<Button, List<TextMeshProUGUI>> buttonTexts = new Dictionary<Button, List<TextMeshProUGUI>>();
 
     private void Awake()
@@ -61,59 +62,42 @@ public class SystemManager : MonoBehaviour
         }
         
         panel.SetActive(false);
-        isInSubPanel = false;
+        currentPanelLevel = PanelLevel.Main;
         currentSubPanelIndex = -1;
     }
 
     private void CollectAllButtons()
     {
+        allButtons.Clear();
+        
         // 收集主面板的所有按钮
-        mainPanelButtons.Clear();
         if (mainPanel != null)
         {
             Button[] buttons = mainPanel.GetComponentsInChildren<Button>(true);
-            mainPanelButtons.AddRange(buttons);
+            allButtons.AddRange(buttons);
         }
 
-        // 收集每个二级面板的所有按钮
-        subPanelButtons.Clear();
+        // 收集所有二级面板的所有按钮
         foreach (var subPanel in subPanels)
         {
             if (subPanel != null)
             {
                 Button[] buttons = subPanel.GetComponentsInChildren<Button>(true);
-                subPanelButtons.Add(new List<Button>(buttons));
-            }
-            else
-            {
-                subPanelButtons.Add(new List<Button>());
+                allButtons.AddRange(buttons);
             }
         }
     }
 
-    // 简化：查找所有按钮的TextMeshPro子对象
+    // 查找所有按钮的TextMeshPro子对象
     private void FindAllButtonTexts()
     {
         buttonTexts.Clear();
         
-        // 处理主面板按钮
-        foreach (var button in mainPanelButtons)
+        foreach (var button in allButtons)
         {
             if (button != null)
             {
                 FindButtonTexts(button);
-            }
-        }
-
-        // 处理二级面板按钮
-        foreach (var buttonList in subPanelButtons)
-        {
-            foreach (var button in buttonList)
-            {
-                if (button != null)
-                {
-                    FindButtonTexts(button);
-                }
             }
         }
     }
@@ -121,14 +105,10 @@ public class SystemManager : MonoBehaviour
     // 查找单个按钮的TextMeshPro子对象
     private void FindButtonTexts(Button button)
     {
-        // 获取按钮下所有的TextMeshProUGUI组件
         TextMeshProUGUI[] textComponents = button.GetComponentsInChildren<TextMeshProUGUI>(true);
-        
-        // 存储所有TextMeshPro子对象
         List<TextMeshProUGUI> texts = new List<TextMeshProUGUI>(textComponents);
         buttonTexts[button] = texts;
         
-        // 更新按钮显示
         UpdateButtonTextDisplay(button);
     }
 
@@ -139,7 +119,6 @@ public class SystemManager : MonoBehaviour
         {
             List<TextMeshProUGUI> texts = buttonTexts[button];
             
-            // 如果有多个文本对象，只显示与全局选项索引对应的那个
             if (texts.Count > 1)
             {
                 for (int i = 0; i < texts.Count; i++)
@@ -150,7 +129,6 @@ public class SystemManager : MonoBehaviour
                     }
                 }
             }
-            // 如果只有一个文本对象，始终显示它
             else if (texts.Count == 1 && texts[0] != null)
             {
                 texts[0].gameObject.SetActive(true);
@@ -173,41 +151,26 @@ public class SystemManager : MonoBehaviour
         if(globalOptionIndex == 1){Debug.Log("----------1");}
     }
 
-    // 处理键盘导航
+    // 统一的键盘导航处理
     private void HandleKeyboardNavigation()
     {
-        if (isInSubPanel)
-        {
-            // 在二级面板中导航
-            HandleSubPanelNavigation();
-        }
-        else
-        {
-            // 在主面板中导航
-            HandleMainPanelNavigation();
-        }
-    }
-
-    // 处理主面板导航
-    private void HandleMainPanelNavigation()
-    {
-        if (mainPanelButtons.Count == 0) return;
+        if (allButtons.Count == 0) return;
 
         if (Input.GetKeyDown(KeyCode.W))
         {
             // 向上选择
-            currentMainButtonIndex--;
-            if (currentMainButtonIndex < 0)
-                currentMainButtonIndex = mainPanelButtons.Count - 1;
+            currentButtonIndex--;
+            if (currentButtonIndex < 0)
+                currentButtonIndex = allButtons.Count - 1;
             
             UpdateButtonSelection();
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {
             // 向下选择
-            currentMainButtonIndex++;
-            if (currentMainButtonIndex >= mainPanelButtons.Count)
-                currentMainButtonIndex = 0;
+            currentButtonIndex++;
+            if (currentButtonIndex >= allButtons.Count)
+                currentButtonIndex = 0;
             
             UpdateButtonSelection();
         }
@@ -224,63 +187,17 @@ public class SystemManager : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.J))
         {
             // 触发当前选中的按钮
-            TriggerCurrentMainButton();
+            TriggerCurrentButton();
         }
     }
 
-    // 处理二级面板导航
-    private void HandleSubPanelNavigation()
-    {
-        if (currentSubPanelIndex < 0 || currentSubPanelIndex >= subPanelButtons.Count) return;
-        
-        var currentSubButtons = subPanelButtons[currentSubPanelIndex];
-        if (currentSubButtons.Count == 0) return;
-
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            // 向上选择
-            currentSubButtonIndex--;
-            if (currentSubButtonIndex < 0)
-                currentSubButtonIndex = currentSubButtons.Count - 1;
-            
-            UpdateButtonSelection();
-        }
-        else if (Input.GetKeyDown(KeyCode.S))
-        {
-            // 向下选择
-            currentSubButtonIndex++;
-            if (currentSubButtonIndex >= currentSubButtons.Count)
-                currentSubButtonIndex = 0;
-            
-            UpdateButtonSelection();
-        }
-        else if (Input.GetKeyDown(KeyCode.A))
-        {
-            // 向左选择选项
-            HandleLeftOption();
-        }
-        else if (Input.GetKeyDown(KeyCode.D))
-        {
-            // 向右选择选项
-            HandleRightOption();
-        }
-        else if (Input.GetKeyDown(KeyCode.J))
-        {
-            // 触发当前选中的按钮
-            TriggerCurrentSubButton();
-        }
-    }
-
-    // 简化：处理向左选择选项 - 更新全局选项索引
+    // 处理向左选择选项
     private void HandleLeftOption()
     {
-        // 减少全局选项索引
         globalOptionIndex--;
         
-        // 循环索引
         if (globalOptionIndex < 0)
         {
-            // 找到最大索引值
             int maxIndex = 0;
             foreach (var texts in buttonTexts.Values)
             {
@@ -291,17 +208,14 @@ public class SystemManager : MonoBehaviour
             globalOptionIndex = maxIndex > 0 ? maxIndex - 1 : 0;
         }
         
-        // 更新所有按钮的显示
         UpdateAllButtonTexts();
     }
 
-    // 简化：处理向右选择选项 - 更新全局选项索引
+    // 处理向右选择选项
     private void HandleRightOption()
     {
-        // 增加全局选项索引
         globalOptionIndex++;
         
-        // 找到最大索引值
         int maxIndex = 0;
         foreach (var texts in buttonTexts.Values)
         {
@@ -309,13 +223,11 @@ public class SystemManager : MonoBehaviour
                 maxIndex = texts.Count;
         }
         
-        // 循环索引
         if (maxIndex > 0 && globalOptionIndex >= maxIndex)
         {
             globalOptionIndex = 0;
         }
         
-        // 更新所有按钮的显示
         UpdateAllButtonTexts();
     }
 
@@ -331,20 +243,9 @@ public class SystemManager : MonoBehaviour
     // 获取当前选中的按钮
     private Button GetCurrentSelectedButton()
     {
-        if (isInSubPanel)
+        if (currentButtonIndex >= 0 && currentButtonIndex < allButtons.Count)
         {
-            if (currentSubPanelIndex >= 0 && currentSubPanelIndex < subPanelButtons.Count && 
-                currentSubButtonIndex >= 0 && currentSubButtonIndex < subPanelButtons[currentSubPanelIndex].Count)
-            {
-                return subPanelButtons[currentSubPanelIndex][currentSubButtonIndex];
-            }
-        }
-        else
-        {
-            if (currentMainButtonIndex >= 0 && currentMainButtonIndex < mainPanelButtons.Count)
-            {
-                return mainPanelButtons[currentMainButtonIndex];
-            }
+            return allButtons[currentButtonIndex];
         }
         return null;
     }
@@ -369,8 +270,7 @@ public class SystemManager : MonoBehaviour
     // 重置所有按钮颜色
     private void ResetAllButtonColors()
     {
-        // 重置主面板按钮
-        foreach (var button in mainPanelButtons)
+        foreach (var button in allButtons)
         {
             if (button != null)
             {
@@ -380,66 +280,22 @@ public class SystemManager : MonoBehaviour
                 button.colors = colors;
             }
         }
-
-        // 重置所有二级面板按钮
-        foreach (var buttonList in subPanelButtons)
-        {
-            foreach (var button in buttonList)
-            {
-                if (button != null)
-                {
-                    var colors = button.colors;
-                    colors.normalColor = normalColor;
-                    colors.selectedColor = normalColor;
-                    button.colors = colors;
-                }
-            }
-        }
     }
 
-    // 简化：触发当前主面板按钮
-    private void TriggerCurrentMainButton()
+    // 触发当前按钮
+    private void TriggerCurrentButton()
     {
-        if (currentMainButtonIndex >= 0 && currentMainButtonIndex < mainPanelButtons.Count)
+        Button currentButton = GetCurrentSelectedButton();
+        if (currentButton != null && currentButton.interactable)
         {
-            var button = mainPanelButtons[currentMainButtonIndex];
-            if (button != null && button.interactable)
-            {
-                // 触发按钮点击事件，传递全局选项索引
-                TriggerButton(button);
-            }
+            currentButton.onClick.Invoke();
         }
-    }
-
-    // 简化：触发当前二级面板按钮
-    private void TriggerCurrentSubButton()
-    {
-        if (currentSubPanelIndex >= 0 && currentSubPanelIndex < subPanelButtons.Count && 
-            currentSubButtonIndex >= 0 && currentSubButtonIndex < subPanelButtons[currentSubPanelIndex].Count)
-        {
-            var button = subPanelButtons[currentSubPanelIndex][currentSubButtonIndex];
-            if (button != null && button.interactable)
-            {
-                // 触发按钮点击事件，传递全局选项索引
-                TriggerButton(button);
-            }
-        }
-    }
-
-    // 简化：触发按钮
-    private void TriggerButton(Button button)
-    {
-        // 直接触发按钮的点击事件
-        button.onClick.Invoke();
-        
-        // 可以通过全局选项索引获取当前选中的选项
-        // 其他脚本可以通过SystemManager.instance.GetGlobalOptionIndex()获取当前全局选项索引
     }
 
     // 处理ESC键逻辑
     private void HandleEscapeKey()
     {
-        if (isInSubPanel)
+        if (currentPanelLevel == PanelLevel.Sub)
         {
             // 如果在二级面板，返回主面板
             ReturnToMainPanel();
@@ -458,17 +314,16 @@ public class SystemManager : MonoBehaviour
         panel.SetActive(isActive);
         Time.timeScale = isActive ? 0 : 1;
         
-        // 如果打开面板，显示主面板并重置导航状态
         if (isActive)
         {
             ShowMainPanel();
-            currentMainButtonIndex = 0;
+            currentButtonIndex = 0;
             UpdateButtonSelection();
         }
         else
         {
             // 关闭面板时重置状态
-            isInSubPanel = false;
+            currentPanelLevel = PanelLevel.Main;
             currentSubPanelIndex = -1;
             ResetAllButtonColors();
         }
@@ -488,9 +343,9 @@ public class SystemManager : MonoBehaviour
         if (mainPanel != null)
             mainPanel.SetActive(true);
             
-        isInSubPanel = false;
+        currentPanelLevel = PanelLevel.Main;
         currentSubPanelIndex = -1;
-        currentMainButtonIndex = 0;
+        currentButtonIndex = 0;
         UpdateButtonSelection();
     }
 
@@ -508,8 +363,8 @@ public class SystemManager : MonoBehaviour
         {
             subPanels[subPanelIndex].SetActive(true);
             currentSubPanelIndex = subPanelIndex;
-            isInSubPanel = true;
-            currentSubButtonIndex = 0;
+            currentPanelLevel = PanelLevel.Sub;
+            currentButtonIndex = 0;
             UpdateButtonSelection();
         }
     }
@@ -527,16 +382,16 @@ public class SystemManager : MonoBehaviour
         Time.timeScale = 1;
         
         // 重置状态
-        isInSubPanel = false;
+        currentPanelLevel = PanelLevel.Main;
         currentSubPanelIndex = -1;
         ResetAllButtonColors();
     }
 
-    // 获取当前是否在二级面板
-    public bool IsInSubPanel()
-    {
-        return isInSubPanel;
-    }
+    // // 获取当前面板层级
+    // public PanelLevel GetCurrentPanelLevel()
+    // {
+    //     return currentPanelLevel;
+    // }
 
     // 获取当前二级面板索引
     public int GetCurrentSubPanelIndex()
@@ -544,7 +399,7 @@ public class SystemManager : MonoBehaviour
         return currentSubPanelIndex;
     }
 
-    // 启用/禁用导航（可用于临时禁用键盘导航）
+    // 启用/禁用导航
     public void SetNavigationEnabled(bool enabled)
     {
         navigationEnabled = enabled;
@@ -554,18 +409,17 @@ public class SystemManager : MonoBehaviour
         }
     }
 
-    // 新增：获取全局选项索引
+    // 获取全局选项索引
     public int GetGlobalOptionIndex()
     {
         return globalOptionIndex;
     }
 
-    // 新增：设置全局选项索引
+    // 设置全局选项索引
     public void SetGlobalOptionIndex(int index)
     {
         globalOptionIndex = index;
         
-        // 确保索引在有效范围内
         int maxIndex = 0;
         foreach (var texts in buttonTexts.Values)
         {
@@ -582,11 +436,10 @@ public class SystemManager : MonoBehaviour
             globalOptionIndex = 0;
         }
         
-        // 更新所有按钮的显示
         UpdateAllButtonTexts();
     }
 
-    // 新增：获取按钮的文本对象列表
+    // 获取按钮的文本对象列表
     public List<TextMeshProUGUI> GetButtonTexts(Button button)
     {
         if (buttonTexts.ContainsKey(button))
