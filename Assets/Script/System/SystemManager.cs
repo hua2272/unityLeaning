@@ -17,8 +17,7 @@ public class SystemManager : MonoBehaviour
     [SerializeField] private Color normalColor = Color.white;
     [SerializeField] private Color selectedColor = Color.yellow;
     
-    [Header("Global Option Parameter")]
-    [SerializeField] private int globalOptionIndex = 0;                              // 全局选项索引
+    public int globalOptionIndex { get; private set; } = 0;                              // 全局选项索引
     
     // 统一的按钮管理
     private List<Button> allButtons = new List<Button>();
@@ -147,8 +146,6 @@ public class SystemManager : MonoBehaviour
         {
             HandleKeyboardNavigation();
         }
-        if(globalOptionIndex == 0){Debug.Log("globalOptionIndex 0");}
-        if(globalOptionIndex == 1){Debug.Log("----------1");}
     }
 
     // 统一的键盘导航处理
@@ -407,12 +404,6 @@ public class SystemManager : MonoBehaviour
         {
             ResetAllButtonColors();
         }
-    }
-
-    // 获取全局选项索引
-    public int GetGlobalOptionIndex()
-    {
-        return globalOptionIndex;
     }
 
     // 设置全局选项索引
