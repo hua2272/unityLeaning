@@ -83,6 +83,8 @@ public class CustomInputSystem : MonoBehaviour
             inputActions.Add(new InputAction("Attack", KeyCode.Mouse0, "ButtonWest"));
             inputActions.Add(new InputAction("Interact", KeyCode.E, "ButtonEast"));
             inputActions.Add(new InputAction("Menu", KeyCode.Escape, "ButtonStart"));
+            inputActions.Add(new InputAction("UIConfirm", KeyCode.J, "DPadConfirm"));
+            inputActions.Add(new InputAction("UICancel", KeyCode.K, "DPadCancel"));
         }
         // 构建快速查找字典
         foreach (var action in inputActions)

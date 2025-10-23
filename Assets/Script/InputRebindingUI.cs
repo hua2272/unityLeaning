@@ -10,8 +10,6 @@ public class InputRebindingUI : MonoBehaviour
     public GameObject waitingForInputPanel;
     public TextMeshProUGUI waitingForInputText;
     public Button resetToDefaultsButton;
-    public Button confirmButton;
-    public Button cancelButton;
     
     [Header("Action Button Bindings")]
     public Button moveUpButton;
@@ -22,6 +20,14 @@ public class InputRebindingUI : MonoBehaviour
     // public Button attackButton;
     // public Button interactButton;
     // public Button menuButton;
+    
+    [Header("System Button Bindings")]
+    // public Button up;
+    // public Button down;
+    // public Button left;
+    // public Button right;
+    public Button confirm;    // 用于UI确认的按键绑定
+    public Button cancel;     // 用于UI取消的按键绑定
     
     private Dictionary<string, Button> actionButtons = new Dictionary<string, Button>();
     private CustomInputSystem inputSystem;
@@ -43,6 +49,8 @@ public class InputRebindingUI : MonoBehaviour
         actionButtons["MoveDown"] = moveDownButton;
         actionButtons["MoveLeft"] = moveLeftButton;
         actionButtons["MoveRight"] = moveRightButton;
+        actionButtons["UIConfirm"] = confirm;    // 新增确认键绑定
+        actionButtons["UICancel"] = cancel;      // 新增取消键绑定
         // actionButtons["Menu"] = menuButton;
         // actionButtons["Attack"] = attackButton;
         // actionButtons["Interact"] = interactButton;
@@ -59,14 +67,14 @@ public class InputRebindingUI : MonoBehaviour
         moveDownButton.onClick.AddListener(() => StartRebinding("MoveDown", true));
         moveLeftButton.onClick.AddListener(() => StartRebinding("MoveLeft", true));
         moveRightButton.onClick.AddListener(() => StartRebinding("MoveRight", true));
+        confirm.onClick.AddListener(() => StartRebinding("UIConfirm", true));    // 确认键重绑定
+        cancel.onClick.AddListener(() => StartRebinding("UICancel", true));      // 取消键重绑定
         // menuButton.onClick.AddListener(() => StartRebinding("Menu", true));
         // attackButton.onClick.AddListener(() => StartRebinding("Attack", true));
         // interactButton.onClick.AddListener(() => StartRebinding("Interact", true));
         
         // 其他功能按钮
         resetToDefaultsButton.onClick.AddListener(ResetToDefaults);
-        confirmButton.onClick.AddListener(ConfirmChanges);
-        cancelButton.onClick.AddListener(CancelChanges);
         
         // 注册输入系统事件
         inputSystem.OnActionRebound += OnActionRebound;
@@ -100,6 +108,10 @@ public class InputRebindingUI : MonoBehaviour
         // 重绑定完成，更新UI
         waitingForInputPanel.SetActive(false);
         SetAllButtonsInteractable(true);
+        
+        // 即时保存按键设置
+        inputSystem.SaveKeyBindings();
+        Debug.Log($"按键设置已即时保存");
     }
 
     void OnActionRebound(string actionName)
@@ -136,32 +148,19 @@ public class InputRebindingUI : MonoBehaviour
             button.interactable = interactable;
         }
         resetToDefaultsButton.interactable = interactable;
-        confirmButton.interactable = interactable;
-        cancelButton.interactable = interactable;
     }
 
     void ResetToDefaults()
     {
         inputSystem.ResetToDefaults();
         UpdateAllButtonTexts();
-    }
-
-    void ConfirmChanges()
-    {
+        
+        // 重置后即时保存
         inputSystem.SaveKeyBindings();
-        // 可以添加保存成功的反馈
-        Debug.Log("按键设置已保存");
+        Debug.Log("已重置为默认设置并保存");
     }
 
-    void CancelChanges()
-    {
-        // 重新加载已保存的设置
-        inputSystem.LoadKeyBindings();
-        UpdateAllButtonTexts();
-        Debug.Log("已取消更改");
-    }
-
-    #region 显示名称转换（同上）
+    #region 显示名称转换
     string GetDisplayName(string actionName)
     {
         return actionName switch
@@ -171,6 +170,8 @@ public class InputRebindingUI : MonoBehaviour
             "MoveLeft" => "向左移动",
             "MoveRight" => "向右移动",
             "Jump" => "跳跃",
+            "UIConfirm" => "确认",      // 新增确认键显示名称
+            "UICancel" => "取消",       // 新增取消键显示名称
             "Attack" => "攻击",
             "Interact" => "交互",
             "Menu" => "菜单",
