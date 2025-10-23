@@ -49,14 +49,17 @@ public class InputRebindingUI : MonoBehaviour
         actionButtons["MoveDown"] = moveDownButton;
         actionButtons["MoveLeft"] = moveLeftButton;
         actionButtons["MoveRight"] = moveRightButton;
-        actionButtons["UIConfirm"] = confirm;    // 新增确认键绑定
-        actionButtons["UICancel"] = cancel;      // 新增取消键绑定
+        actionButtons["UIConfirm"] = confirm;
+        actionButtons["UICancel"] = cancel;
         // actionButtons["Menu"] = menuButton;
         // actionButtons["Attack"] = attackButton;
         // actionButtons["Interact"] = interactButton;
         
         // 初始化所有按钮文本
-        UpdateAllButtonTexts();
+        foreach (var kvp in actionButtons)
+        {
+            UpdateButtonText(kvp.Value, kvp.Key);
+        }
     }
 
     void SetupEventListeners()
@@ -67,17 +70,14 @@ public class InputRebindingUI : MonoBehaviour
         moveDownButton.onClick.AddListener(() => StartRebinding("MoveDown", true));
         moveLeftButton.onClick.AddListener(() => StartRebinding("MoveLeft", true));
         moveRightButton.onClick.AddListener(() => StartRebinding("MoveRight", true));
-        confirm.onClick.AddListener(() => StartRebinding("UIConfirm", true));    // 确认键重绑定
-        cancel.onClick.AddListener(() => StartRebinding("UICancel", true));      // 取消键重绑定
+        confirm.onClick.AddListener(() => StartRebinding("UIConfirm", true));
+        cancel.onClick.AddListener(() => StartRebinding("UICancel", true));
         // menuButton.onClick.AddListener(() => StartRebinding("Menu", true));
         // attackButton.onClick.AddListener(() => StartRebinding("Attack", true));
         // interactButton.onClick.AddListener(() => StartRebinding("Interact", true));
-        
-        // 其他功能按钮
         resetToDefaultsButton.onClick.AddListener(ResetToDefaults);
         
-        // 注册输入系统事件
-        inputSystem.OnActionRebound += OnActionRebound;
+        inputSystem.OnActionRebound.AddListener(OnActionRebound);       //注册输入系统事件，绑定按键更新UI
     }
 
     void StartRebinding(string actionName, bool forKeyboard)
@@ -133,14 +133,6 @@ public class InputRebindingUI : MonoBehaviour
         }
     }
 
-    void UpdateAllButtonTexts()
-    {
-        foreach (var kvp in actionButtons)
-        {
-            UpdateButtonText(kvp.Value, kvp.Key);
-        }
-    }
-
     void SetAllButtonsInteractable(bool interactable)
     {
         foreach (var button in actionButtons.Values)
@@ -153,11 +145,10 @@ public class InputRebindingUI : MonoBehaviour
     void ResetToDefaults()
     {
         inputSystem.ResetToDefaults();
-        UpdateAllButtonTexts();
-        
-        // 重置后即时保存
-        inputSystem.SaveKeyBindings();
-        Debug.Log("已重置为默认设置并保存");
+        foreach (var kvp in actionButtons)
+        {
+            UpdateButtonText(kvp.Value, kvp.Key);
+        }
     }
 
     #region 显示名称转换
@@ -208,7 +199,7 @@ public class InputRebindingUI : MonoBehaviour
     {
         if (inputSystem != null)
         {
-            inputSystem.OnActionRebound -= OnActionRebound;
+            inputSystem.OnActionRebound.RemoveListener(OnActionRebound);
         }
     }
 }

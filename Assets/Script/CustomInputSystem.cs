@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class CustomInputSystem : MonoBehaviour
 {
@@ -35,9 +36,8 @@ public class CustomInputSystem : MonoBehaviour
     [Header("Input Actions")]
     public List<InputAction> inputActions = new List<InputAction>();
     
-    // 事件
     public event Action<InputDevice> OnDeviceChanged;
-    public event Action<string> OnActionRebound;
+    [HideInInspector] public UnityEvent<string> OnActionRebound;
     
     private Dictionary<string, InputAction> actionMap = new Dictionary<string, InputAction>();
     private float lastGamepadCheckTime;
