@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 public class SystemManager : MonoBehaviour
 {
     public static SystemManager instance { get; private set; }
+    private CustomInputSystem customInputSystem;
     
     [Header("UI References")]
     [SerializeField] private GameObject panel;                                       // 总面板
@@ -29,6 +31,7 @@ public class SystemManager : MonoBehaviour
     private int currentSubPanelIndex = -1;
     
     private bool navigationEnabled = true;
+    private bool isInRebindingProcess = false; // 新增：标记是否在重绑定过程中
 
     // 按钮文本管理
     private Dictionary<Button, List<TextMeshProUGUI>> buttonTexts = new Dictionary<Button, List<TextMeshProUGUI>>();
@@ -46,6 +49,11 @@ public class SystemManager : MonoBehaviour
         InitializePanels();
         CollectAllButtons();
         FindAllButtonTexts();
+    }
+
+    private void Start()
+    {
+        customInputSystem = CustomInputSystem.instance;
     }
 
     private void InitializePanels()
@@ -181,7 +189,7 @@ public class SystemManager : MonoBehaviour
             // 向右选择选项
             HandleRightOption();
         }
-        else if (Input.GetKeyDown(KeyCode.J))
+        else if (customInputSystem.GetButton("UIConfirm"))
         {
             // 触发当前选中的按钮
             TriggerCurrentButton();
@@ -383,12 +391,6 @@ public class SystemManager : MonoBehaviour
         currentSubPanelIndex = -1;
         ResetAllButtonColors();
     }
-
-    // // 获取当前面板层级
-    // public PanelLevel GetCurrentPanelLevel()
-    // {
-    //     return currentPanelLevel;
-    // }
 
     // 获取当前二级面板索引
     public int GetCurrentSubPanelIndex()

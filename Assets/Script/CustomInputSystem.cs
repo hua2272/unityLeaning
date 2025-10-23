@@ -181,11 +181,6 @@ public class CustomInputSystem : MonoBehaviour
         
         if (currentDevice == InputDevice.Keyboard)
         {
-            // Debug.Log("Keyboard Input: " + actionName );
-            // if (Input.GetKey(action.currentKeyboardKey))
-            // {
-            //     Debug.Log("xxxx: " );
-            // }
             return Input.GetKey(action.currentKeyboardKey);
         }
         else
