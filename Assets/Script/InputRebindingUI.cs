@@ -90,7 +90,7 @@ public class InputRebindingUI : MonoBehaviour
         waitingForInputText.text = $"wait for...<size=70%> {actionName} rebinding</size>";
         
         SetAllButtonsInteractable(false);                               //禁用所有按钮避免重复点击
-        inputSystem.StartRebinding(actionName, forKeyboard);            //开始重绑定
+        inputSystem.StartRebinding(actionName);            //开始重绑定
         StartCoroutine(WaitForRebindingComplete());              //开始检测重绑定完成
     }
 
