@@ -159,8 +159,6 @@ public class SystemManager : MonoBehaviour
     // 统一的键盘导航处理
     private void HandleKeyboardNavigation()
     {
-        if (allButtons.Count == 0) return;
-
         if (Input.GetKeyDown(KeyCode.W))
         {
             // 向上选择
@@ -291,10 +289,13 @@ public class SystemManager : MonoBehaviour
     private void TriggerCurrentButton()
     {
         Button currentButton = GetCurrentSelectedButton();
-        if (currentButton != null && currentButton.interactable)
-        {
-            currentButton.onClick.Invoke();
-        }
+        // if (currentButton != null && currentButton.interactable)
+        // {
+        //     currentButton.onClick.Invoke();
+        // }
+        Debug.LogWarning("----------" + currentButton.name + "-----------");
+        Debug.LogWarning("----------" + currentButtonIndex + "-----------");
+        currentButton.onClick.Invoke();
     }
 
     // 处理ESC键逻辑
@@ -378,67 +379,5 @@ public class SystemManager : MonoBehaviour
     public void ReturnToMainPanel()
     {
         ShowMainPanel();
-    }
-
-    // 关闭系统面板
-    public void CloseSystemPanel()
-    {
-        panel.SetActive(false);
-        Time.timeScale = 1;
-        
-        // 重置状态
-        currentPanelLevel = PanelLevel.Main;
-        currentSubPanelIndex = -1;
-        ResetAllButtonColors();
-    }
-
-    // 获取当前二级面板索引
-    public int GetCurrentSubPanelIndex()
-    {
-        return currentSubPanelIndex;
-    }
-
-    // 启用/禁用导航
-    public void SetNavigationEnabled(bool enabled)
-    {
-        navigationEnabled = enabled;
-        if (!enabled)
-        {
-            ResetAllButtonColors();
-        }
-    }
-
-    // 设置全局选项索引
-    public void SetGlobalOptionIndex(int index)
-    {
-        globalOptionIndex = index;
-        
-        int maxIndex = 0;
-        foreach (var texts in buttonTexts.Values)
-        {
-            if (texts.Count > maxIndex)
-                maxIndex = texts.Count;
-        }
-        
-        if (maxIndex > 0 && globalOptionIndex >= maxIndex)
-        {
-            globalOptionIndex = maxIndex - 1;
-        }
-        else if (globalOptionIndex < 0)
-        {
-            globalOptionIndex = 0;
-        }
-        
-        UpdateAllButtonTexts();
-    }
-
-    // 获取按钮的文本对象列表
-    public List<TextMeshProUGUI> GetButtonTexts(Button button)
-    {
-        if (buttonTexts.ContainsKey(button))
-        {
-            return buttonTexts[button];
-        }
-        return null;
     }
 }
