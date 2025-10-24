@@ -44,7 +44,6 @@ public class CustomInputSystem : MonoBehaviour
     public bool isRebinding = false;
     private string rebindingAction;
     private bool rebindingForKeyboard;
-    private Coroutine rebindingCoroutine;
     
     void Awake()
     {
@@ -63,7 +62,7 @@ public class CustomInputSystem : MonoBehaviour
     
     void Update()
     {
-        DetectInputDevice();
+        //DetectInputDevice();
         if (isRebinding)
         {
             ProcessRebinding();
@@ -95,79 +94,6 @@ public class CustomInputSystem : MonoBehaviour
         LoadKeyBindings();
     }
     
-    void DetectInputDevice()
-    {
-        if (Time.time - lastGamepadCheckTime < gamepadCheckInterval) return;
-        
-        lastGamepadCheckTime = Time.time;
-        
-        InputDevice detectedDevice = currentDevice;
-        
-        // 检查手柄输入
-        if (IsGamepadInput())
-        {
-            detectedDevice = InputDevice.Gamepad;
-        }
-        // 检查键盘输入
-        else if (IsKeyboardInput())
-        {
-            detectedDevice = InputDevice.Keyboard;
-        }
-        
-        // 设备切换
-        if (detectedDevice != currentDevice)
-        {
-            currentDevice = detectedDevice;
-            OnDeviceChanged?.Invoke(currentDevice);
-            Debug.Log($"Input device switched to: {currentDevice}");
-        }
-    }
-    
-    bool IsGamepadInput()
-    {
-        // 检查手柄按钮
-        for (int i = 0; i < 20; i++)
-        {
-            if (Input.GetKey((KeyCode)((int)KeyCode.JoystickButton0 + i)))
-                return true;
-        }
-        
-        // 检查手柄摇杆
-        string[] axes = { "Horizontal", "Vertical", "Horizontal2", "Vertical2" };
-        foreach (string axis in axes)
-        {
-            if (Mathf.Abs(Input.GetAxis(axis)) > axisDeadZone)
-                return true;
-        }
-        
-        // 检查手柄触发器
-        if (Mathf.Abs(Input.GetAxis("Triggers")) > axisDeadZone)
-            return true;
-        
-        return false;
-    }
-    
-    bool IsKeyboardInput()
-    {
-        // 检查键盘按键（排除鼠标，因为鼠标移动太敏感）
-        foreach (KeyCode keyCode in System.Enum.GetValues(typeof(KeyCode)))
-        {
-            if (keyCode >= KeyCode.A && keyCode <= KeyCode.Z && Input.GetKey(keyCode))
-                return true;
-                
-            if ((keyCode >= KeyCode.Alpha0 && keyCode <= KeyCode.Alpha9) && Input.GetKey(keyCode))
-                return true;
-                
-            if ((keyCode >= KeyCode.Keypad0 && keyCode <= KeyCode.Keypad9) && Input.GetKey(keyCode))
-                return true;
-                
-            if ((keyCode >= KeyCode.UpArrow && keyCode <= KeyCode.DownArrow) && Input.GetKey(keyCode))
-                return true;
-        }
-        
-        return false;
-    }
-    
     #region 输入查询方法
     
     public bool GetButton(string actionName)
@@ -186,45 +112,6 @@ public class CustomInputSystem : MonoBehaviour
         else
         {
             return Input.GetButton(action.currentGamepadButton);
-        }
-    }
-    
-    public bool GetButtonDown(string actionName)
-    {
-        if (!actionMap.ContainsKey(actionName))
-        {
-            Debug.LogWarning($"Input action '{actionName}' not found!");
-            return false;
-        }
-        var action = actionMap[actionName];
-        
-        if (currentDevice == InputDevice.Keyboard)
-        {
-            return Input.GetKeyDown(action.currentKeyboardKey);
-        }
-        else
-        {
-            return Input.GetButtonDown(action.currentGamepadButton);
-        }
-    }
-    
-    public bool GetButtonUp(string actionName)
-    {
-        if (!actionMap.ContainsKey(actionName))
-        {
-            Debug.LogWarning($"Input action '{actionName}' not found!");
-            return false;
-        }
-        
-        var action = actionMap[actionName];
-        
-        if (currentDevice == InputDevice.Keyboard)
-        {
-            return Input.GetKeyUp(action.currentKeyboardKey);
-        }
-        else
-        {
-            return Input.GetButtonUp(action.currentGamepadButton);
         }
     }
     
@@ -254,85 +141,31 @@ public class CustomInputSystem : MonoBehaviour
     
     public void StartRebinding(string actionName, bool forKeyboard)
     {
-        if (isRebinding) return;
-        
-        if (!actionMap.ContainsKey(actionName))
-        {
-            Debug.LogWarning($"Cannot rebind - action '{actionName}' not found!");
-            return;
-        }
-        
         isRebinding = true;
         rebindingAction = actionName;
         rebindingForKeyboard = forKeyboard;
-        
-        Debug.Log($"Rebinding {actionName} for {(forKeyboard ? "Keyboard" : "Gamepad")}. Press any key...");
-        
-        if (rebindingCoroutine != null)
-            StopCoroutine(rebindingCoroutine);
-            
-        rebindingCoroutine = StartCoroutine(RebindingTimeout(5f));
     }
     
     public void CancelRebinding()
     {
-        if (!isRebinding) return;
-        
         isRebinding = false;
         rebindingAction = null;
-        
-        if (rebindingCoroutine != null)
-        {
-            StopCoroutine(rebindingCoroutine);
-            rebindingCoroutine = null;
-        }
-        
-        Debug.Log("Rebinding cancelled");
     }
     
     void ProcessRebinding()
     {
-        if (!isRebinding) return;
-        
-        if (rebindingForKeyboard)
+        foreach (KeyCode keyCode in System.Enum.GetValues(typeof(KeyCode)))
         {
-            // 键盘重绑定
-            foreach (KeyCode keyCode in System.Enum.GetValues(typeof(KeyCode)))
+            if (Input.GetKeyDown(keyCode))
             {
-                if (Input.GetKeyDown(keyCode))
-                {
-                    // 跳过不应该绑定的键
-                    if (keyCode == KeyCode.None || keyCode == KeyCode.Escape)
-                        continue;
-                    
-                    BindKey(rebindingAction, keyCode);
-                    return;
-                }
+                // 跳过不应该绑定的键
+                if (keyCode == KeyCode.None || keyCode == KeyCode.Escape)
+                    continue;
+
+                BindKey(rebindingAction, keyCode);
+                return;
             }
         }
-        else
-        {
-            // 手柄重绑定
-            for (int i = 0; i < 20; i++)
-            {
-                KeyCode joystickButton = (KeyCode)((int)KeyCode.JoystickButton0 + i);
-                if (Input.GetKeyDown(joystickButton))
-                {
-                    string buttonName = $"JoystickButton{i}";
-                    BindGamepadButton(rebindingAction, buttonName);
-                    return;
-                }
-            }
-            
-            // 检查摇杆输入（作为备选手柄绑定方式）
-            CheckAxisForRebinding();
-        }
-    }
-    
-    void CheckAxisForRebinding()
-    {
-        // 这里可以添加对摇杆和触发器输入的检测
-        // 简化实现，实际项目中需要更详细的手柄输入检测
     }
     
     void BindKey(string actionName, KeyCode newKey)
@@ -356,30 +189,6 @@ public class CustomInputSystem : MonoBehaviour
         OnActionRebound?.Invoke(actionName);
         
         Debug.Log($"Bound {actionName} to {newKey}");
-    }
-    
-    void BindGamepadButton(string actionName, string newButton)
-    {
-        if (!actionMap.ContainsKey(actionName)) return;
-        
-        actionMap[actionName].currentGamepadButton = newButton;
-        isRebinding = false;
-        
-        SaveKeyBindings();
-        OnActionRebound?.Invoke(actionName);
-        
-        Debug.Log($"Bound {actionName} to {newButton}");
-    }
-    
-    IEnumerator RebindingTimeout(float timeout)
-    {
-        yield return new WaitForSeconds(timeout);
-        
-        if (isRebinding)
-        {
-            Debug.Log("Rebinding timed out");
-            CancelRebinding();
-        }
     }
     
     public void ResetToDefaults()

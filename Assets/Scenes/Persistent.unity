@@ -4186,7 +4186,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 5.673828, y: -16.077026}
+  m_AnchoredPosition: {x: 5.673828, y: -16.076996}
   m_SizeDelta: {x: -32.4818, y: -50.18}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &456827645
@@ -5683,10 +5683,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1958639387}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -32, y: -1}
-  m_SizeDelta: {x: 195.5536, y: 71.1148}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &637297756
 MonoBehaviour:
@@ -5773,7 +5773,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: 7.326233, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -6078,7 +6078,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 315, y: -27.00003}
+  m_AnchoredPosition: {x: 315, y: -27}
   m_SizeDelta: {x: -673.563, y: -87.0008}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &646389128
@@ -14298,6 +14298,9 @@ MonoBehaviour:
   gamepadCheckInterval: 0.5
   axisDeadZone: 0.2
   inputActions: []
+  OnActionRebound:
+    m_PersistentCalls:
+      m_Calls: []
   isRebinding: 0
 --- !u!4 &1583894852
 Transform:
@@ -16591,8 +16594,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -85, y: 357}
-  m_SizeDelta: {x: -1122.623, y: -728.5708}
+  m_AnchoredPosition: {x: 18.17987, y: 360.0526}
+  m_SizeDelta: {x: -554.8285, y: -734.6761}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1958639388
 MonoBehaviour:

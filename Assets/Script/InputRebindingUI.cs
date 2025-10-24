@@ -26,8 +26,8 @@ public class InputRebindingUI : MonoBehaviour
     // public Button down;
     // public Button left;
     // public Button right;
-    public Button confirm;    // 用于UI确认的按键绑定
-    public Button cancel;     // 用于UI取消的按键绑定
+    public Button confirm;
+    public Button cancel;
     
     private Dictionary<string, Button> actionButtons = new Dictionary<string, Button>();
     private CustomInputSystem inputSystem;
@@ -51,6 +51,7 @@ public class InputRebindingUI : MonoBehaviour
         actionButtons["MoveRight"] = moveRightButton;
         actionButtons["UIConfirm"] = confirm;
         actionButtons["UICancel"] = cancel;
+        
         // actionButtons["Menu"] = menuButton;
         // actionButtons["Attack"] = attackButton;
         // actionButtons["Interact"] = interactButton;
@@ -84,18 +85,13 @@ public class InputRebindingUI : MonoBehaviour
     {
         if (inputSystem.isRebinding) return;
         
-        // 显示等待输入提示
         waitingForInputPanel.SetActive(true);
-        waitingForInputText.text = $"等待输入...\n<size=70%>为 {GetDisplayName(actionName)} 绑定按键</size>";
+        // waitingForInputText.text = $"等待输入...\n<size=70%>为 {GetDisplayName(actionName)} 绑定按键</size>";
+        waitingForInputText.text = $"wait for...<size=70%> {actionName} rebinding</size>";
         
-        // 禁用所有按钮避免重复点击
-        SetAllButtonsInteractable(false);
-        
-        // 开始重绑定
-        inputSystem.StartRebinding(actionName, forKeyboard);
-        
-        // 开始检测重绑定完成
-        StartCoroutine(WaitForRebindingComplete());
+        SetAllButtonsInteractable(false);                               //禁用所有按钮避免重复点击
+        inputSystem.StartRebinding(actionName, forKeyboard);            //开始重绑定
+        StartCoroutine(WaitForRebindingComplete());              //开始检测重绑定完成
     }
 
     IEnumerator WaitForRebindingComplete()
@@ -104,8 +100,6 @@ public class InputRebindingUI : MonoBehaviour
         {
             yield return null;
         }
-        
-        // 重绑定完成，更新UI
         waitingForInputPanel.SetActive(false);
         SetAllButtonsInteractable(true);
         
