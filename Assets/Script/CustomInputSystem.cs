@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
+using UnityEngine.InputSystem.Utilities;
 
 public class CustomInputSystem : MonoBehaviour
 {
@@ -57,15 +60,6 @@ public class CustomInputSystem : MonoBehaviour
         else
         {
             Destroy(gameObject);
-        }
-    }
-    
-    void Update()
-    {
-        //DetectInputDevice();
-        if (isRebinding)
-        {
-            ProcessRebinding();
         }
     }
     
@@ -144,6 +138,7 @@ public class CustomInputSystem : MonoBehaviour
         isRebinding = true;
         rebindingAction = actionName;
         rebindingForKeyboard = forKeyboard;
+        ProcessRebinding();
     }
     
     public void CancelRebinding()
@@ -154,18 +149,7 @@ public class CustomInputSystem : MonoBehaviour
     
     void ProcessRebinding()
     {
-        foreach (KeyCode keyCode in System.Enum.GetValues(typeof(KeyCode)))
-        {
-            if (Input.GetKeyDown(keyCode))
-            {
-                // 跳过不应该绑定的键
-                if (keyCode == KeyCode.None || keyCode == KeyCode.Escape)
-                    continue;
 
-                BindKey(rebindingAction, keyCode);
-                return;
-            }
-        }
     }
     
     void BindKey(string actionName, KeyCode newKey)
