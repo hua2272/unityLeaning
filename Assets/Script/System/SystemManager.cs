@@ -7,7 +7,7 @@ using System.Collections.Generic;
 public class SystemManager : MonoBehaviour
 {
     public static SystemManager instance { get; private set; }
-    private CustomInputSystem customInputSystem;
+    private PlayerInputManager playerInputManager;
     
     [Header("UI References")]
     [SerializeField] private GameObject panel;                                       // 总面板
@@ -53,7 +53,7 @@ public class SystemManager : MonoBehaviour
 
     private void Start()
     {
-        customInputSystem = CustomInputSystem.instance;
+        playerInputManager = PlayerInputManager.instance;
     }
 
     private void InitializePanels()
@@ -187,7 +187,7 @@ public class SystemManager : MonoBehaviour
             // 向右选择选项
             HandleRightOption();
         }
-        else if (customInputSystem.GetButton("UIConfirm"))
+        else if (playerInputManager.GetButton("UIConfirm"))
         {
             // 触发当前选中的按钮
             TriggerCurrentButton();
@@ -289,10 +289,11 @@ public class SystemManager : MonoBehaviour
     private void TriggerCurrentButton()
     {
         Button currentButton = GetCurrentSelectedButton();
-        // if (currentButton != null && currentButton.interactable)
-        // {
-        //     currentButton.onClick.Invoke();
-        // }
+        if (currentButton.name.Equals("confirm"))
+        {
+            playerInputManager.StartRebinding("UIConfirm");
+            return;
+        }
         Debug.LogWarning("----------" + currentButton.name + "-----------");
         Debug.LogWarning("----------" + currentButtonIndex + "-----------");
         currentButton.onClick.Invoke();
