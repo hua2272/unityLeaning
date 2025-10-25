@@ -11,6 +11,10 @@ public class PlayerInputManager : MonoBehaviour
 {
     public static PlayerInputManager instance { get; private set; }
     
+    private bool inputBufferEnabled = false;
+    private float inputBufferTime = 0.2f;
+    private float lastRebindTime = 0f;
+    
     [Header("UI References")]
     public GameObject waitingForInputPanel;
     public TextMeshProUGUI waitingForInputText;
@@ -65,6 +69,22 @@ public class PlayerInputManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+        }
+    }
+    
+    // 输入缓冲方法
+    private void EnableInputBuffer()
+    {
+        inputBufferEnabled = true;
+        lastRebindTime = Time.unscaledTime;
+    }
+    
+    private void Update()
+    {
+        // 更新输入缓冲
+        if (inputBufferEnabled && Time.unscaledTime - lastRebindTime > inputBufferTime)
+        {
+            inputBufferEnabled = false;
         }
     }
 
@@ -166,10 +186,10 @@ public class PlayerInputManager : MonoBehaviour
             KeyCode newKeyCode = ConvertToKeyCode(keyControl.keyCode);          // 将新输入系统的 Key 转换为传统的 KeyCode
             if (newKeyCode == KeyCode.None || newKeyCode == KeyCode.Escape)     // 跳过不允许绑定的键
             {
-                Debug.Log("Rebinding cancelled");
                 CancelRebinding();
                 return;
             }
+            Debug.Log("----------1");
             BindKey(rebindingAction, newKeyCode);
         }
     }
@@ -191,21 +211,23 @@ public class PlayerInputManager : MonoBehaviour
         if (!actionMap.ContainsKey(actionName)) return;
         
         // 检查按键是否已被使用
-        foreach (var action in inputActions)
-        {
-            if (action.actionName != actionName && action.currentKeyboardKey == newKey)
-            {
-                Debug.LogWarning($"Key {newKey} is already bound to {action.actionName}");
-                // 重新开始重绑定
-                currentRebindingOperation = InputSystem.onAnyButtonPress.CallOnce(OnAnyButtonPressed);
-                return;
-            }
-        }
-        
+        // foreach (var action in inputActions)
+        // {
+        //     if (action.actionName != actionName && action.currentKeyboardKey == newKey)
+        //     {
+        //         Debug.LogWarning($"Key {newKey} is already bound to {action.actionName}");
+        //         // 重新开始重绑定
+        //         currentRebindingOperation = InputSystem.onAnyButtonPress.CallOnce(OnAnyButtonPressed);
+        //         return;
+        //     }
+        // }
         actionMap[actionName].currentKeyboardKey = newKey;
         isRebinding = false;
         currentRebindingOperation?.Dispose();
         currentRebindingOperation = null;
+        
+        // 启用输入缓冲
+        EnableInputBuffer();
         
         SaveKeyBindings();
         UpdateButtonText(actionButtons[actionName], actionName);
@@ -259,6 +281,7 @@ public class PlayerInputManager : MonoBehaviour
     
     public bool GetButton(string actionName)
     {
+        if (inputBufferEnabled) return false;
         if (!actionMap.ContainsKey(actionName))
         {
             Debug.LogWarning($"Input action '{actionName}' not found!");
@@ -271,6 +294,7 @@ public class PlayerInputManager : MonoBehaviour
     
     public bool GetButtonDown(string actionName)
     {
+        if (inputBufferEnabled) return false;
         if (!actionMap.ContainsKey(actionName))
         {
             Debug.LogWarning($"Input action '{actionName}' not found!");
@@ -283,6 +307,7 @@ public class PlayerInputManager : MonoBehaviour
     
     public bool GetButtonUp(string actionName)
     {
+        if (inputBufferEnabled) return false;
         if (!actionMap.ContainsKey(actionName))
         {
             Debug.LogWarning($"Input action '{actionName}' not found!");

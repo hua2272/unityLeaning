@@ -289,14 +289,6 @@ public class SystemManager : MonoBehaviour
     private void TriggerCurrentButton()
     {
         Button currentButton = GetCurrentSelectedButton();
-        if (currentButton.name.Equals("confirm"))
-        {
-            Debug.LogWarning("----------rebind-----------");
-            playerInputManager.StartRebinding("UIConfirm");
-            return;
-        }
-        Debug.Log("----------" + currentButton.name + "-----------");
-        Debug.Log("----------" + currentButtonIndex + "-----------");
         currentButton.onClick.Invoke();
     }
 
