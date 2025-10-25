@@ -48,8 +48,6 @@ public class PlayerInputManager : MonoBehaviour
     [Header("Input Actions")]
     public List<InputAction> inputActions = new List<InputAction>();
     
-    [HideInInspector] public UnityEvent<string> OnActionRebound = new UnityEvent<string>();
-    
     private Dictionary<string, Button> actionButtons = new Dictionary<string, Button>();
     private Dictionary<string, InputAction> actionMap = new Dictionary<string, InputAction>();
     public bool isRebinding = false;
@@ -135,7 +133,6 @@ public class PlayerInputManager : MonoBehaviour
         cancel.onClick.AddListener(() => StartRebinding("UICancel"));
         
         resetToDefaultsButton.onClick.AddListener(ResetToDefaults);
-        OnActionRebound.AddListener(OnActionReboundCallback); // 修复：使用不同的方法名
     }
 
     public void StartRebinding(string actionName)
@@ -164,28 +161,16 @@ public class PlayerInputManager : MonoBehaviour
 
     private void OnAnyButtonPressed(InputControl control)
     {
-        if (!isRebinding) return;
-        
-        // 只处理键盘按键
-        if (control is KeyControl keyControl)
+        if (control is KeyControl keyControl)                                   // 只处理键盘按键
         {
-            // 将新输入系统的 Key 转换为传统的 KeyCode
-            KeyCode newKeyCode = ConvertToKeyCode(keyControl.keyCode);
-            
-            // 跳过不允许绑定的键
-            if (newKeyCode == KeyCode.None || newKeyCode == KeyCode.Escape)
+            KeyCode newKeyCode = ConvertToKeyCode(keyControl.keyCode);          // 将新输入系统的 Key 转换为传统的 KeyCode
+            if (newKeyCode == KeyCode.None || newKeyCode == KeyCode.Escape)     // 跳过不允许绑定的键
             {
                 Debug.Log("Rebinding cancelled");
                 CancelRebinding();
                 return;
             }
-            
             BindKey(rebindingAction, newKeyCode);
-        }
-        else
-        {
-            // 如果不是键盘按键，继续等待
-            currentRebindingOperation = InputSystem.onAnyButtonPress.CallOnce(OnAnyButtonPressed);
         }
     }
 
@@ -223,22 +208,11 @@ public class PlayerInputManager : MonoBehaviour
         currentRebindingOperation = null;
         
         SaveKeyBindings();
-        OnActionRebound?.Invoke(actionName); // 修复：正确触发事件
+        UpdateButtonText(actionButtons[actionName], actionName);
         
         Debug.Log($"Bound {actionName} to {newKey}");
-        
         waitingForInputPanel.SetActive(false);
         SetAllButtonsInteractable(true);
-    }
-
-    // 修复：重命名回调方法，避免与事件同名
-    void OnActionReboundCallback(string actionName)
-    {
-        // 更新特定按钮的文本
-        if (actionButtons.ContainsKey(actionName))
-        {
-            UpdateButtonText(actionButtons[actionName], actionName);
-        }
     }
 
     void UpdateButtonText(Button button, string actionName)
@@ -471,8 +445,5 @@ public class PlayerInputManager : MonoBehaviour
     {
         // 清理资源
         currentRebindingOperation?.Dispose();
-        
-        // 移除事件监听
-        OnActionRebound.RemoveListener(OnActionReboundCallback);
     }
 }
