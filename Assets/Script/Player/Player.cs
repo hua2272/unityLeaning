@@ -6,7 +6,7 @@ public class Player : Entity
     public bool isBusy { get; private set; }
     public GameObject sword { get; private set; }
     [SerializeField] private DeathMenuController deathMenu;
-    public PlayerInputManager PlayerInputManager;
+    public PlayerInputManager PlayerInputManager { get; private set; }
     
     #region State
     public PlayerStateMachine stateMachine { get; private set; }

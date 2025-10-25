@@ -26,9 +26,9 @@ public class PlayerInputManager : MonoBehaviour
     public Button moveLeftButton;
     public Button moveRightButton;
     public Button jumpButton;
-    // public Button attackButton;
-    // public Button interactButton;
-    // public Button menuButton;
+    public Button attack1Button;
+    public Button interactButton;
+    public Button menuButton;
     
     [Header("System Button Bindings")]
     public Button confirm;
@@ -60,7 +60,7 @@ public class PlayerInputManager : MonoBehaviour
 
     void Awake()
     {
-        Debug.unityLogger.Log("-------InputRebindingUI instance-------");
+        Debug.unityLogger.Log("-------PlayerInputManager instance-------");
         if (instance == null)
         {
             instance = this;
@@ -106,7 +106,7 @@ public class PlayerInputManager : MonoBehaviour
             inputActions.Add(new InputAction("MoveLeft", KeyCode.A));
             inputActions.Add(new InputAction("MoveRight", KeyCode.D));
             inputActions.Add(new InputAction("Jump", KeyCode.Space));
-            inputActions.Add(new InputAction("Attack", KeyCode.Mouse0));
+            inputActions.Add(new InputAction("Attack1", KeyCode.Mouse0));
             inputActions.Add(new InputAction("Interact", KeyCode.E));
             inputActions.Add(new InputAction("Menu", KeyCode.Escape));
             inputActions.Add(new InputAction("UIConfirm", KeyCode.Return));
@@ -126,11 +126,14 @@ public class PlayerInputManager : MonoBehaviour
     void InitializeButtonBindings()
     {
         // 手动绑定每个按钮到对应的动作
-        actionButtons["Jump"] = jumpButton;
         actionButtons["MoveUp"] = moveUpButton;
         actionButtons["MoveDown"] = moveDownButton;
         actionButtons["MoveLeft"] = moveLeftButton;
         actionButtons["MoveRight"] = moveRightButton;
+        actionButtons["Jump"] = jumpButton;
+        actionButtons["Attack1"] = attack1Button;
+        actionButtons["Interact"] = interactButton;
+        actionButtons["Menu"] = menuButton;
         actionButtons["UIConfirm"] = confirm;
         actionButtons["UICancel"] = cancel;
         
@@ -144,11 +147,15 @@ public class PlayerInputManager : MonoBehaviour
     void SetupEventListeners()
     {
         // 为每个动作按钮添加点击事件
-        jumpButton.onClick.AddListener(() => StartRebinding("Jump"));
         moveUpButton.onClick.AddListener(() => StartRebinding("MoveUp"));
         moveDownButton.onClick.AddListener(() => StartRebinding("MoveDown"));
         moveLeftButton.onClick.AddListener(() => StartRebinding("MoveLeft"));
         moveRightButton.onClick.AddListener(() => StartRebinding("MoveRight"));
+        jumpButton.onClick.AddListener(() => StartRebinding("Jump"));
+        attack1Button.onClick.AddListener(() => StartRebinding("Attack1"));
+        interactButton.onClick.AddListener(() => StartRebinding("Interact"));
+        menuButton.onClick.AddListener(() => StartRebinding("Menu"));
+        
         confirm.onClick.AddListener(() => StartRebinding("UIConfirm"));
         cancel.onClick.AddListener(() => StartRebinding("UICancel"));
         
