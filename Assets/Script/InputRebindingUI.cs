@@ -106,7 +106,7 @@ public class PlayerInputManager : MonoBehaviour
             inputActions.Add(new InputAction("MoveLeft", KeyCode.A));
             inputActions.Add(new InputAction("MoveRight", KeyCode.D));
             inputActions.Add(new InputAction("Jump", KeyCode.Space));
-            inputActions.Add(new InputAction("Attack1", KeyCode.Mouse0));
+            inputActions.Add(new InputAction("Attack1", KeyCode.J));
             inputActions.Add(new InputAction("Interact", KeyCode.E));
             inputActions.Add(new InputAction("Menu", KeyCode.Escape));
             inputActions.Add(new InputAction("UIConfirm", KeyCode.Return));
@@ -196,7 +196,6 @@ public class PlayerInputManager : MonoBehaviour
                 CancelRebinding();
                 return;
             }
-            Debug.Log("----------1");
             BindKey(rebindingAction, newKeyCode);
         }
     }

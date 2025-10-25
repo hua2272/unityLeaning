@@ -8,6 +8,7 @@ public class PlayerState
     protected Player player;
     protected Rigidbody2D rb;
     protected PlayerEffectManager playerEffectManager;
+    protected PlayerInputManager playerInputManager;
     
     protected float xInput;
     protected float yInput;
@@ -29,12 +30,13 @@ public class PlayerState
         rb = player.rb;
         triggerCalled = false;
         playerEffectManager = PlayerEffectManager.instance;
+        playerInputManager = PlayerInputManager.instance;
     }
     
     public virtual void Update()
     {
         // Vector2 movement = player.customInputSystem.GetMovementAxis();
-        Vector2 movement = PlayerInputManager.instance.GetMovementAxis();
+        Vector2 movement = playerInputManager.GetMovementAxis();
         xInput = movement.x;
         yInput = movement.y;
         stateTimer -= Time.deltaTime;
