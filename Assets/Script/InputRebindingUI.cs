@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,25 +15,14 @@ public class PlayerInputManager : MonoBehaviour
     private bool inputBufferEnabled = false;
     private float inputBufferTime = 0.2f;
     private float lastRebindTime = 0f;
+
+    [Header("Scroll View Settings")]
+    public Transform bindingsContent; // ScrollView 的 Content 对象
+    public GameObject bindingButtonPrefab; // 按键绑定按钮的预制体
     
     [Header("UI References")]
     public GameObject waitingForInputPanel;
     public TextMeshProUGUI waitingForInputText;
-    public Button resetToDefaultsButton;
-    
-    [Header("Action Button Bindings")]
-    public Button moveUpButton;
-    public Button moveDownButton;
-    public Button moveLeftButton;
-    public Button moveRightButton;
-    public Button jumpButton;
-    public Button attack1Button;
-    public Button interactButton;
-    public Button menuButton;
-    
-    [Header("System Button Bindings")]
-    public Button confirm;
-    public Button cancel;
     
     [System.Serializable]
     public class InputAction
@@ -52,6 +42,7 @@ public class PlayerInputManager : MonoBehaviour
     [Header("Input Actions")]
     public List<InputAction> inputActions = new List<InputAction>();
     
+    private Dictionary<string, GameObject> actionButtonObjects = new Dictionary<string, GameObject>();
     private Dictionary<string, Button> actionButtons = new Dictionary<string, Button>();
     private Dictionary<string, InputAction> actionMap = new Dictionary<string, InputAction>();
     public bool isRebinding = false;
@@ -72,6 +63,19 @@ public class PlayerInputManager : MonoBehaviour
         }
     }
     
+    void Start()
+    {
+        // 延迟一帧创建按钮，确保UI完全初始化
+        StartCoroutine(DelayedStart());
+    }
+
+    IEnumerator DelayedStart()
+    {
+        yield return null;
+        CreateBindingButtons();
+        waitingForInputPanel.SetActive(false);
+    }
+    
     // 输入缓冲方法
     private void EnableInputBuffer()
     {
@@ -86,14 +90,6 @@ public class PlayerInputManager : MonoBehaviour
         {
             inputBufferEnabled = false;
         }
-    }
-
-    void Start()
-    {
-        InitializeButtonBindings();
-        SetupEventListeners();
-        
-        waitingForInputPanel.SetActive(false);
     }
 
     void InitializeInputSystem()
@@ -122,46 +118,221 @@ public class PlayerInputManager : MonoBehaviour
         // 加载保存的按键设置
         LoadKeyBindings();
     }
-
-    void InitializeButtonBindings()
+    
+    void CreateBindingButtons()
     {
-        // 手动绑定每个按钮到对应的动作
-        actionButtons["MoveUp"] = moveUpButton;
-        actionButtons["MoveDown"] = moveDownButton;
-        actionButtons["MoveLeft"] = moveLeftButton;
-        actionButtons["MoveRight"] = moveRightButton;
-        actionButtons["Jump"] = jumpButton;
-        actionButtons["Attack1"] = attack1Button;
-        actionButtons["Interact"] = interactButton;
-        actionButtons["Menu"] = menuButton;
-        actionButtons["UIConfirm"] = confirm;
-        actionButtons["UICancel"] = cancel;
-        
-        // 初始化所有按钮文本
-        foreach (var kvp in actionButtons)
+        // 清空现有按钮
+        foreach (Transform child in bindingsContent)
         {
-            UpdateButtonText(kvp.Value, kvp.Key);
+            Destroy(child.gameObject);
+        }
+        actionButtonObjects.Clear();
+        actionButtons.Clear();
+
+        // 创建分类和按钮
+        CreateCategoryTitle("a");
+        CreateButtonForAction("MoveUp");
+        CreateButtonForAction("MoveDown");
+        CreateButtonForAction("MoveLeft");
+        CreateButtonForAction("MoveRight");
+        CreateButtonForAction("Jump");
+        
+        CreateCategoryTitle("b");
+        CreateButtonForAction("Attack1");
+        CreateButtonForAction("Interact");
+        CreateButtonForAction("Menu");
+        
+        CreateCategoryTitle("c");
+        CreateButtonForAction("UIConfirm");
+        CreateButtonForAction("UICancel");
+        
+        CreateResetButton();
+        
+        RefreshLayout();
+    }
+    
+    void CreateCategoryTitle(string title)
+    {
+        GameObject titleObj = new GameObject(title + "Title", typeof(RectTransform));
+        titleObj.transform.SetParent(bindingsContent);
+        
+        LayoutElement layoutElem = titleObj.AddComponent<LayoutElement>();
+        layoutElem.preferredHeight = 40;
+        
+        RectTransform rect = titleObj.GetComponent<RectTransform>();
+        rect.sizeDelta = new Vector2(0, 40);
+        
+        TextMeshProUGUI text = titleObj.AddComponent<TextMeshProUGUI>();
+        text.text = title;
+        text.fontSize = 22;
+        text.alignment = TextAlignmentOptions.Center;
+        text.color = new Color(0.2f, 0.2f, 0.2f);
+        text.fontStyle = FontStyles.Bold;
+    }
+
+    void CreateButtonForAction(string actionName)
+    {
+        if (!actionMap.ContainsKey(actionName))
+        {
+            Debug.LogWarning($"Action {actionName} not found in actionMap!");
+            return;
+        }
+
+        if (bindingButtonPrefab == null)
+        {
+            Debug.LogError("BindingButtonPrefab is not assigned!");
+            return;
+        }
+
+        // 实例化按钮预制体
+        GameObject buttonObj = Instantiate(bindingButtonPrefab, bindingsContent);
+        
+        // 设置Layout Element
+        LayoutElement layoutElem = buttonObj.GetComponent<LayoutElement>();
+        if (layoutElem == null)
+        {
+            layoutElem = buttonObj.AddComponent<LayoutElement>();
+        }
+        layoutElem.preferredHeight = 50;
+        
+        // 更新按钮显示
+        UpdateButtonVisuals(buttonObj, actionName);
+        
+        // 找到内部的KeyButton并添加点击事件
+        Transform keyButtonTransform = buttonObj.transform.Find("KeyButton");
+        if (keyButtonTransform != null)
+        {
+            Button keyButton = keyButtonTransform.GetComponent<Button>();
+            if (keyButton != null)
+            {
+                keyButton.onClick.RemoveAllListeners();
+                keyButton.onClick.AddListener(() => StartRebinding(actionName));
+                
+                // 存储按钮引用
+                actionButtons[actionName] = keyButton;
+            }
+            else
+            {
+                Debug.LogError("KeyButton component not found on KeyButton object!");
+            }
+        }
+        else
+        {
+            Debug.LogError("KeyButton child not found in button prefab!");
+        }
+        
+        // 存储整个按钮对象的引用
+        actionButtonObjects[actionName] = buttonObj;
+    }
+
+    void UpdateButtonVisuals(GameObject buttonObj, string actionName)
+    {
+        if (!actionMap.ContainsKey(actionName)) return;
+        
+        var action = actionMap[actionName];
+        
+        // 更新动作名称文本
+        Transform actionNameText = buttonObj.transform.Find("ActionNameText");
+        if (actionNameText != null)
+        {
+            TextMeshProUGUI textComp = actionNameText.GetComponent<TextMeshProUGUI>();
+            if (textComp != null)
+            {
+                textComp.text = GetDisplayName(action.actionName);
+            }
+        }
+        else
+        {
+            Debug.LogError("ActionNameText not found in button prefab!");
+        }
+        
+        // 更新按键名称文本（在KeyButton下面）
+        Transform keyButtonTransform = buttonObj.transform.Find("KeyButton");
+        if (keyButtonTransform != null)
+        {
+            Transform keyTextTransform = keyButtonTransform.Find("Text");
+            if (keyTextTransform != null)
+            {
+                TextMeshProUGUI textComp = keyTextTransform.GetComponent<TextMeshProUGUI>();
+                if (textComp != null)
+                {
+                    textComp.text = GetKeyDisplayName(action.currentKeyboardKey);
+                }
+            }
+            else
+            {
+                Debug.LogError("Text child not found under KeyButton!");
+            }
+        }
+    }
+    
+        void CreateResetButton()
+    {
+        GameObject buttonObj = Instantiate(bindingButtonPrefab, bindingsContent);
+        
+        LayoutElement layoutElem = buttonObj.GetComponent<LayoutElement>();
+        if (layoutElem == null)
+        {
+            layoutElem = buttonObj.AddComponent<LayoutElement>();
+        }
+        layoutElem.preferredHeight = 50;
+        
+        // 修改重置按钮的显示
+        Transform actionNameText = buttonObj.transform.Find("ActionNameText");
+        if (actionNameText != null)
+        {
+            TextMeshProUGUI textComp = actionNameText.GetComponent<TextMeshProUGUI>();
+            if (textComp != null)
+            {
+                textComp.text = "重置所有设置为默认值";
+                textComp.color = Color.red;
+                textComp.alignment = TextAlignmentOptions.Center;
+            }
+        }
+        
+        // 隐藏按键按钮或修改其显示
+        Transform keyButtonTransform = buttonObj.transform.Find("KeyButton");
+        if (keyButtonTransform != null)
+        {
+            // 修改按键按钮的文本
+            Transform keyTextTransform = keyButtonTransform.Find("Text");
+            if (keyTextTransform != null)
+            {
+                TextMeshProUGUI textComp = keyTextTransform.GetComponent<TextMeshProUGUI>();
+                if (textComp != null)
+                {
+                    textComp.text = "重置";
+                }
+            }
+            
+            // 修改按键按钮的颜色
+            Button keyButton = keyButtonTransform.GetComponent<Button>();
+            if (keyButton != null)
+            {
+                ColorBlock colors = keyButton.colors;
+                colors.normalColor = new Color(0.8f, 0.2f, 0.2f);
+                colors.highlightedColor = new Color(1f, 0.3f, 0.3f);
+                colors.pressedColor = new Color(0.6f, 0.1f, 0.1f);
+                keyButton.colors = colors;
+                
+                keyButton.onClick.RemoveAllListeners();
+                keyButton.onClick.AddListener(ResetToDefaults);
+            }
         }
     }
 
-    void SetupEventListeners()
+    void RefreshLayout()
     {
-        // 为每个动作按钮添加点击事件
-        moveUpButton.onClick.AddListener(() => StartRebinding("MoveUp"));
-        moveDownButton.onClick.AddListener(() => StartRebinding("MoveDown"));
-        moveLeftButton.onClick.AddListener(() => StartRebinding("MoveLeft"));
-        moveRightButton.onClick.AddListener(() => StartRebinding("MoveRight"));
-        jumpButton.onClick.AddListener(() => StartRebinding("Jump"));
-        attack1Button.onClick.AddListener(() => StartRebinding("Attack1"));
-        interactButton.onClick.AddListener(() => StartRebinding("Interact"));
-        menuButton.onClick.AddListener(() => StartRebinding("Menu"));
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(bindingsContent as RectTransform);
         
-        confirm.onClick.AddListener(() => StartRebinding("UIConfirm"));
-        cancel.onClick.AddListener(() => StartRebinding("UICancel"));
-        
-        resetToDefaultsButton.onClick.AddListener(ResetToDefaults);
+        ScrollRect scrollRect = bindingsContent?.parent?.parent?.GetComponent<ScrollRect>();
+        if (scrollRect != null)
+        {
+            scrollRect.verticalNormalizedPosition = 1;
+        }
     }
-
+    
     public void StartRebinding(string actionName)
     {
         if (isRebinding) return;
@@ -182,7 +353,6 @@ public class PlayerInputManager : MonoBehaviour
         
         Debug.Log($"Press any key to bind for {actionName}... (Press Escape to cancel)");
         
-        // 使用新输入系统的事件监听
         currentRebindingOperation = InputSystem.onAnyButtonPress.CallOnce(OnAnyButtonPressed);
     }
 
@@ -216,42 +386,35 @@ public class PlayerInputManager : MonoBehaviour
     {
         if (!actionMap.ContainsKey(actionName)) return;
         
-        // 检查按键是否已被使用
-        // foreach (var action in inputActions)
-        // {
-        //     if (action.actionName != actionName && action.currentKeyboardKey == newKey)
-        //     {
-        //         Debug.LogWarning($"Key {newKey} is already bound to {action.actionName}");
-        //         // 重新开始重绑定
-        //         currentRebindingOperation = InputSystem.onAnyButtonPress.CallOnce(OnAnyButtonPressed);
-        //         return;
-        //     }
-        // }
         actionMap[actionName].currentKeyboardKey = newKey;
         isRebinding = false;
         currentRebindingOperation?.Dispose();
         currentRebindingOperation = null;
         
-        // 启用输入缓冲
         EnableInputBuffer();
-        
         SaveKeyBindings();
-        UpdateButtonText(actionButtons[actionName], actionName);
+        
+        // 更新按钮显示
+        if (actionButtonObjects.ContainsKey(actionName))
+        {
+            UpdateButtonVisuals(actionButtonObjects[actionName], actionName);
+        }
         
         Debug.Log($"Bound {actionName} to {newKey}");
         waitingForInputPanel.SetActive(false);
         SetAllButtonsInteractable(true);
     }
 
-    void UpdateButtonText(Button button, string actionName)
+    void UpdateButtonText(string actionName)
     {
-        if (actionMap.ContainsKey(actionName))
+        if (actionMap.ContainsKey(actionName) && actionButtons.ContainsKey(actionName))
         {
             var action = actionMap[actionName];
+            Button button = actionButtons[actionName];
             TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
             if (buttonText != null)
             {
-                buttonText.text = GetKeyDisplayName(action.currentKeyboardKey);
+                buttonText.text = $"{GetDisplayName(action.actionName)}: {GetKeyDisplayName(action.currentKeyboardKey)}";
             }
         }
     }
@@ -260,9 +423,11 @@ public class PlayerInputManager : MonoBehaviour
     {
         foreach (var button in actionButtons.Values)
         {
-            button.interactable = interactable;
+            if (button != null)
+            {
+                button.interactable = interactable;
+            }
         }
-        resetToDefaultsButton.interactable = interactable;
     }
 
     public void ResetToDefaults()
@@ -270,16 +435,10 @@ public class PlayerInputManager : MonoBehaviour
         foreach (var action in inputActions)
         {
             action.currentKeyboardKey = action.defaultKeyboardKey;
+            UpdateButtonText(action.actionName);
         }
         
         SaveKeyBindings();
-        
-        // 更新所有按钮文本
-        foreach (var kvp in actionButtons)
-        {
-            UpdateButtonText(kvp.Value, kvp.Key);
-        }
-        
         Debug.Log("All bindings reset to defaults");
     }
 
@@ -433,16 +592,16 @@ public class PlayerInputManager : MonoBehaviour
     {
         return actionName switch
         {
-            "MoveUp" => "向上移动",
-            "MoveDown" => "向下移动", 
-            "MoveLeft" => "向左移动",
-            "MoveRight" => "向右移动",
-            "Jump" => "跳跃",
-            "UIConfirm" => "确认",
-            "UICancel" => "取消",
-            "Attack" => "攻击",
-            "Interact" => "交互",
-            "Menu" => "菜单",
+            "MoveUp" => "MoveUp",
+            "MoveDown" => "MoveDown", 
+            "MoveLeft" => "MoveLeft",
+            "MoveRight" => "MoveRight",
+            "Jump" => "Jump",
+            "UIConfirm" => "UIConfirm",
+            "UICancel" => "UICancel",
+            "Attack" => "Attack",
+            "Interact" => "Interact",
+            "Menu" => "Menu",
             _ => actionName
         };
     }
@@ -451,22 +610,22 @@ public class PlayerInputManager : MonoBehaviour
     {
         return keyCode switch
         {
-            KeyCode.Mouse0 => "鼠标左键",
-            KeyCode.Mouse1 => "鼠标右键",
-            KeyCode.Mouse2 => "鼠标中键",
-            KeyCode.UpArrow => "上箭头",
-            KeyCode.DownArrow => "下箭头", 
-            KeyCode.LeftArrow => "左箭头",
-            KeyCode.RightArrow => "右箭头",
-            KeyCode.Return => "回车",
+            KeyCode.Mouse0 => "Mouse0",
+            KeyCode.Mouse1 => "Mouse1",
+            KeyCode.Mouse2 => "Mouse2",
+            KeyCode.UpArrow => "Up",
+            KeyCode.DownArrow => "DownArrow", 
+            KeyCode.LeftArrow => "LeftArrow",
+            KeyCode.RightArrow => "RightArrow",
+            KeyCode.Return => "Return",
             KeyCode.Escape => "ESC",
-            KeyCode.Space => "空格",
-            KeyCode.LeftShift => "左Shift",
-            KeyCode.RightShift => "右Shift",
-            KeyCode.LeftControl => "左Ctrl",
-            KeyCode.RightControl => "右Ctrl",
-            KeyCode.LeftAlt => "左Alt",
-            KeyCode.RightAlt => "右Alt",
+            KeyCode.Space => "Space",
+            KeyCode.LeftShift => "LeftShift",
+            KeyCode.RightShift => "RightShift",
+            KeyCode.LeftControl => "LeftControl",
+            KeyCode.RightControl => "RightControl",
+            KeyCode.LeftAlt => "LeftAlt",
+            KeyCode.RightAlt => "RightAlt",
             _ => keyCode.ToString()
         };
     }
