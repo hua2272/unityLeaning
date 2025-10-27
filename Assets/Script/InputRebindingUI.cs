@@ -174,17 +174,8 @@ public class PlayerInputManager : MonoBehaviour
 
     public void CreateButtonForAction(string actionName)
     {
-        if (!actionMap.ContainsKey(actionName))
-        {
-            Debug.LogWarning($"Action {actionName} not found in actionMap!");
-            return;
-        }
-
-        if (bindingButtonPrefab == null)
-        {
-            Debug.LogError("BindingButtonPrefab is not assigned!");
-            return;
-        }
+        if (!actionMap.ContainsKey(actionName)) return;
+        if (bindingButtonPrefab == null) return;
 
         // 实例化按钮预制体
         GameObject buttonObj = Instantiate(bindingButtonPrefab, bindingsContent);
@@ -213,59 +204,57 @@ public class PlayerInputManager : MonoBehaviour
                 // 存储按钮引用
                 actionButtons[actionName] = keyButton;
             }
-            else
-            {
-                Debug.LogError("KeyButton component not found on KeyButton object!");
-            }
         }
-        else
-        {
-            Debug.LogError("KeyButton child not found in button prefab!");
-        }
-        
         // 存储整个按钮对象的引用
         actionButtonObjects[actionName] = buttonObj;
     }
 
     void UpdateButtonVisuals(GameObject buttonObj, string actionName)
     {
-        if (!actionMap.ContainsKey(actionName)) return;
-        
         var action = actionMap[actionName];
         
-        // 更新动作名称文本
-        Transform actionNameText = buttonObj.transform.Find("ActionNameText");
-        if (actionNameText != null)
-        {
-            TextMeshProUGUI textComp = actionNameText.GetComponent<TextMeshProUGUI>();
-            if (textComp != null)
-            {
-                textComp.text = GetDisplayName(action.actionName);
-            }
-        }
-        else
-        {
-            Debug.LogError("ActionNameText not found in button prefab!");
-        }
+        RectTransform rt = buttonObj.GetComponent<RectTransform>();         // 设置正确的缩放和锚点
+        rt.localScale = Vector3.one;
+        rt.anchorMin = new Vector2(0, 1); // 左上锚点
+        rt.anchorMax = new Vector2(1, 1); // 右上锚点
+        rt.pivot = new Vector2(0.5f, 1); // 顶部中心轴心
         
-        // 更新按键名称文本（在KeyButton下面）
-        Transform keyButtonTransform = buttonObj.transform.Find("KeyButton");
-        if (keyButtonTransform != null)
-        {
-            Transform keyTextTransform = keyButtonTransform.Find("Text");
-            if (keyTextTransform != null)
-            {
-                TextMeshProUGUI textComp = keyTextTransform.GetComponent<TextMeshProUGUI>();
-                if (textComp != null)
-                {
-                    textComp.text = GetKeyDisplayName(action.currentKeyboardKey);
-                }
-            }
-            else
-            {
-                Debug.LogError("Text child not found under KeyButton!");
-            }
-        }
+        Transform actionNameText = buttonObj.transform.Find("ActionNameText");  // 更新动作名称文本
+        RectTransform textRt = actionNameText.GetComponent<RectTransform>();
+        // 设置文本的锚点 - 左侧垂直居中
+        textRt.anchorMin = new Vector2(0, 0.5f);
+        textRt.anchorMax = new Vector2(0, 0.5f);
+        textRt.pivot = new Vector2(0, 0.5f);
+        // 设置位置偏移
+        textRt.anchoredPosition = new Vector2(10, 0);
+        // 设置文本的宽度和高度
+        textRt.sizeDelta = new Vector2(200, 30);
+
+        TextMeshProUGUI actionText = actionNameText.GetComponent<TextMeshProUGUI>();
+        actionText.text = GetDisplayName(action.actionName);
+        
+        
+        Transform keyButtonTransform = buttonObj.transform.Find("KeyButton");       // 更新按键名称文本
+
+        RectTransform keyButtonRt = keyButtonTransform.GetComponent<RectTransform>();
+        // 设置按键按钮的锚点 - 右侧垂直居中
+        keyButtonRt.anchorMin = new Vector2(1, 0.5f);
+        keyButtonRt.anchorMax = new Vector2(1, 0.5f);
+        keyButtonRt.pivot = new Vector2(1, 0.5f);
+        // 设置位置偏移
+        keyButtonRt.anchoredPosition = new Vector2(-10, 0);
+        // 设置按键按钮的宽度和高度
+        keyButtonRt.sizeDelta = new Vector2(100, 40);
+
+        Transform keyTextTransform = keyButtonTransform.Find("Text");
+        RectTransform keyTextRt = keyTextTransform.GetComponent<RectTransform>();
+        keyTextRt.anchorMin = Vector2.zero;
+        keyTextRt.anchorMax = Vector2.one;
+        keyTextRt.sizeDelta = Vector2.zero;
+        keyTextRt.offsetMin = Vector2.zero;
+        keyTextRt.offsetMax = Vector2.zero;
+        TextMeshProUGUI buttonText = keyTextTransform.GetComponent<TextMeshProUGUI>();
+        buttonText.text = GetKeyDisplayName(action.currentKeyboardKey);
     }
     
     void CreateResetButton()
