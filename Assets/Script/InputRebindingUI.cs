@@ -109,14 +109,16 @@ public class PlayerInputManager : MonoBehaviour
             inputActions.Add(new InputAction("UICancel", KeyCode.Escape));
         }
         
-        // 构建快速查找字典
         foreach (var action in inputActions)
         {
-            actionMap[action.actionName] = action;
+            actionMap[action.actionName] = action;                      // 构建快速查找字典
+            
+            if (PlayerPrefs.HasKey($"Key_{action.actionName}"))         // 加载保存的按键设置
+            {
+                int keyValue = PlayerPrefs.GetInt($"Key_{action.actionName}");
+                action.currentKeyboardKey = (KeyCode)keyValue;
+            }
         }
-        
-        // 加载保存的按键设置
-        LoadKeyBindings();
     }
     
     void CreateBindingButtons()
@@ -170,7 +172,7 @@ public class PlayerInputManager : MonoBehaviour
         text.fontStyle = FontStyles.Bold;
     }
 
-    void CreateButtonForAction(string actionName)
+    public void CreateButtonForAction(string actionName)
     {
         if (!actionMap.ContainsKey(actionName))
         {
@@ -266,7 +268,7 @@ public class PlayerInputManager : MonoBehaviour
         }
     }
     
-        void CreateResetButton()
+    void CreateResetButton()
     {
         GameObject buttonObj = Instantiate(bindingButtonPrefab, bindingsContent);
         
@@ -561,8 +563,6 @@ public class PlayerInputManager : MonoBehaviour
     }
     
     #endregion
-
-    #region 数据持久化
     
     public void SaveKeyBindings()
     {
@@ -572,20 +572,6 @@ public class PlayerInputManager : MonoBehaviour
         }
         PlayerPrefs.Save();
     }
-    
-    public void LoadKeyBindings()
-    {
-        foreach (var action in inputActions)
-        {
-            if (PlayerPrefs.HasKey($"Key_{action.actionName}"))
-            {
-                int keyValue = PlayerPrefs.GetInt($"Key_{action.actionName}");
-                action.currentKeyboardKey = (KeyCode)keyValue;
-            }
-        }
-    }
-    
-    #endregion
 
     #region 显示名称转换
     string GetDisplayName(string actionName)

@@ -22,7 +22,6 @@ public class SkillTreeManager : MonoBehaviour
         else
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
         }
     }
     
