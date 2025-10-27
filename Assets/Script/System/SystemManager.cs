@@ -145,6 +145,12 @@ public class SystemManager : MonoBehaviour
 
     private void Update()
     {
+        // 如果正在重绑定，完全跳过所有输入处理
+        if (playerInputManager != null && playerInputManager.isRebinding)
+        {
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             HandleEscapeKey();
@@ -161,35 +167,28 @@ public class SystemManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.W))
         {
-            // 向上选择
             currentButtonIndex--;
             if (currentButtonIndex < 0)
                 currentButtonIndex = allButtons.Count - 1;
-            
             UpdateButtonSelection();
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {
-            // 向下选择
             currentButtonIndex++;
             if (currentButtonIndex >= allButtons.Count)
                 currentButtonIndex = 0;
-            
             UpdateButtonSelection();
         }
         else if (Input.GetKeyDown(KeyCode.A))
         {
-            // 向左选择选项
             HandleLeftOption();
         }
         else if (Input.GetKeyDown(KeyCode.D))
         {
-            // 向右选择选项
             HandleRightOption();
         }
         else if (playerInputManager.GetButton("UIConfirm"))
         {
-            // 触发当前选中的按钮
             TriggerCurrentButton();
         }
     }
