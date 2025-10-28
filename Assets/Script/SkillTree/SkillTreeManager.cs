@@ -14,7 +14,7 @@ public class SkillTreeManager : MonoBehaviour
     
     private void Awake()
     {
-        Debug.Log("-------SkillTreeManager instance------->");
+        Debug.Log("-------SkillTreeManager instance-------");
         if (instance != null)
         {
             Destroy(instance.gameObject);

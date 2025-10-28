@@ -13,6 +13,9 @@ public class PlayerInputManager : MonoBehaviour
     public static PlayerInputManager instance { get; private set; }
     
     public UnityEvent OnButtonsCreated;
+    // 添加按键变化事件
+    public class KeyBindingChangedEvent : UnityEvent<string, KeyCode> { }
+    public KeyBindingChangedEvent OnKeyBindingChanged = new KeyBindingChangedEvent();
     
     private bool inputBufferEnabled = false;
     private float inputBufferTime = 0.2f;
@@ -388,6 +391,7 @@ public class PlayerInputManager : MonoBehaviour
         EnableInputBuffer();
         SaveKeyBindings();
         
+        OnKeyBindingChanged?.Invoke(actionName, newKey);//更新提示按钮的文本
         // 更新按钮显示
         if (actionButtonObjects.ContainsKey(actionName))
         {
@@ -430,6 +434,7 @@ public class PlayerInputManager : MonoBehaviour
         {
             action.currentKeyboardKey = action.defaultKeyboardKey;
             UpdateButtonText(action.actionName);
+            OnKeyBindingChanged?.Invoke(action.actionName, action.defaultKeyboardKey);
         }
         
         SaveKeyBindings();
