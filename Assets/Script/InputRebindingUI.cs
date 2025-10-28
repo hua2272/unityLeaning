@@ -12,6 +12,8 @@ public class PlayerInputManager : MonoBehaviour
 {
     public static PlayerInputManager instance { get; private set; }
     
+    public UnityEvent OnButtonsCreated;
+    
     private bool inputBufferEnabled = false;
     private float inputBufferTime = 0.2f;
     private float lastRebindTime = 0f;
@@ -151,6 +153,7 @@ public class PlayerInputManager : MonoBehaviour
         CreateResetButton();
         
         RefreshLayout();
+        OnButtonsCreated?.Invoke();
     }
     
     void CreateCategoryTitle(string title)

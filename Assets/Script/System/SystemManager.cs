@@ -21,8 +21,10 @@ public class SystemManager : MonoBehaviour
     
     public int globalOptionIndex { get; private set; } = 0;                              // 全局选项索引
     
-    // 统一的按钮管理
-    private List<Button> allButtons = new List<Button>();
+    // 分面板按钮管理
+    private List<Button> mainPanelButtons = new List<Button>();
+    private Dictionary<GameObject, List<Button>> subPanelButtons = new Dictionary<GameObject, List<Button>>();
+    private List<Button> currentPanelButtons = new List<Button>();
     private int currentButtonIndex = 0;
     
     // 面板层级管理
@@ -47,13 +49,29 @@ public class SystemManager : MonoBehaviour
             Destroy(gameObject);
         }
         InitializePanels();
-        CollectAllButtons();
+        CollectPanelButtons();
         FindAllButtonTexts();
     }
 
     private void Start()
     {
         playerInputManager = PlayerInputManager.instance;
+        playerInputManager.OnButtonsCreated.AddListener(OnInputButtonsCreated);
+    }
+    
+    // 当输入按钮创建完成后调用
+    private void OnInputButtonsCreated()
+    {
+        // 重新收集所有按钮
+        CollectPanelButtons();
+        FindAllButtonTexts();
+    
+        // 如果当前在按键设置面板，更新选择
+        if (currentPanelLevel == PanelLevel.Sub)
+        {
+            UpdateCurrentPanelButtons();
+            UpdateButtonSelection();
+        }
     }
 
     private void InitializePanels()
@@ -73,26 +91,53 @@ public class SystemManager : MonoBehaviour
         currentSubPanelIndex = -1;
     }
 
-    private void CollectAllButtons()
+    // 分别收集各个面板的按钮
+    private void CollectPanelButtons()
     {
-        allButtons.Clear();
+        mainPanelButtons.Clear();
+        subPanelButtons.Clear();
         
-        // 收集主面板的所有按钮
+        // 收集主面板的按钮
         if (mainPanel != null)
         {
             Button[] buttons = mainPanel.GetComponentsInChildren<Button>(true);
-            allButtons.AddRange(buttons);
+            mainPanelButtons.AddRange(buttons);
         }
 
-        // 收集所有二级面板的所有按钮
+        // 收集每个二级面板的按钮
         foreach (var subPanel in subPanels)
         {
-            if (subPanel != null)
+            if (subPanel != null && !subPanelButtons.ContainsKey(subPanel))
             {
                 Button[] buttons = subPanel.GetComponentsInChildren<Button>(true);
-                allButtons.AddRange(buttons);
+                subPanelButtons[subPanel] = new List<Button>(buttons);
             }
         }
+
+        // 设置当前面板的按钮
+        UpdateCurrentPanelButtons();
+    }
+
+    // 更新当前面板的按钮列表
+    private void UpdateCurrentPanelButtons()
+    {
+        currentPanelButtons.Clear();
+        
+        if (currentPanelLevel == PanelLevel.Main)
+        {
+            currentPanelButtons.AddRange(mainPanelButtons);
+        }
+        else if (currentPanelLevel == PanelLevel.Sub && currentSubPanelIndex >= 0 && currentSubPanelIndex < subPanels.Length)
+        {
+            GameObject currentSubPanel = subPanels[currentSubPanelIndex];
+            if (subPanelButtons.ContainsKey(currentSubPanel))
+            {
+                currentPanelButtons.AddRange(subPanelButtons[currentSubPanel]);
+            }
+        }
+        
+        // 重置按钮索引
+        currentButtonIndex = 0;
     }
 
     // 查找所有按钮的TextMeshPro子对象
@@ -100,11 +145,24 @@ public class SystemManager : MonoBehaviour
     {
         buttonTexts.Clear();
         
-        foreach (var button in allButtons)
+        // 遍历主面板按钮
+        foreach (var button in mainPanelButtons)
         {
             if (button != null)
             {
                 FindButtonTexts(button);
+            }
+        }
+        
+        // 遍历所有二级面板按钮
+        foreach (var buttonList in subPanelButtons.Values)
+        {
+            foreach (var button in buttonList)
+            {
+                if (button != null)
+                {
+                    FindButtonTexts(button);
+                }
             }
         }
     }
@@ -169,13 +227,13 @@ public class SystemManager : MonoBehaviour
         {
             currentButtonIndex--;
             if (currentButtonIndex < 0)
-                currentButtonIndex = allButtons.Count - 1;
+                currentButtonIndex = currentPanelButtons.Count - 1;
             UpdateButtonSelection();
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {
             currentButtonIndex++;
-            if (currentButtonIndex >= allButtons.Count)
+            if (currentButtonIndex >= currentPanelButtons.Count)
                 currentButtonIndex = 0;
             UpdateButtonSelection();
         }
@@ -245,9 +303,9 @@ public class SystemManager : MonoBehaviour
     // 获取当前选中的按钮
     private Button GetCurrentSelectedButton()
     {
-        if (currentButtonIndex >= 0 && currentButtonIndex < allButtons.Count)
+        if (currentButtonIndex >= 0 && currentButtonIndex < currentPanelButtons.Count)
         {
-            return allButtons[currentButtonIndex];
+            return currentPanelButtons[currentButtonIndex];
         }
         return null;
     }
@@ -256,7 +314,7 @@ public class SystemManager : MonoBehaviour
     private void UpdateButtonSelection()
     {
         // 重置所有按钮颜色
-        ResetAllButtonColors();
+        ResetCurrentPanelButtonColors();
 
         // 设置当前选中按钮的颜色
         Button currentButton = GetCurrentSelectedButton();
@@ -269,10 +327,10 @@ public class SystemManager : MonoBehaviour
         }
     }
 
-    // 重置所有按钮颜色
-    private void ResetAllButtonColors()
+    // 重置当前面板所有按钮颜色
+    private void ResetCurrentPanelButtonColors()
     {
-        foreach (var button in allButtons)
+        foreach (var button in currentPanelButtons)
         {
             if (button != null)
             {
@@ -288,7 +346,10 @@ public class SystemManager : MonoBehaviour
     private void TriggerCurrentButton()
     {
         Button currentButton = GetCurrentSelectedButton();
-        currentButton.onClick.Invoke();
+        if (currentButton != null)
+        {
+            currentButton.onClick.Invoke();
+        }
     }
 
     // 处理ESC键逻辑
@@ -324,7 +385,7 @@ public class SystemManager : MonoBehaviour
             // 关闭面板时重置状态
             currentPanelLevel = PanelLevel.Main;
             currentSubPanelIndex = -1;
-            ResetAllButtonColors();
+            ResetCurrentPanelButtonColors();
         }
     }
 
@@ -344,6 +405,7 @@ public class SystemManager : MonoBehaviour
             
         currentPanelLevel = PanelLevel.Main;
         currentSubPanelIndex = -1;
+        UpdateCurrentPanelButtons();
         currentButtonIndex = 0;
         UpdateButtonSelection();
     }
@@ -363,6 +425,7 @@ public class SystemManager : MonoBehaviour
             subPanels[subPanelIndex].SetActive(true);
             currentSubPanelIndex = subPanelIndex;
             currentPanelLevel = PanelLevel.Sub;
+            UpdateCurrentPanelButtons();
             currentButtonIndex = 0;
             UpdateButtonSelection();
         }
