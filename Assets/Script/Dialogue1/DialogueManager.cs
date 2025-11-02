@@ -14,7 +14,7 @@ public class DialogueManager : MonoBehaviour
     public event NodeEvent OnNodeUpdate;
 
     private DialogueLoader dialogueLoader;
-    private PlayerManager playerManager;
+    private Player player ;
     
     private int currentNpcId;
     private DialogueNode currentNode;
@@ -23,7 +23,7 @@ public class DialogueManager : MonoBehaviour
     void Start()
     {
         dialogueLoader = GetComponent<DialogueLoader>();
-        playerManager = PlayerManager.instance;
+        player = PlayerManager.instance.player;
     }
     
     private void Awake()
@@ -45,7 +45,7 @@ public class DialogueManager : MonoBehaviour
             panel.SetActive(isActive);
             Time.timeScale = isActive ? 0 : 1;//暂停游戏
             
-            var closestNPC = playerManager.playerNpcDetector.GetClosestVisibleNPC();
+            var closestNPC = player.npcDetector.GetClosestVisibleNPC();
             if (closestNPC != null)
             {
                 Debug.Log($"与最近的NPC交互 ID: {closestNPC.npcId}");

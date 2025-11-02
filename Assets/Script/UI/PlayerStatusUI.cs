@@ -9,7 +9,7 @@ public class PlayerStatusUI : MonoBehaviour
     
     private void Start()
     {
-        playerStatus = PlayerManager.instance.playerStatus;
+        playerStatus = PlayerManager.instance.player.playerStatus;
         Slider[] sliders = GetComponentsInChildren<Slider>();
         healthSlider = sliders[0];
         staminaSlider = sliders[1];

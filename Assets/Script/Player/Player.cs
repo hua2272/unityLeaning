@@ -38,7 +38,7 @@ public class Player : Entity
     public float dashDuration;
     public float dashDir { get; set;}
     
-    private PlayerNPCDetector npcDetector;
+    public PlayerNPCDetector npcDetector;
     
     protected override void Awake()
     {

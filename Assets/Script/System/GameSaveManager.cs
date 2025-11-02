@@ -11,9 +11,8 @@ public class GameSaveManager : MonoBehaviour
     public static GameSaveManager instance;
 
     private GameDataManager gameDataManager;
-    public Player player;
+    private Player player;
     public WeaponSlotsManager weaponSlotsManager;
-    private PlayerStatus playerStatus;
     private GameData currentGameData = new GameData();
     
     private void Awake()
@@ -26,7 +25,6 @@ public class GameSaveManager : MonoBehaviour
         else
         {
             instance = this;
-            //DontDestroyOnLoad(gameObject);
         }
     }
     
@@ -40,7 +38,7 @@ public class GameSaveManager : MonoBehaviour
 
     private void Start()
     {
-        playerStatus = PlayerManager.instance.playerStatus;
+        player = PlayerManager.instance.player;
         gameDataManager = GameDataManager.instance;
     }
 
@@ -48,7 +46,7 @@ public class GameSaveManager : MonoBehaviour
     {
         currentGameData.unlockedSkills = gameDataManager.unlockedSkills;
         currentGameData.playerLevel = 5;
-        currentGameData.playerHealth = playerStatus.health.getValue();
+        currentGameData.playerHealth = player.playerStatus.health.getValue();
         currentGameData.playerPosition = new Vector3(player.transform.position.x, player.transform.position.y, 0f);
         currentGameData.equippedSlotId = gameDataManager.equippedSlotId;
         currentGameData.scene = SceneManager.GetActiveScene().name;

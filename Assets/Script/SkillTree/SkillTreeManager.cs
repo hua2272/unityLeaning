@@ -37,7 +37,7 @@ public class SkillTreeManager : MonoBehaviour
     {
         if (isInitialized) return;
         skillManager = SkillManager.instance;
-        playerStatus = PlayerManager.instance.playerStatus;
+        playerStatus = PlayerManager.instance.player.playerStatus;
         gameDataManager = GameDataManager.instance;
         
         // 获取所有子节点的SkillNodeUI组件

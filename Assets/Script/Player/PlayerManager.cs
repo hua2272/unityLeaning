@@ -7,8 +7,6 @@ public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager instance;
     public Player player;
-    public PlayerStatus playerStatus;
-    public PlayerNPCDetector playerNpcDetector;
 
     private void Awake()
     {
@@ -20,7 +18,6 @@ public class PlayerManager : MonoBehaviour
         else
         {
             instance = this;
-            //DontDestroyOnLoad(gameObject);
         }
     }
     
