@@ -22,7 +22,7 @@ public class PlayerGroundedState : PlayerState
         {
             stateMachine.ChangeState(player.aimSword);
         }
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (playerInputManager.GetButtonDown("Skill_1"))
         {
             stateMachine.ChangeState(player.CounterAttack);
         }
@@ -34,7 +34,7 @@ public class PlayerGroundedState : PlayerState
         {
             stateMachine.ChangeState(player.jumpState);
         }
-        if (playerInputManager.GetButtonDown("Attack1"))
+        if (playerInputManager.GetButtonDown("Attack_1"))
         {
             stateMachine.ChangeState(player.primaryAttack);
         }

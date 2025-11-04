@@ -1143,8 +1143,8 @@ MonoBehaviour:
   attackCooldown: 0
   lastTimeAttacked: 0
   firePoint: {fileID: 1959216635}
-  straightProjectilePrefab: {fileID: 0}
-  parabolicProjectilePrefab: {fileID: 0}
+  straightProjectilePrefab: {fileID: 7145265371048817460, guid: be0e4b4ee5e92fe48b3e8eae59ee7dc2, type: 3}
+  parabolicProjectilePrefab: {fileID: 3896861469729050021, guid: 3c2b50bc87292e647b0bfa0681c5f2f4, type: 3}
   straightFireRate: 2
   straightProjectileSpeed: 8
   parabolicFireRate: 3

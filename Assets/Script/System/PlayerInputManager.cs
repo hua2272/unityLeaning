@@ -107,7 +107,8 @@ public class PlayerInputManager : MonoBehaviour
             inputActions.Add(new InputAction("MoveLeft", KeyCode.A));
             inputActions.Add(new InputAction("MoveRight", KeyCode.D));
             inputActions.Add(new InputAction("Jump", KeyCode.Space));
-            inputActions.Add(new InputAction("Attack1", KeyCode.J));
+            inputActions.Add(new InputAction("Attack_1", KeyCode.J));
+            inputActions.Add(new InputAction("Skill_1", KeyCode.Q));
             inputActions.Add(new InputAction("Interact", KeyCode.E));
             inputActions.Add(new InputAction("Menu", KeyCode.I));
             inputActions.Add(new InputAction("UIMenu", KeyCode.P));
@@ -145,7 +146,8 @@ public class PlayerInputManager : MonoBehaviour
         CreateButtonForAction("MoveRight");
         CreateButtonForAction("Jump");
         
-        CreateButtonForAction("Attack1");
+        CreateButtonForAction("Attack_1");
+        CreateButtonForAction("Skill_1");
         CreateButtonForAction("Interact");
         CreateButtonForAction("Menu");
         

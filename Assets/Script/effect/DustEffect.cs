@@ -47,6 +47,7 @@ public class DustEffect : MonoBehaviour
     {
         yield return null;                                                                                       //等待一帧确保动画状态已切换
         yield return new WaitForSeconds(dustEffectsAnimator.GetCurrentAnimatorStateInfo(0).length);     //等待当前动画播放完成
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
+        dustEffectsAnimator.SetTrigger("StopDust");
     }
 }
