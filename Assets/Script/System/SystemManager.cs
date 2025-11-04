@@ -236,25 +236,25 @@ public class SystemManager : MonoBehaviour
     // 统一的键盘导航处理
     private void HandleKeyboardNavigation()
     {
-        if (Input.GetKeyDown(KeyCode.W))
+        if (playerInputManager.GetButtonDown("UIUp"))
         {
             currentButtonIndex--;
             if (currentButtonIndex < 0)
                 currentButtonIndex = currentPanelButtons.Count - 1;
             UpdateButtonSelection();
         }
-        else if (Input.GetKeyDown(KeyCode.S))
+        else if (playerInputManager.GetButtonDown("UIDown"))
         {
             currentButtonIndex++;
             if (currentButtonIndex >= currentPanelButtons.Count)
                 currentButtonIndex = 0;
             UpdateButtonSelection();
         }
-        else if (Input.GetKeyDown(KeyCode.A))
+        else if (playerInputManager.GetButtonDown("UILeft"))
         {
             HandleLeftOption();
         }
-        else if (Input.GetKeyDown(KeyCode.D))
+        else if (playerInputManager.GetButtonDown("UIRight"))
         {
             HandleRightOption();
         }

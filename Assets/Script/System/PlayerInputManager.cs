@@ -112,6 +112,10 @@ public class PlayerInputManager : MonoBehaviour
             inputActions.Add(new InputAction("Interact", KeyCode.E));
             inputActions.Add(new InputAction("Menu", KeyCode.I));
             inputActions.Add(new InputAction("UIMenu", KeyCode.P));
+            inputActions.Add(new InputAction("UIUp", KeyCode.W));
+            inputActions.Add(new InputAction("UIDown", KeyCode.S));
+            inputActions.Add(new InputAction("UILeft", KeyCode.A));
+            inputActions.Add(new InputAction("UIRight", KeyCode.D));
             inputActions.Add(new InputAction("UIConfirm", KeyCode.Return));
             inputActions.Add(new InputAction("UICancel", KeyCode.Escape));
         }
@@ -153,6 +157,10 @@ public class PlayerInputManager : MonoBehaviour
         
         CreateCategoryTitle("UI行为");
         CreateButtonForAction("UIMenu");
+        CreateButtonForAction("UIUp");
+        CreateButtonForAction("UIDown");
+        CreateButtonForAction("UILeft");
+        CreateButtonForAction("UIRight");
         CreateButtonForAction("UIConfirm");
         CreateButtonForAction("UICancel");
         
@@ -583,11 +591,16 @@ public class PlayerInputManager : MonoBehaviour
             "MoveLeft" => "MoveLeft",
             "MoveRight" => "MoveRight",
             "Jump" => "Jump",
-            "UIConfirm" => "UIConfirm",
-            "UICancel" => "UICancel",
             "Attack" => "Attack",
             "Interact" => "Interact",
             "Menu" => "Menu",
+            "UIMenu" => "UIMenu",
+            "UIUp" => "上",
+            "UIDown" => "下",
+            "UILeft" => "⬅",
+            "UIRight" => "→",
+            "UIConfirm" => "Confirm",
+            "UICancel" => "Cancel",
             _ => actionName
         };
     }
