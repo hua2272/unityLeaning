@@ -208,10 +208,23 @@ public class SystemManager : MonoBehaviour
         {
             return;
         }
-
-        if (Input.GetKeyDown(KeyCode.Escape))
+        
+        if (playerInputManager.GetButtonDown("UIMenu"))
         {
-            HandleEscapeKey();
+            ToggleSystemPanel();
+        }
+        if (playerInputManager.GetButtonDown("UICancel") && panel.activeSelf)
+        {
+            if (currentPanelLevel == PanelLevel.Sub)
+            {
+                // 如果在二级面板，返回主面板
+                ReturnToMainPanel();
+            }
+            else
+            {
+                // 如果在主面板，切换系统面板显示/隐藏
+                ToggleSystemPanel();
+            }
         }
 
         if (panel.activeSelf && navigationEnabled)
@@ -245,7 +258,7 @@ public class SystemManager : MonoBehaviour
         {
             HandleRightOption();
         }
-        else if (playerInputManager.GetButton("UIConfirm"))
+        else if (playerInputManager.GetButtonDown("UIConfirm"))
         {
             TriggerCurrentButton();
         }
@@ -349,21 +362,6 @@ public class SystemManager : MonoBehaviour
         if (currentButton != null)
         {
             currentButton.onClick.Invoke();
-        }
-    }
-
-    // 处理ESC键逻辑
-    private void HandleEscapeKey()
-    {
-        if (currentPanelLevel == PanelLevel.Sub)
-        {
-            // 如果在二级面板，返回主面板
-            ReturnToMainPanel();
-        }
-        else
-        {
-            // 如果在主面板，切换系统面板显示/隐藏
-            ToggleSystemPanel();
         }
     }
 

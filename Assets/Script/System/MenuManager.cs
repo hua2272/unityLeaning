@@ -22,7 +22,7 @@ public class MenuManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.I))
+        if (PlayerInputManager.instance.GetButtonDown("Menu"))
         {
             bool isActive = !panel.activeSelf;
             panel.SetActive(isActive);

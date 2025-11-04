@@ -34,7 +34,7 @@ public class PlayerGroundedState : PlayerState
         {
             stateMachine.ChangeState(player.jumpState);
         }
-        if (playerInputManager.GetButton("Attack1"))
+        if (playerInputManager.GetButtonDown("Attack1"))
         {
             stateMachine.ChangeState(player.primaryAttack);
         }

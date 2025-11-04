@@ -109,7 +109,8 @@ public class PlayerInputManager : MonoBehaviour
             inputActions.Add(new InputAction("Jump", KeyCode.Space));
             inputActions.Add(new InputAction("Attack1", KeyCode.J));
             inputActions.Add(new InputAction("Interact", KeyCode.E));
-            inputActions.Add(new InputAction("Menu", KeyCode.Escape));
+            inputActions.Add(new InputAction("Menu", KeyCode.I));
+            inputActions.Add(new InputAction("UIMenu", KeyCode.P));
             inputActions.Add(new InputAction("UIConfirm", KeyCode.Return));
             inputActions.Add(new InputAction("UICancel", KeyCode.Escape));
         }
@@ -137,19 +138,19 @@ public class PlayerInputManager : MonoBehaviour
         actionButtons.Clear();
 
         // 创建分类和按钮
-        CreateCategoryTitle("a");
+        CreateCategoryTitle("游戏行为");
         CreateButtonForAction("MoveUp");
         CreateButtonForAction("MoveDown");
         CreateButtonForAction("MoveLeft");
         CreateButtonForAction("MoveRight");
         CreateButtonForAction("Jump");
         
-        CreateCategoryTitle("b");
         CreateButtonForAction("Attack1");
         CreateButtonForAction("Interact");
         CreateButtonForAction("Menu");
         
-        CreateCategoryTitle("c");
+        CreateCategoryTitle("UI行为");
+        CreateButtonForAction("UIMenu");
         CreateButtonForAction("UIConfirm");
         CreateButtonForAction("UICancel");
         
