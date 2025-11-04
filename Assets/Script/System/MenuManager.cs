@@ -3,15 +3,15 @@ using System.Collections;
 
 public class MenuManager : MonoBehaviour
 {
-    public static MenuManager Instance { get; private set; }
+    public static MenuManager instance { get; private set; }
     
     [SerializeField] private GameObject panel;
 
     private void Awake()
     {
-        if (Instance == null)
+        if (instance == null)
         {
-            Instance = this;
+            instance = this;
         }
         else
         {
@@ -26,7 +26,8 @@ public class MenuManager : MonoBehaviour
         {
             bool isActive = !panel.activeSelf;
             panel.SetActive(isActive);
-            Time.timeScale = isActive ? 0 : 1;  //可选：暂停游戏当背包打开
+            GetComponent<Canvas>().sortingOrder = 100;      //提高渲染层级
+            Time.timeScale = isActive ? 0 : 1;              //暂停游戏 TODO 需要停止按键检测
         }
     }
 }
