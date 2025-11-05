@@ -32,6 +32,14 @@ public class SystemManager : MonoBehaviour
     private PanelLevel currentPanelLevel = PanelLevel.Main;
     private int currentSubPanelIndex = -1;
     
+    [Header("Scroll Settings")]
+    [SerializeField] private float thresholdTop = 5;                              // 滚动阈值（距离顶部/底部的按钮数量）
+    [SerializeField] private float scrollStep = 100f;                                // 每次滚动的距离
+
+    // ScrollRect 管理
+    private Dictionary<GameObject, ScrollRect> panelScrollRects = new Dictionary<GameObject, ScrollRect>();
+    private ScrollRect currentScrollRect;
+    
     private bool navigationEnabled = true;
     private bool isInRebindingProcess = false; // 新增：标记是否在重绑定过程中
 
@@ -49,6 +57,7 @@ public class SystemManager : MonoBehaviour
             Destroy(gameObject);
         }
         InitializePanels();
+        CollectPanelScrollRects(); // 收集面板的ScrollRect
         CollectPanelButtons();
         FindAllButtonTexts();
     }
@@ -59,6 +68,53 @@ public class SystemManager : MonoBehaviour
         playerInputManager.OnButtonsCreated.AddListener(OnInputButtonsCreated);
     }
     
+    private void CollectPanelScrollRects()                          // 收集所有面板的ScrollRect组件
+    {
+        panelScrollRects.Clear();
+        ScrollRect scrollRectMain = mainPanel.GetComponentInChildren<ScrollRect>();
+        if (scrollRectMain != null)
+        {
+            panelScrollRects[mainPanel] = scrollRectMain;
+        }
+        
+        foreach (var subPanel in subPanels)
+        {
+            ScrollRect scrollRect = subPanel.GetComponentInChildren<ScrollRect>();
+            if (scrollRect != null)
+            {
+                panelScrollRects[subPanel] = scrollRect;            // 收集二级面板的ScrollRect
+            }
+        }
+        UpdateCurrentScrollRect();
+    }
+    
+    private void UpdateCurrentScrollRect()                          // 更新当前ScrollRect
+    {
+        GameObject currentPanel = GetCurrentPanel();
+        if (currentPanel != null && panelScrollRects.ContainsKey(currentPanel))
+        {
+            currentScrollRect = panelScrollRects[currentPanel];
+        }
+        else
+        {
+            currentScrollRect = null;
+        }
+    }
+    
+    // 获取当前面板
+    private GameObject GetCurrentPanel()
+    {
+        if (currentPanelLevel == PanelLevel.Main)
+        {
+            return mainPanel;
+        }
+        if (currentPanelLevel == PanelLevel.Sub && currentSubPanelIndex >= 0 && currentSubPanelIndex < subPanels.Length)
+        {
+            return subPanels[currentSubPanelIndex];
+        }
+        return null;
+    }
+
     // 当输入按钮创建完成后调用
     private void OnInputButtonsCreated()
     {
@@ -135,9 +191,9 @@ public class SystemManager : MonoBehaviour
                 currentPanelButtons.AddRange(subPanelButtons[currentSubPanel]);
             }
         }
-        
-        // 重置按钮索引
-        currentButtonIndex = 0;
+        currentButtonIndex = 0;                                                             //重置按钮索引
+        UpdateCurrentScrollRect();
+        if (currentScrollRect != null) currentScrollRect.verticalNormalizedPosition = 1f;// 将滚动位置设置为顶部 (1 = 顶部, 0 = 底部)
     }
 
     // 查找所有按钮的TextMeshPro子对象
@@ -217,13 +273,11 @@ public class SystemManager : MonoBehaviour
         {
             if (currentPanelLevel == PanelLevel.Sub)
             {
-                // 如果在二级面板，返回主面板
-                ReturnToMainPanel();
+                ShowMainPanel();            // 如果在二级面板，返回主面板
             }
             else
             {
-                // 如果在主面板，切换系统面板显示/隐藏
-                ToggleSystemPanel();
+                ToggleSystemPanel();        // 如果在主面板，切换系统面板显示/隐藏
             }
         }
 
@@ -238,6 +292,7 @@ public class SystemManager : MonoBehaviour
     {
         if (playerInputManager.GetButtonDown("UIUp"))
         {
+            HandleScroll(currentButtonIndex, true);
             currentButtonIndex--;
             if (currentButtonIndex < 0)
                 currentButtonIndex = currentPanelButtons.Count - 1;
@@ -245,6 +300,7 @@ public class SystemManager : MonoBehaviour
         }
         else if (playerInputManager.GetButtonDown("UIDown"))
         {
+            HandleScroll(currentButtonIndex, false);
             currentButtonIndex++;
             if (currentButtonIndex >= currentPanelButtons.Count)
                 currentButtonIndex = 0;
@@ -261,6 +317,58 @@ public class SystemManager : MonoBehaviour
         else if (playerInputManager.GetButtonDown("UIConfirm"))
         {
             TriggerCurrentButton();
+        }
+    }
+    
+    private void HandleScroll(int buttonIndex, bool isUpward)                                     //处理滚动逻辑
+    {
+        int buttonCount = currentPanelButtons.Count;
+        float thresholdBottom = buttonCount - thresholdTop;
+        Debug.Log("--------buttonCount: " + buttonCount);
+        Debug.Log("--------buttonIndex: " + buttonIndex);
+        if (currentScrollRect == null || buttonCount == 0) return;
+        if (buttonIndex == 0 && isUpward)
+        {
+            Debug.Log("--------2top");
+            currentScrollRect.verticalNormalizedPosition = 0f;
+            return;
+        }
+
+        if (buttonIndex == buttonCount - 1 && !isUpward)
+        {
+            Debug.Log("--------!2top");
+            currentScrollRect.verticalNormalizedPosition = 1f;
+            return;
+        }
+        if (isUpward && (buttonIndex < thresholdTop || buttonIndex > thresholdBottom)) return;    //向上滚动：如果新索引在顶部阈值范围内
+        if (!isUpward && (buttonIndex < thresholdTop || buttonIndex > thresholdBottom)) return;   //向下滚动：如果新索引在底部阈值范围内
+        ScrollContent(isUpward);
+    }
+    
+    private void ScrollContent(bool scrollUp)                                                     //滚动内容
+    {
+        if (currentScrollRect == null) return;
+        
+        // 获取当前滚动位置
+        float currentPosition = currentScrollRect.verticalNormalizedPosition;
+        
+        // 计算滚动步长（基于内容高度）
+        RectTransform content = currentScrollRect.content;
+        float contentHeight = content.rect.height;
+        float viewportHeight = currentScrollRect.viewport.rect.height;
+        
+        if (contentHeight <= viewportHeight) return; // 内容不足一屏，不需要滚动
+        
+        float scrollAmount = scrollStep / (contentHeight - viewportHeight);
+        
+        // 根据方向调整滚动位置
+        if (scrollUp)
+        {
+            currentScrollRect.verticalNormalizedPosition = Mathf.Clamp01(currentPosition + scrollAmount);
+        }
+        else
+        {
+            currentScrollRect.verticalNormalizedPosition = Mathf.Clamp01(currentPosition - scrollAmount);
         }
     }
 
@@ -375,7 +483,6 @@ public class SystemManager : MonoBehaviour
         if (isActive)
         {
             ShowMainPanel();
-            currentButtonIndex = 0;
             UpdateButtonSelection();
         }
         else
@@ -386,52 +493,27 @@ public class SystemManager : MonoBehaviour
             ResetCurrentPanelButtonColors();
         }
     }
-
-    // 显示主面板
-    public void ShowMainPanel()
+    
+    public void ShowMainPanel()                                                 // 显示主面板
     {
-        // 隐藏所有二级面板
-        foreach (var subPanel in subPanels)
+        foreach (var subPanel in subPanels)                         // 隐藏所有二级面板
         {
-            if (subPanel != null)
-                subPanel.SetActive(false);
+            subPanel.SetActive(false);
         }
-        
-        // 显示主面板
-        if (mainPanel != null)
-            mainPanel.SetActive(true);
-            
+        mainPanel.SetActive(true);                                              // 显示主面板
         currentPanelLevel = PanelLevel.Main;
         currentSubPanelIndex = -1;
         UpdateCurrentPanelButtons();
-        currentButtonIndex = 0;
         UpdateButtonSelection();
     }
-
-    // 进入二级面板
-    public void EnterSubPanel(int subPanelIndex)
+    
+    public void EnterSubPanel(int subPanelIndex)                                // 进入二级面板
     {
-        if (subPanelIndex < 0 || subPanelIndex >= subPanels.Length) return;
-        
-        // 隐藏主面板
-        if (mainPanel != null)
-            mainPanel.SetActive(false);
-        
-        // 显示指定的二级面板
-        if (subPanels[subPanelIndex] != null)
-        {
-            subPanels[subPanelIndex].SetActive(true);
-            currentSubPanelIndex = subPanelIndex;
-            currentPanelLevel = PanelLevel.Sub;
-            UpdateCurrentPanelButtons();
-            currentButtonIndex = 0;
-            UpdateButtonSelection();
-        }
-    }
-
-    // 返回到主面板
-    public void ReturnToMainPanel()
-    {
-        ShowMainPanel();
+        mainPanel.SetActive(false);                                             // 隐藏主面板
+        subPanels[subPanelIndex].SetActive(true);                               // 显示指定的二级面板
+        currentSubPanelIndex = subPanelIndex;
+        currentPanelLevel = PanelLevel.Sub;
+        UpdateCurrentPanelButtons();
+        UpdateButtonSelection();
     }
 }
