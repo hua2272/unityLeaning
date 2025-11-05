@@ -33,8 +33,8 @@ public class SystemManager : MonoBehaviour
     private int currentSubPanelIndex = -1;
     
     [Header("Scroll Settings")]
-    [SerializeField] private float thresholdTop = 5;                              // 滚动阈值（距离顶部/底部的按钮数量）
-    [SerializeField] private float scrollStep = 100f;                                // 每次滚动的距离
+    [SerializeField] private float thresholdTop = 5;                                 //滚动阈值（距离顶部/底部的按钮数量）
+    [SerializeField] private float scrollStep = 100f;                                //每次滚动的距离
 
     // ScrollRect 管理
     private Dictionary<GameObject, ScrollRect> panelScrollRects = new Dictionary<GameObject, ScrollRect>();
@@ -487,30 +487,30 @@ public class SystemManager : MonoBehaviour
         }
         else
         {
-            // 关闭面板时重置状态
-            currentPanelLevel = PanelLevel.Main;
+            currentPanelLevel = PanelLevel.Main;                               //关闭面板时重置状态
             currentSubPanelIndex = -1;
             ResetCurrentPanelButtonColors();
         }
     }
     
-    public void ShowMainPanel()                                                 // 显示主面板
+    public void ShowMainPanel()                                                 //显示主面板
     {
-        foreach (var subPanel in subPanels)                         // 隐藏所有二级面板
+        GetComponent<Canvas>().sortingOrder = 100;                              //提高渲染层级
+        foreach (var subPanel in subPanels)                          //隐藏所有二级面板
         {
             subPanel.SetActive(false);
         }
-        mainPanel.SetActive(true);                                              // 显示主面板
+        mainPanel.SetActive(true);                                              //显示主面板
         currentPanelLevel = PanelLevel.Main;
         currentSubPanelIndex = -1;
         UpdateCurrentPanelButtons();
         UpdateButtonSelection();
     }
     
-    public void EnterSubPanel(int subPanelIndex)                                // 进入二级面板
+    public void EnterSubPanel(int subPanelIndex)                                //进入二级面板
     {
-        mainPanel.SetActive(false);                                             // 隐藏主面板
-        subPanels[subPanelIndex].SetActive(true);                               // 显示指定的二级面板
+        mainPanel.SetActive(false);                                             //隐藏主面板
+        subPanels[subPanelIndex].SetActive(true);                               //显示指定的二级面板
         currentSubPanelIndex = subPanelIndex;
         currentPanelLevel = PanelLevel.Sub;
         UpdateCurrentPanelButtons();
