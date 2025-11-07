@@ -3,6 +3,8 @@ using UnityEngine.EventSystems;
 
 public class ScreenController : MonoBehaviour, IPointerDownHandler, IDragHandler
 {
+    public static ScreenController instance;
+    
     [Header("Screen Modes")]
     public bool borderlessFullscreen = false;
     
@@ -30,6 +32,27 @@ public class ScreenController : MonoBehaviour, IPointerDownHandler, IDragHandler
         TopRight,
         BottomLeft,
         BottomRight
+    }
+    
+    private void Awake()
+    {
+        Debug.Log("-------ScreenController instance-------");
+        if (instance != null)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            instance = this;
+        }
+    }
+    
+    private void OnDestroy()
+    {
+        if (instance == this)
+        {
+            instance = null;
+        }
     }
 
     void Start()

@@ -17,7 +17,7 @@ public class GameSaveManager : MonoBehaviour
     
     private void Awake()
     {
-        Debug.Log("-------GameSaveManager instance------->");
+        Debug.Log("-------GameSaveManager instance-------");
         if (instance != null)
         {
             Destroy(gameObject);

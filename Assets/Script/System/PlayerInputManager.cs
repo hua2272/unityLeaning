@@ -29,8 +29,7 @@ public class PlayerInputManager : MonoBehaviour
     public GameObject waitingForInputPanel;
     public TextMeshProUGUI waitingForInputText;
     
-    [System.Serializable]
-    public class InputAction
+    [System.Serializable] public class InputAction
     {
         public string actionName;
         public KeyCode defaultKeyboardKey;
@@ -209,7 +208,7 @@ public class PlayerInputManager : MonoBehaviour
         UpdateButtonVisuals(buttonObj, actionName);
         
         // 找到内部的KeyButton并添加点击事件
-        Transform keyButtonTransform = buttonObj.transform.Find("KeyButton");
+        Transform keyButtonTransform = buttonObj.transform.Find("Button");
         if (keyButtonTransform != null)
         {
             Button keyButton = keyButtonTransform.GetComponent<Button>();
@@ -236,7 +235,7 @@ public class PlayerInputManager : MonoBehaviour
         rt.anchorMax = new Vector2(1, 1); // 右上锚点
         rt.pivot = new Vector2(0.5f, 1); // 顶部中心轴心
         
-        Transform actionNameText = buttonObj.transform.Find("ActionNameText");  // 更新动作名称文本
+        Transform actionNameText = buttonObj.transform.Find("Title");  // 更新动作名称文本
         RectTransform textRt = actionNameText.GetComponent<RectTransform>();
         // 设置文本的锚点 - 左侧垂直居中
         textRt.anchorMin = new Vector2(0, 0.5f);
@@ -251,7 +250,7 @@ public class PlayerInputManager : MonoBehaviour
         actionText.text = GetDisplayName(action.actionName);
         
         
-        Transform keyButtonTransform = buttonObj.transform.Find("KeyButton");       // 更新按键名称文本
+        Transform keyButtonTransform = buttonObj.transform.Find("Button");       // 更新按键名称文本
 
         RectTransform keyButtonRt = keyButtonTransform.GetComponent<RectTransform>();
         // 设置按键按钮的锚点 - 右侧垂直居中
@@ -286,7 +285,7 @@ public class PlayerInputManager : MonoBehaviour
         layoutElem.preferredHeight = 50;
         
         // 修改重置按钮的显示
-        Transform actionNameText = buttonObj.transform.Find("ActionNameText");
+        Transform actionNameText = buttonObj.transform.Find("Title");
         if (actionNameText != null)
         {
             TextMeshProUGUI textComp = actionNameText.GetComponent<TextMeshProUGUI>();
@@ -299,7 +298,7 @@ public class PlayerInputManager : MonoBehaviour
         }
         
         // 隐藏按键按钮或修改其显示
-        Transform keyButtonTransform = buttonObj.transform.Find("KeyButton");
+        Transform keyButtonTransform = buttonObj.transform.Find("Button");
         if (keyButtonTransform != null)
         {
             // 修改按键按钮的文本
