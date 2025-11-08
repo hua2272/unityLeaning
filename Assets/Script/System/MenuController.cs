@@ -3,24 +3,75 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
-using UnityEngine.Events;
 
 [Serializable] public class MenuItemData
 {
     public string title;
     public string buttonText;
-    [NonSerialized] private Action action;// 使用委托来存储可调用方法 避免序列化问题
-    
-    public MenuItemData(string title,  string buttonText, Action action)
+    [NonSerialized] private Action action;
+
+    // 选项相关字段
+    public bool isOptionButton = false;
+    public List<string> options = new List<string>();
+    public int currentOptionIndex = 0;
+    [NonSerialized] private Action<int> onOptionChanged; // 选项改变时的回调
+
+    // 普通按钮构造函数
+    public MenuItemData(string title, string buttonText, Action action)
     {
         this.title = title;
         this.buttonText = buttonText;
         this.action = action;
+        this.isOptionButton = false;
+    }
+
+    // 选项按钮构造函数
+    public MenuItemData(string title, List<string> options, int defaultIndex, Action<int> onOptionChanged)
+    {
+        this.title = title;
+        this.options = options;
+        this.currentOptionIndex = defaultIndex;
+        this.onOptionChanged = onOptionChanged;
+        this.isOptionButton = true;
+        UpdateButtonText();
     }
     
     public void Invoke()
     {
-        action?.Invoke();
+        if (isOptionButton)
+        {
+            CycleOption();
+        }
+        else
+        {
+            action?.Invoke();
+        }
+    }
+
+    private void CycleOption()
+    {
+        currentOptionIndex = (currentOptionIndex + 1) % options.Count;
+        UpdateButtonText();
+        onOptionChanged?.Invoke(currentOptionIndex);
+    }
+
+    private void UpdateButtonText()
+    {
+        if (options.Count > 0 && currentOptionIndex < options.Count)
+        {
+            buttonText = options[currentOptionIndex];
+        }
+    }
+
+    // 获取当前选项文本
+    public string GetCurrentOptionText()
+    {
+        if (options.Count > 0 && currentOptionIndex < options.Count)
+        {
+            return options[currentOptionIndex];
+        }
+
+        return buttonText;
     }
 }
 
@@ -66,7 +117,9 @@ public class MenuController : MonoBehaviour
     {
         menuItems.Add(new MenuItemData("保存游戏", "1", () => gameSaveManager.SaveGame()));
         menuItems.Add(new MenuItemData("键盘按键设置", "2", () => systemManager.EnterSubPanel(0)));
-        menuItems.Add(new MenuItemData("全屏", "3", () => screenController.ScreenModeChange()));
+        // menuItems.Add(new MenuItemData("全屏", "3", () => screenController.ScreenModeChange()));
+        menuItems.Add(new MenuItemData("屏幕", new List<string> {"无边框全屏",  "窗口化" }, 
+            0,(index) => screenController.ScreenModeChange(index)));
     }
     
     void ClearMenuItems()
@@ -153,7 +206,8 @@ public class MenuController : MonoBehaviour
         {
             titleLayout = titleTransform.gameObject.AddComponent<LayoutElement>();
         }
-        titleLayout.flexibleWidth = 1f; // 标题占据剩余空间
+
+        titleLayout.flexibleWidth = 1f;
         titleLayout.preferredWidth = -1f;
         
         // 设置文本自适应
@@ -165,7 +219,15 @@ public class MenuController : MonoBehaviour
         // 查找Button组件
         Transform buttonTransform = menuItem.transform.Find("Button");
         Button button = buttonTransform.GetComponent<Button>();
-        button.onClick.AddListener(() => itemData.Invoke());
+        button.onClick.AddListener(() =>
+        {
+            itemData.Invoke();
+            // 如果是选项按钮，更新按钮文本
+            if (itemData.isOptionButton)
+            {
+                UpdateButtonText(buttonTransform, itemData);
+            }
+        });
 
         // 设置按钮的布局元素
         LayoutElement buttonLayout = buttonTransform.GetComponent<LayoutElement>();
@@ -174,8 +236,8 @@ public class MenuController : MonoBehaviour
             buttonLayout = buttonTransform.gameObject.AddComponent<LayoutElement>();
         }
 
-        buttonLayout.preferredWidth = 80f; // 按钮固定宽度
-        buttonLayout.minWidth = 60f;
+        buttonLayout.preferredWidth = 120f; // 稍微加宽以容纳选项文本
+        buttonLayout.minWidth = 80f;
         buttonLayout.preferredHeight = 40f;
         buttonLayout.minHeight = 30f;
 
@@ -183,18 +245,21 @@ public class MenuController : MonoBehaviour
         RectTransform buttonRect = buttonTransform.GetComponent<RectTransform>();
         if (buttonRect != null)
         {
-            buttonRect.sizeDelta = new Vector2(80f, 40f);
+            buttonRect.sizeDelta = new Vector2(120f, 40f);
         }
 
         // 设置按钮文本
+        UpdateButtonText(buttonTransform, itemData);
+
+        // 设置按钮文本自适应
         Transform buttonTextTransform = buttonTransform.Find("Text");
         TextMeshProUGUI buttonText = buttonTextTransform.GetComponent<TextMeshProUGUI>();
-        buttonText.text = itemData.buttonText;
+        //buttonText.text = itemData.buttonText;
 
         // 设置按钮文本自适应
         buttonText.enableAutoSizing = true;
         buttonText.fontSizeMin = 10f;
-        buttonText.fontSizeMax = 18f;
+        buttonText.fontSizeMax = 16f; // 稍微减小最大字体大小以容纳更长文本
         buttonText.overflowMode = TextOverflowModes.Ellipsis;
         buttonText.alignment = TextAlignmentOptions.Center;
 
@@ -208,7 +273,23 @@ public class MenuController : MonoBehaviour
             textRect.offsetMax = Vector2.zero;
         }
     }
-    
+
+    // 更新按钮文本的辅助方法
+    void UpdateButtonText(Transform buttonTransform, MenuItemData itemData)
+    {
+        Transform buttonTextTransform = buttonTransform.Find("Text");
+        TextMeshProUGUI buttonText = buttonTextTransform.GetComponent<TextMeshProUGUI>();
+
+        if (itemData.isOptionButton)
+        {
+            buttonText.text = itemData.GetCurrentOptionText();
+        }
+        else
+        {
+            buttonText.text = itemData.buttonText;
+        }
+    }
+
     void UpdateContentSize()
     {
         if (contentRectTransform == null) return;
