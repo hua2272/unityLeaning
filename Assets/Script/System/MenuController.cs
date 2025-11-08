@@ -40,7 +40,7 @@ using System.Collections.Generic;
     {
         if (isOptionButton)
         {
-            CycleOption();
+            CycleOption(1); // 默认向右循环
         }
         else
         {
@@ -48,9 +48,10 @@ using System.Collections.Generic;
         }
     }
 
-    private void CycleOption()
+    // 修改：添加方向参数的选项循环
+    public void CycleOption(int direction)
     {
-        currentOptionIndex = (currentOptionIndex + 1) % options.Count;
+        currentOptionIndex = (currentOptionIndex + direction + options.Count) % options.Count;
         UpdateButtonText();
         onOptionChanged?.Invoke(currentOptionIndex);
     }
@@ -95,12 +96,28 @@ public class MenuController : MonoBehaviour
     private List<GameObject> createdMenuItems = new List<GameObject>();
     private RectTransform contentRectTransform;
     
+    // 新增：按钮与菜单项的映射
+    private Dictionary<Button, MenuItemData> buttonToMenuItemMap = new Dictionary<Button, MenuItemData>();
+    
     void Start()
     {
         gameSaveManager = GameSaveManager.instance;
         systemManager = SystemManager.instance;
         screenController = ScreenController.instance;
+        
+        // 订阅左右方向键事件
+        systemManager.OnOptionChanged += HandleOptionChange;
+        
         InitializeMenu();
+    }
+    
+    void OnDestroy()
+    {
+        // 取消订阅事件
+        if (systemManager != null)
+        {
+            systemManager.OnOptionChanged -= HandleOptionChange;
+        }
     }
     
     void InitializeMenu()
@@ -108,22 +125,23 @@ public class MenuController : MonoBehaviour
         contentRectTransform = contentParent.GetComponent<RectTransform>();
         
         ClearMenuItems();// 清除现有菜单项
+        InitializeMenuItems(); // 初始化菜单项数据
         CreateMenuItems();// 创建菜单项
         UpdateContentSize();// 更新Content大小
-        InitializeMenuItems();
     }
 
     void InitializeMenuItems()
     {
-        menuItems.Add(new MenuItemData("保存游戏", "1", () => gameSaveManager.SaveGame()));
-        menuItems.Add(new MenuItemData("键盘按键设置", "2", () => systemManager.EnterSubPanel(0)));
-        // menuItems.Add(new MenuItemData("全屏", "3", () => screenController.ScreenModeChange()));
-        menuItems.Add(new MenuItemData("屏幕", new List<string> {"无边框全屏",  "窗口化" }, 
-            0,(index) => screenController.ScreenModeChange(index)));
+        menuItems.Clear();
+        menuItems.Add(new MenuItemData("保存游戏", "保存", () => gameSaveManager.SaveGame()));
+        menuItems.Add(new MenuItemData("键盘按键设置", "设置", () => systemManager.EnterSubPanel(0)));
+        menuItems.Add(new MenuItemData("屏幕", new List<string> {"无边框全屏", "窗口化"}, 
+            0, (index) => screenController.ScreenModeChange(index)));
     }
     
     void ClearMenuItems()
     {
+        buttonToMenuItemMap.Clear();
         foreach (var item in createdMenuItems)
         {
             if (item != null)
@@ -219,6 +237,10 @@ public class MenuController : MonoBehaviour
         // 查找Button组件
         Transform buttonTransform = menuItem.transform.Find("Button");
         Button button = buttonTransform.GetComponent<Button>();
+        
+        // 将按钮与菜单项数据关联
+        buttonToMenuItemMap[button] = itemData;
+        
         button.onClick.AddListener(() =>
         {
             itemData.Invoke();
@@ -254,7 +276,6 @@ public class MenuController : MonoBehaviour
         // 设置按钮文本自适应
         Transform buttonTextTransform = buttonTransform.Find("Text");
         TextMeshProUGUI buttonText = buttonTextTransform.GetComponent<TextMeshProUGUI>();
-        //buttonText.text = itemData.buttonText;
 
         // 设置按钮文本自适应
         buttonText.enableAutoSizing = true;
@@ -271,6 +292,26 @@ public class MenuController : MonoBehaviour
             textRect.anchorMax = Vector2.one;
             textRect.offsetMin = Vector2.zero;
             textRect.offsetMax = Vector2.zero;
+        }
+    }
+
+    // 新增：处理左右方向键事件
+    private void HandleOptionChange(int direction)
+    {
+        // 获取当前选中的按钮
+        Button currentButton = systemManager.GetCurrentSelectedButton();
+        if (currentButton != null && buttonToMenuItemMap.ContainsKey(currentButton))
+        {
+            MenuItemData menuItem = buttonToMenuItemMap[currentButton];
+            if (menuItem.isOptionButton)
+            {
+                // 更新选项索引
+                menuItem.CycleOption(direction);
+                
+                // 更新按钮文本显示
+                Transform buttonTransform = currentButton.transform;
+                UpdateButtonText(buttonTransform, menuItem);
+            }
         }
     }
 

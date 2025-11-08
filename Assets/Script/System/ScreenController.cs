@@ -83,10 +83,9 @@ public class ScreenController : MonoBehaviour, IPointerDownHandler, IDragHandler
         }
     }
 
-    public void ScreenModeChange()
+    public void ScreenModeChange(int index)
     {
-        int globalOptionIndex = SystemManager.instance.globalOptionIndex;
-        if (globalOptionIndex == 0)
+        if (index == 0)
         {
             Debug.Log("全屏");
         }

@@ -46,6 +46,9 @@ public class SystemManager : MonoBehaviour
     // 按钮文本管理
     private Dictionary<Button, List<TextMeshProUGUI>> buttonTexts = new Dictionary<Button, List<TextMeshProUGUI>>();
 
+    // 新增：左右方向键事件
+    public event Action<int> OnOptionChanged; // 参数：方向（-1左，1右）
+
     private void Awake()
     {
         if (instance == null)
@@ -372,57 +375,21 @@ public class SystemManager : MonoBehaviour
         }
     }
 
-    // 处理向左选择选项
+    // 修改后的左右方向键处理 - 通过事件通知
     private void HandleLeftOption()
     {
-        globalOptionIndex--;
-        
-        if (globalOptionIndex < 0)
-        {
-            int maxIndex = 0;
-            foreach (var texts in buttonTexts.Values)
-            {
-                if (texts.Count > maxIndex)
-                    maxIndex = texts.Count;
-            }
-            
-            globalOptionIndex = maxIndex > 0 ? maxIndex - 1 : 0;
-        }
-        
-        UpdateAllButtonTexts();
+        // 触发左方向键事件
+        OnOptionChanged?.Invoke(-1);
     }
 
-    // 处理向右选择选项
     private void HandleRightOption()
     {
-        globalOptionIndex++;
-        
-        int maxIndex = 0;
-        foreach (var texts in buttonTexts.Values)
-        {
-            if (texts.Count > maxIndex)
-                maxIndex = texts.Count;
-        }
-        
-        if (maxIndex > 0 && globalOptionIndex >= maxIndex)
-        {
-            globalOptionIndex = 0;
-        }
-        
-        UpdateAllButtonTexts();
-    }
-
-    // 更新所有按钮的文本显示
-    private void UpdateAllButtonTexts()
-    {
-        foreach (var button in buttonTexts.Keys)
-        {
-            UpdateButtonTextDisplay(button);
-        }
+        // 触发右方向键事件
+        OnOptionChanged?.Invoke(1);
     }
 
     // 获取当前选中的按钮
-    private Button GetCurrentSelectedButton()
+    public Button GetCurrentSelectedButton()
     {
         if (currentButtonIndex >= 0 && currentButtonIndex < currentPanelButtons.Count)
         {
