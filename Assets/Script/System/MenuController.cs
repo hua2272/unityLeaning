@@ -89,7 +89,6 @@ public class MenuController : MonoBehaviour
     
     void CreateMenuItem(MenuItemData itemData, int index)
     {
-        
         // 实例化预制件
         GameObject menuItem = Instantiate(menuItemPrefab, contentParent);
         createdMenuItems.Add(menuItem);
@@ -129,20 +128,85 @@ public class MenuController : MonoBehaviour
     
     void SetupUIElements(GameObject menuItem, MenuItemData itemData, int index)
     {
+        // 为菜单项添加水平布局组
+        HorizontalLayoutGroup itemLayout = menuItem.GetComponent<HorizontalLayoutGroup>();
+        if (itemLayout == null)
+        {
+            itemLayout = menuItem.AddComponent<HorizontalLayoutGroup>();
+        }
+        itemLayout.padding = new RectOffset(10, 10, 5, 5);
+        itemLayout.spacing = 15f;
+        itemLayout.childAlignment = TextAnchor.MiddleCenter;
+        itemLayout.childControlWidth = true;
+        itemLayout.childControlHeight = true;
+        itemLayout.childForceExpandWidth = false;
+        itemLayout.childForceExpandHeight = true;
+        
         // 查找TextMeshPro组件 - 标题
         Transform titleTransform = menuItem.transform.Find("Title");
         TextMeshProUGUI titleText = titleTransform.GetComponent<TextMeshProUGUI>();
         titleText.text = itemData.title;
+                
+        // 设置标题的布局元素
+        LayoutElement titleLayout = titleTransform.GetComponent<LayoutElement>();
+        if (titleLayout == null)
+        {
+            titleLayout = titleTransform.gameObject.AddComponent<LayoutElement>();
+        }
+        titleLayout.flexibleWidth = 1f; // 标题占据剩余空间
+        titleLayout.preferredWidth = -1f;
+        
+        // 设置文本自适应
+        titleText.enableAutoSizing = true;
+        titleText.fontSizeMin = 12f;
+        titleText.fontSizeMax = 24f;
+        titleText.overflowMode = TextOverflowModes.Ellipsis;
         
         // 查找Button组件
         Transform buttonTransform = menuItem.transform.Find("Button");
         Button button = buttonTransform.GetComponent<Button>();
         button.onClick.AddListener(() => itemData.Invoke());
 
+        // 设置按钮的布局元素
+        LayoutElement buttonLayout = buttonTransform.GetComponent<LayoutElement>();
+        if (buttonLayout == null)
+        {
+            buttonLayout = buttonTransform.gameObject.AddComponent<LayoutElement>();
+        }
+
+        buttonLayout.preferredWidth = 80f; // 按钮固定宽度
+        buttonLayout.minWidth = 60f;
+        buttonLayout.preferredHeight = 40f;
+        buttonLayout.minHeight = 30f;
+
+        // 设置按钮的RectTransform
+        RectTransform buttonRect = buttonTransform.GetComponent<RectTransform>();
+        if (buttonRect != null)
+        {
+            buttonRect.sizeDelta = new Vector2(80f, 40f);
+        }
+
         // 设置按钮文本
         Transform buttonTextTransform = buttonTransform.Find("Text");
         TextMeshProUGUI buttonText = buttonTextTransform.GetComponent<TextMeshProUGUI>();
         buttonText.text = itemData.buttonText;
+
+        // 设置按钮文本自适应
+        buttonText.enableAutoSizing = true;
+        buttonText.fontSizeMin = 10f;
+        buttonText.fontSizeMax = 18f;
+        buttonText.overflowMode = TextOverflowModes.Ellipsis;
+        buttonText.alignment = TextAlignmentOptions.Center;
+
+        // 确保按钮文本填满整个按钮
+        RectTransform textRect = buttonTextTransform.GetComponent<RectTransform>();
+        if (textRect != null)
+        {
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = Vector2.zero;
+            textRect.offsetMax = Vector2.zero;
+        }
     }
     
     void UpdateContentSize()
