@@ -36,8 +36,7 @@ public class MenuController : MonoBehaviour
     [Header("菜单项数据")]
     [SerializeField] private List<MenuItemData> menuItems = new List<MenuItemData>();
     
-    [Header("目标脚本")]
-    //[SerializeField] private MonoBehaviour targetScript; // 调用方法的脚本
+    [Header("功能脚本")]
     private GameSaveManager gameSaveManager;
     private SystemManager systemManager;
     private ScreenController screenController;
@@ -108,17 +107,24 @@ public class MenuController : MonoBehaviour
     
     void SetupRectTransform(RectTransform rectTransform, int index)
     {
-        // 设置锚点为上方
+        // 重置变换
+        rectTransform.localScale = Vector3.one;
+        rectTransform.localPosition = Vector3.zero;
+    
+        // 使用顶部居中的锚点
         rectTransform.anchorMin = new Vector2(0.5f, 1f);
         rectTransform.anchorMax = new Vector2(0.5f, 1f);
         rectTransform.pivot = new Vector2(0.5f, 1f);
-        
-        // 设置大小
+    
+        // 设置固定尺寸
         rectTransform.sizeDelta = itemSize;
-        
-        // 设置位置
-        float yPosition = -index * (itemSize.y + itemSpacing);
+    
+        // 修正位置计算：从Content顶部开始向下排列
+        // 第一个菜单项应该在Content顶部，后续项依次向下
+        float yPosition = -index * (itemSize.y + itemSpacing) - (itemSize.y * 0.5f);
         rectTransform.anchoredPosition = new Vector2(0, yPosition);
+    
+        Debug.Log($"修正后 - 菜单项 {index} 位置: {rectTransform.anchoredPosition}");
     }
     
     void SetupUIElements(GameObject menuItem, MenuItemData itemData, int index)
