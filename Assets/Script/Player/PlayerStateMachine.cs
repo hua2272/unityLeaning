@@ -6,16 +6,16 @@ public class PlayerStateMachine
 {
     public PlayerState currentState { get; private set; }
 
-    public void Initialize(PlayerState _startState)
+    public void Initialize(PlayerState startState)
     {
-        currentState = _startState;
+        currentState = startState;
         currentState.Enter();
     }
 
-    public void ChangeState(PlayerState _newState)
+    public void ChangeState(PlayerState newState)
     {
-        currentState.Exist();
-        currentState = _newState;
+        currentState.Exit();
+        currentState = newState;
         currentState.Enter();
     }
 }

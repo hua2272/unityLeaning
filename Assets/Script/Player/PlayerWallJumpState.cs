@@ -28,8 +28,8 @@ public class PlayerWallJumpState : PlayerState
         // }
     }
 
-    public override void Exist()
+    public override void Exit()
     {
-        base.Exist();
+        base.Exit();
     }
 }

@@ -31,9 +31,9 @@ public class PlayerAimSwordState : PlayerState
         }
     }
 
-    public override void Exist()
+    public override void Exit()
     {
-        base.Exist();
+        base.Exit();
         //player.StartCoroutine("BusyFor", 0.1f);
     }
 }

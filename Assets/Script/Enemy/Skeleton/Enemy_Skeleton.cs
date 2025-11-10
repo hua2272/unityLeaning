@@ -33,9 +33,9 @@ public class Enemy_Skeleton : Enemy
         stateMachine.Initialize(idleState);
     }
 
-    public override bool IsStunned()
+    public override bool CanCounter()
     {
-        if (base.IsStunned())
+        if (base.CanCounter())
         {
             stateMachine.ChangeState(stunnedState);
             return true;

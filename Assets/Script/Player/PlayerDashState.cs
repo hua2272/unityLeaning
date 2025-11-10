@@ -28,9 +28,9 @@ public class PlayerDashState : PlayerState
         }
     }
 
-    public override void Exist()
+    public override void Exit()
     {
-        base.Exist();
+        base.Exit();
         player.SetVelocity(0, rb.velocity.y);
     }
 }

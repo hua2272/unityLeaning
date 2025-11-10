@@ -22,7 +22,7 @@ public class PlayerGroundedState : PlayerState
         {
             stateMachine.ChangeState(player.aimSword);
         }
-        if (playerInputManager.GetButtonDown("Skill_1"))
+        if (playerInputManager.GetButton("Skill_1"))
         {
             stateMachine.ChangeState(player.CounterAttack);
         }
@@ -50,8 +50,8 @@ public class PlayerGroundedState : PlayerState
         return false;
     }
 
-    public override void Exist()
+    public override void Exit()
     {
-        base.Exist();
+        base.Exit();
     }
 }

@@ -11,7 +11,7 @@ public class playerCounterAttackState : PlayerState
     public override void Enter()
     {
         base.Enter();
-        stateTimer = player.countAttackDuration;
+        //stateTimer = player.countAttackDuration;
         player.anim.SetBool("SuccessfulCounterAttack", false);
     }
 
@@ -24,21 +24,21 @@ public class playerCounterAttackState : PlayerState
         {
             if (hit.GetComponent<Enemy>() != null)
             {
-                if (hit.GetComponent<Enemy>().IsStunned())
+                if (hit.GetComponent<Enemy>().CanCounter())
                 {
                     stateTimer = 10;
                     player.anim.SetBool("SuccessfulCounterAttack", true);
                 }
             }
         }
-        if (stateTimer < 0 || triggerCalled)
+        if (triggerCalled || playerInputManager.GetButtonUp("Skill_1"))
         {
             stateMachine.ChangeState(player.idleState);
         }
     }
 
-    public override void Exist()
+    public override void Exit()
     {
-        base.Exist();
+        base.Exit();
     }
 }

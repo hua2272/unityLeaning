@@ -37,9 +37,9 @@ public class PlayerPrimaryAttackState : PlayerState
         }
     }
 
-    public override void Exist()
+    public override void Exit()
     {
-        base.Exist();
+        base.Exit();
         player.StartCoroutine("BusyFor", .15f);
         comboCounter++;
         lastTimeAttacked = Time.time;
