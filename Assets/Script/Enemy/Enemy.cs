@@ -54,14 +54,19 @@ public class Enemy : Entity
         counterImage.SetActive(false);
     }
 
-    public virtual bool CanCounter()
+    public virtual bool CanBeCounter()
     {
-        if (canBeStunned)
-        {
-            CloseCounterAttackWindow();
-            return true;
-        }
-        return false;
+        return canBeStunned;
+    }
+    
+    public virtual bool ActiveCounterImage()
+    {
+        return counterImage != null && counterImage.activeInHierarchy;
+    }
+
+    public virtual void EnterStunnedState()
+    {
+        CloseCounterAttackWindow();
     }
     
     public virtual void AnimationFinishTrigger() => stateMachine.currentState.AnimationFinishTrigger();

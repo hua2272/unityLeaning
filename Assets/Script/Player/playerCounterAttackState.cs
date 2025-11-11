@@ -11,8 +11,8 @@ public class playerCounterAttackState : PlayerState
     public override void Enter()
     {
         base.Enter();
-        //stateTimer = player.countAttackDuration;
         player.anim.SetBool("SuccessfulCounterAttack", false);
+        player.anim.SetBool("FailCounterAttack", false);
     }
 
     public override void Update()
@@ -22,13 +22,16 @@ public class playerCounterAttackState : PlayerState
         Collider2D[] colliders = Physics2D.OverlapCircleAll(player.attackCheck.position, player.attackCheckRadius);
         foreach (Collider2D hit in colliders)
         {
-            if (hit.GetComponent<Enemy>() != null)
+            if (hit.GetComponent<Enemy>() ==null) continue;
+            if (!hit.GetComponent<Enemy>().ActiveCounterImage()) continue;
+            if (playerInputManager.GetButtonDown("Attack_1") && hit.GetComponent<Enemy>().CanBeCounter())
             {
-                if (hit.GetComponent<Enemy>().CanCounter())
-                {
-                    stateTimer = 10;
-                    player.anim.SetBool("SuccessfulCounterAttack", true);
-                }
+                player.anim.SetBool("SuccessfulCounterAttack", true);
+                hit.GetComponent<Enemy>().EnterStunnedState();
+            }
+            if (!playerInputManager.GetButtonDown("Attack_1"))
+            {
+                player.anim.SetBool("FailCounterAttack", true);
             }
         }
         if (triggerCalled || playerInputManager.GetButtonUp("Skill_1"))

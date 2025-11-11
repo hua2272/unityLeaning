@@ -33,14 +33,15 @@ public class Enemy_Skeleton : Enemy
         stateMachine.Initialize(idleState);
     }
 
-    public override bool CanCounter()
+    public override bool CanBeCounter()
     {
-        if (base.CanCounter())
-        {
-            stateMachine.ChangeState(stunnedState);
-            return true;
-        }
-        return false;
+        return base.CanBeCounter();
+    }
+    
+    public override void EnterStunnedState()
+    {
+        base.EnterStunnedState();
+        stateMachine.ChangeState(stunnedState);
     }
 
     public override void Die()
