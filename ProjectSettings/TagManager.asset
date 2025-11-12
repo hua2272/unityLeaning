@@ -19,7 +19,7 @@ TagManager:
   - Sword
   - Map_Fog
   - FogOfWar
-  - 
+  - PlayerProjectile
   - 
   - 
   - 
@@ -58,4 +58,7 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 202865179
+    locked: 0
+  - name: PlayerProjectile
+    uniqueID: 3658010395
     locked: 0

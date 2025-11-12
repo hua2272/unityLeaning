@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1778634276496554747}
   - component: {fileID: 9123971601330128839}
   - component: {fileID: 8150049778865408301}
+  - component: {fileID: -1802909232452894816}
   m_Layer: 7
   m_Name: bullet_1_prefab
   m_TagString: Untagged
@@ -27,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 3896861469729050021}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.91, y: -1.66, z: -0.03468457}
+  m_LocalPosition: {x: 4.903, y: -1.65, z: -0.03468457}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -55,6 +56,7 @@ MonoBehaviour:
   hitEffect: {fileID: 6615269855981529763}
   hitSound: {fileID: 8300000, guid: 423dd9c0ae329244c89728c4f3a2226a, type: 3}
   fireSound: {fileID: 8300000, guid: 58006fb8f72e593458f6f987df61f5eb, type: 3}
+  isReflected: 0
 --- !u!212 &8150049778865408301
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -107,6 +109,41 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!70 &-1802909232452894816
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3896861469729050021}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 1, y: 1}
+  m_Direction: 0
 --- !u!1 &6615269855981529763
 GameObject:
   m_ObjectHideFlags: 0

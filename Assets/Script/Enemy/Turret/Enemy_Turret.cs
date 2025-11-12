@@ -42,8 +42,8 @@ public class Enemy_Turret : Enemy
         // 发射直线炮弹
         if (straightFireTimer <= 0f)
         {
-            FireStraightProjectile();
-            straightFireTimer = straightFireRate;
+            // FireStraightProjectile();
+            // straightFireTimer = straightFireRate;
         }
         
         // 发射抛物线炮弹

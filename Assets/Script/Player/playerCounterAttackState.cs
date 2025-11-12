@@ -8,6 +8,7 @@ public class playerCounterAttackState : PlayerState
     private bool counterWindowStarted = false;
     private bool hasCountered = false;
     private bool hasFailed = false;
+    
     public playerCounterAttackState(Player _player, PlayerStateMachine _stateMachine, string _animBoolName) : base(_player, _stateMachine, _animBoolName)
     {
     }
@@ -29,59 +30,98 @@ public class playerCounterAttackState : PlayerState
         player.ZeroVelocity();
     
         Collider2D[] colliders = Physics2D.OverlapCircleAll(player.attackCheck.position, player.attackCheckRadius);
-        bool foundCounterableEnemy = false;
+    
+        bool foundCounterableTarget = false;
     
         foreach (Collider2D hit in colliders)
         {
-            if (hit.GetComponent<Enemy>() == null) continue;
-            if (!hit.GetComponent<Enemy>().ActiveCounterImage()) continue;
-        
-            foundCounterableEnemy = true;
-        
-            // 如果是第一次发现可反击的敌人，开始计时
-            if (!counterWindowStarted)
+            // 检查敌人反击
+            Enemy enemy = hit.GetComponent<Enemy>();
+            if (enemy != null && enemy.ActiveCounterImage())
             {
-                counterWindowStarted = true;
-                counterTimer = 0f;
+                foundCounterableTarget = true;
+                if (!counterWindowStarted)
+                {
+                    counterWindowStarted = true;
+                    counterTimer = 0f;
+                }
+            
+                if (counterTimer <= 0.5f && playerInputManager.GetButtonDown("Attack_1") && enemy.CanBeCounter())
+                {
+                    player.anim.SetBool("SuccessfulCounterAttack", true);
+                    enemy.EnterStunnedState();
+                    hasCountered = true;
+                    break;
+                }
             }
-        
-            // 如果计时器在0.5秒内且按下攻击键且敌人可被反击
-            if (counterTimer <= 0.5f && playerInputManager.GetButtonDown("Attack_1") && hit.GetComponent<Enemy>().CanBeCounter())
+            
+            // 新增：检查炮弹反击
+            ParabolicProjectile projectile = hit.GetComponent<ParabolicProjectile>();
+            if (projectile != null)
             {
-                player.anim.SetBool("SuccessfulCounterAttack", true);
-                hit.GetComponent<Enemy>().EnterStunnedState();
-                hasCountered = true;
-                break; // 成功反击后跳出循环
+                Debug.Log("nooooooooo");
+            }
+            if (projectile != null && !projectile.isReflected) // 确保没有被反弹过
+            {
+                foundCounterableTarget = true;
+                if (!counterWindowStarted)
+                {
+                    counterWindowStarted = true;
+                    counterTimer = 0f;
+                }
+                
+                if (counterTimer <= 0.5f && playerInputManager.GetButtonDown("Attack_1"))
+                {
+                    player.anim.SetBool("SuccessfulCounterAttack", true);
+                    ReflectProjectile(projectile);
+                    hasCountered = true;
+                    break;
+                }
             }
         }
     
-        // 更新计时器（只有在反击窗口开始后才计时）
+        // 更新计时器
         if (counterWindowStarted)
         {
             counterTimer += Time.deltaTime;
         
-            // 如果超过0.5秒且没有成功反击，触发失败
-            if (counterTimer > 0.5f && !hasCountered && !hasFailed)
+            if (counterTimer > 0.5f && !hasCountered && !hasFailed && foundCounterableTarget)
             {
                 player.anim.SetBool("FailCounterAttack", true);
                 hasFailed = true;
             }
         }
     
-        // 新增功能：不在反击窗口期内按下Attack_1直接切换状态
+        // 不在反击窗口期内按下Attack_1直接切换状态
         if (playerInputManager.GetButtonDown("Attack_1") && 
             (!counterWindowStarted || counterTimer > 0.5f) && 
             !hasCountered)
         {
-            // 切换到攻击状态或其他你指定的状态
             stateMachine.ChangeState(player.primaryAttack);
-            return; // 直接返回，避免执行后续逻辑
+            return;
         }
     
         if (triggerCalled || playerInputManager.GetButtonUp("Skill_1"))
         {
             stateMachine.ChangeState(player.idleState);
         }
+    }
+    
+    // 新增：反弹炮弹方法
+    private void ReflectProjectile(ParabolicProjectile projectile)
+    {
+        // 计算反弹方向（水平方向，基于玩家面向方向）
+        Vector3 reflectDirection = player.facingDir == 1 ? Vector3.right : Vector3.left;
+        
+        // 可以添加一些随机偏移让反弹更有趣
+        float randomOffset = Random.Range(-0.2f, 0.2f);
+        reflectDirection += Vector3.up * randomOffset;
+        
+        // 调用炮弹的反弹方法
+        projectile.ReflectProjectile(reflectDirection);
+        
+        // 可以在这里添加反击成功的音效或视觉效果
+        Debug.Log("成功反弹炮弹！");
     }
 
     public override void Exit()
