@@ -9,6 +9,7 @@ public class SkillManager : MonoBehaviour
     public Dash_Skill dash { get; private set; }
     public Sword_Skill sword { get; private set; }
     public FeiLeiShen_Skill feiLeiShen { get; private set; }
+    public GroundSlamSkill groundSlam { get; private set; }
 
     private void Awake()
     {
@@ -19,7 +20,6 @@ public class SkillManager : MonoBehaviour
         else
         {
             instance = this;
-            //DontDestroyOnLoad(gameObject);
         }
     }
     
@@ -36,6 +36,7 @@ public class SkillManager : MonoBehaviour
         dash = GetComponent<Dash_Skill>();
         sword = GetComponent<Sword_Skill>();
         feiLeiShen = GetComponent<FeiLeiShen_Skill>();
+        groundSlam =  GetComponentInChildren<GroundSlamSkill>();
     }
 
     public void UpgradeSkill(string skillName, int level)
