@@ -17,41 +17,35 @@ public class GroundSlamSkill : Skill
     public GameObject slamEffect;           // 落地特效
     public AudioClip slamSound;             // 落地音效
     
-    // 组件引用
-    private Collider2D playerCollider;
-    
     // 状态变量
     private bool isSlamming = false;
     private float lastSTapTime;
     private int sTapCount = 0;
     
-    
     [SerializeField] private GameObject damageArea;
     
     void Start()
     {
-        playerCollider = GetComponent<Collider2D>();
-        CreateDamageArea();
+        base.Start();
+        //CreateDamageArea();
     }
     
     void Update()
     {
         DetectDoubleTapS();// 检测双击S键
         EndGroundSlamCheck();// 检测下砸结束
-        OnDrawGizmosSelected();
+        //OnDrawGizmosSelected();
         //player.stateMachine.ChangeState();// 更新动画状态
     }
     
     void CreateDamageArea()
     {
         damageArea.transform.SetParent(player.transform);
-        damageArea.transform.position = new Vector3(0, verticalOffset, 0);
+        damageArea.transform.localPosition = new Vector3(0, verticalOffset, 0);
         
         CircleCollider2D collider = damageArea.GetComponent<CircleCollider2D>();
         collider.radius = detectionRadius;
         collider.isTrigger = true;
-        
-        
         damageArea.SetActive(false);
     }
     
@@ -60,18 +54,32 @@ public class GroundSlamSkill : Skill
         if (player.isGroundDetected() && isSlamming)    // 检测落地瞬间
         {
             isSlamming = false;// 停止下砸
-            damageArea.SetActive(true);// 激活伤害区域
+            DetectAndDamageEnemies();// 检测并伤害敌人
+            damageArea.SetActive(true);// 激活伤害区域（用于视觉效果）
             if (slamEffect != null)// 生成特效
             {
-                Instantiate(slamEffect, transform.position, Quaternion.identity);
+                Instantiate(slamEffect, damageArea.transform.position, Quaternion.identity);
             }
             if (slamSound != null)// 播放音效
             {
-                AudioSource.PlayClipAtPoint(slamSound, transform.position);
+                AudioSource.PlayClipAtPoint(slamSound, damageArea.transform.position);
             }
             //StartCoroutine(CameraShake(0.2f, 0.3f));// 屏幕震动（可选）
             Debug.Log("下砸落地！造成伤害");
             StartCoroutine(DeactivateDamageArea());// 延迟关闭伤害区域
+        }
+    }
+    
+    // 检测并伤害敌人（只检测一次）
+    void DetectAndDamageEnemies()
+    {
+        // 检测范围内的所有敌人
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(damageArea.transform.position, detectionRadius, enemyLayer);
+        
+        foreach (Collider2D enemy in hitEnemies)
+        {
+            // 对敌人造成伤害
+            //DealDamageToEnemy(enemy.gameObject);
         }
     }
     
@@ -102,7 +110,7 @@ public class GroundSlamSkill : Skill
     void StartGroundSlam()
     {
         isSlamming = true;
-        player.SetVelocity(0, slamSpeed);
+        player.SetVelocity(0, -slamSpeed); // 注意：向下应该是负值
         Debug.Log("发动下砸攻击！");
     }
     
@@ -111,7 +119,6 @@ public class GroundSlamSkill : Skill
         yield return new WaitForSeconds(0.2f);
         damageArea.SetActive(false);
     }
-    
     
     void OnDrawGizmosSelected()// 可视化伤害范围（在Scene视图中显示）
     {

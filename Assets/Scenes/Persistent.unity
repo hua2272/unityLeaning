@@ -4592,11 +4592,12 @@ MonoBehaviour:
   detectionRadius: 2
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
+  verticalOffset: -0.5
   doubleTapTime: 0.3
   slamEffect: {fileID: 0}
   slamSound: {fileID: 0}
-  damageArea: {fileID: 2083571052}
+  damageArea: {fileID: 2083571051}
 --- !u!1 &631507588
 GameObject:
   m_ObjectHideFlags: 0
