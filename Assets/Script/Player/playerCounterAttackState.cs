@@ -57,10 +57,6 @@ public class playerCounterAttackState : PlayerState
             
             // 新增：检查炮弹反击
             ParabolicProjectile projectile = hit.GetComponent<ParabolicProjectile>();
-            if (projectile != null)
-            {
-                Debug.Log("nooooooooo");
-            }
             if (projectile != null && !projectile.isReflected) // 确保没有被反弹过
             {
                 foundCounterableTarget = true;

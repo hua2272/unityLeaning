@@ -3,6 +3,11 @@ using System.Collections;
 
 public class GroundSlamSkill : Skill
 {
+    [Header("输入设置")]
+    public float comboTimeWindow = 0.2f; // 组合键时间窗口
+
+    private float lastSPressTime = -1f;
+    private float lastJPressTime = -1f;
     [Header("技能设置")]
     public float slamSpeed = 25f;           // 下砸速度
     public float slamDamage = 30f;          // 伤害值
@@ -18,7 +23,7 @@ public class GroundSlamSkill : Skill
     public AudioClip slamSound;             // 落地音效
     
     // 状态变量
-    private bool isSlamming = false;
+    public bool isSlamming = false;
     private float lastSTapTime;
     private int sTapCount = 0;
     
@@ -32,10 +37,8 @@ public class GroundSlamSkill : Skill
     
     void Update()
     {
-        DetectDoubleTapS();// 检测双击S键
+        DetectSJComboWithTimeWindow();// 检测双击S键
         EndGroundSlamCheck();// 检测下砸结束
-        //OnDrawGizmosSelected();
-        //player.stateMachine.ChangeState();// 更新动画状态
     }
     
     void CreateDamageArea()
@@ -53,6 +56,7 @@ public class GroundSlamSkill : Skill
     {
         if (player.isGroundDetected() && isSlamming)    // 检测落地瞬间
         {
+            player.isSlamming = false;
             isSlamming = false;// 停止下砸
             DetectAndDamageEnemies();// 检测并伤害敌人
             damageArea.SetActive(true);// 激活伤害区域（用于视觉效果）
@@ -83,35 +87,43 @@ public class GroundSlamSkill : Skill
         }
     }
     
-    void DetectDoubleTapS()
+    void DetectSJComboWithTimeWindow()
     {
-        if (player.isGroundDetected() || isSlamming) return;    //只能在空中且不在下砸状态时发动
-        if (Input.GetKeyDown(KeyCode.S) )
-        {
-            if (Time.time - lastSTapTime < doubleTapTime)
-            {
-                sTapCount++;
-                if (sTapCount >= 2)
-                {
-                    StartGroundSlam();// 触发下砸技能
-                    sTapCount = 0;
-                }
-            }
-            else
-            {
-                sTapCount = 1;
-            }
-            lastSTapTime = Time.time;
-        }
-        if (Time.time - lastSTapTime > doubleTapTime) 
-            sTapCount = 0;// 重置计数（如果超过双击时间）
-    }
+        // 只能在空中且不在下砸状态时发动
+        if (player.isGroundDetected() || isSlamming) return;
     
-    void StartGroundSlam()
-    {
-        isSlamming = true;
-        player.SetVelocity(0, -slamSpeed); // 注意：向下应该是负值
-        Debug.Log("发动下砸攻击！");
+        // 记录按键时间
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            lastSPressTime = Time.time;
+        }
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            lastJPressTime = Time.time;
+        }
+    
+        // 检查是否在时间窗口内按下了两个键
+        if (lastSPressTime > 0 && lastJPressTime > 0)
+        {
+            float timeDiff = Mathf.Abs(lastSPressTime - lastJPressTime);
+            if (timeDiff <= comboTimeWindow)
+            {
+                Debug.Log("S+J组合键，发动下砸！");
+                player.isSlamming = true;
+                isSlamming = true;
+                player.SetVelocity(0, -slamSpeed); // 注意：向下应该是负值
+                lastSPressTime = -1f;// 重置时间，防止连续触发
+                lastJPressTime = -1f;
+            }
+            else if (timeDiff > comboTimeWindow)
+            {
+                // 超过时间窗口，重置较旧的那个按键时间
+                if (lastSPressTime < lastJPressTime)
+                    lastSPressTime = -1f;
+                else
+                    lastJPressTime = -1f;
+            }
+        }
     }
     
     IEnumerator DeactivateDamageArea()

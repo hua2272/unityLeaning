@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class PlayerAirState : PlayerState
 {
     public PlayerAirState(Player _player, PlayerStateMachine _stateMachine, string _animBoolName) : base(_player, _stateMachine, _animBoolName)
@@ -16,6 +12,22 @@ public class PlayerAirState : PlayerState
     public override void Update()
     {
         base.Update();
+        if (player.isSlamming)
+        {
+            player.anim.SetFloat("test", 3);
+        }
+        else
+        {
+            if (rb.velocity.y > 0)
+            {
+                player.anim.SetFloat("test", 1);
+            }
+            else
+            {
+                player.anim.SetFloat("test", 2);
+            }
+        }
+        
         if (player.isGroundDetected())
         {
             stateMachine.ChangeState(player.idleState);

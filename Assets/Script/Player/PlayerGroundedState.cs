@@ -24,7 +24,7 @@ public class PlayerGroundedState : PlayerState
         }
         if (playerInputManager.GetButton("Skill_1"))
         {
-            stateMachine.ChangeState(player.CounterAttack);
+            stateMachine.ChangeState(player.counterAttack);
         }
         if (!player.isGroundDetected())
         {
@@ -32,7 +32,7 @@ public class PlayerGroundedState : PlayerState
         }
         if (playerInputManager.GetButton("Jump") && player.isGroundDetected())
         {
-            stateMachine.ChangeState(player.jumpState);
+            rb.velocity = new Vector2(rb.velocity.x, player.jumpForce);
         }
         if (playerInputManager.GetButtonDown("Attack_1"))
         {
