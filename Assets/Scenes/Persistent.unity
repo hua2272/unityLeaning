@@ -4587,6 +4587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coolDown: 0
+  comboTimeWindow: 0.2
   slamSpeed: 25
   slamDamage: 30
   detectionRadius: 2
@@ -4597,6 +4598,7 @@ MonoBehaviour:
   doubleTapTime: 0.3
   slamEffect: {fileID: 0}
   slamSound: {fileID: 0}
+  isSlamming: 0
   damageArea: {fileID: 2083571051}
 --- !u!1 &631507588
 GameObject:
@@ -5224,7 +5226,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 315, y: -26.99997}
+  m_AnchoredPosition: {x: 315, y: -26.999939}
   m_SizeDelta: {x: -673.563, y: -87.0008}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &646389128
@@ -5717,7 +5719,7 @@ Transform:
   m_GameObject: {fileID: 714969013}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.112, y: -0.152, z: 0}
+  m_LocalPosition: {x: 0.75, y: 0.138, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8638,6 +8640,7 @@ MonoBehaviour:
   swordReturnImpact: 4
   dashSpeed: 20
   dashDuration: 0.3
+  isSlamming: 0
   npcDetector: {fileID: 0}
 --- !u!4 &1142823683
 Transform:

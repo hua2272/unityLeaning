@@ -14,17 +14,17 @@ public class PlayerAirState : PlayerState
         base.Update();
         if (player.isSlamming)
         {
-            player.anim.SetFloat("test", 3);
+            player.anim.SetFloat("AirState", 2);
         }
         else
         {
             if (rb.velocity.y > 0)
             {
-                player.anim.SetFloat("test", 1);
+                player.anim.SetFloat("AirState", 0);
             }
             else
             {
-                player.anim.SetFloat("test", 2);
+                player.anim.SetFloat("AirState", 1);
             }
         }
         

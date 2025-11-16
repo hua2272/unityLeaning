@@ -20,8 +20,9 @@ public class playerCounterAttackState : PlayerState
         counterWindowStarted = false;
         hasCountered = false;
         hasFailed = false;
-        player.anim.SetBool("SuccessfulCounterAttack", false);
-        player.anim.SetBool("FailCounterAttack", false);
+        // player.anim.SetBool("SuccessfulCounterAttack", false);
+        // player.anim.SetBool("FailCounterAttack", false);
+        player.anim.SetFloat("CounterAttackState", 0);
     }
 
     public override void Update()
@@ -48,7 +49,7 @@ public class playerCounterAttackState : PlayerState
             
                 if (counterTimer <= 0.5f && playerInputManager.GetButtonDown("Attack_1") && enemy.CanBeCounter())
                 {
-                    player.anim.SetBool("SuccessfulCounterAttack", true);
+                    player.anim.SetFloat("CounterAttackState", 1);
                     enemy.EnterStunnedState();
                     hasCountered = true;
                     break;
@@ -68,7 +69,7 @@ public class playerCounterAttackState : PlayerState
                 
                 if (counterTimer <= 0.5f && playerInputManager.GetButtonDown("Attack_1"))
                 {
-                    player.anim.SetBool("SuccessfulCounterAttack", true);
+                    player.anim.SetFloat("CounterAttackState", 1);
                     ReflectProjectile(projectile);
                     hasCountered = true;
                     break;
@@ -83,7 +84,7 @@ public class playerCounterAttackState : PlayerState
         
             if (counterTimer > 0.5f && !hasCountered && !hasFailed && foundCounterableTarget)
             {
-                player.anim.SetBool("FailCounterAttack", true);
+                player.anim.SetFloat("CounterAttackState", 2);
                 hasFailed = true;
             }
         }
