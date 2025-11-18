@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Xml;
 using UnityEngine.SceneManagement;
 
 public class GameSaveManager : MonoBehaviour
@@ -15,6 +13,9 @@ public class GameSaveManager : MonoBehaviour
     public WeaponSlotsManager weaponSlotsManager;
     private GameData currentGameData = new GameData();
     
+    // 存储被摧毁的地形对象
+    private Dictionary<string, DestructibleTileData> destroyedTiles = new Dictionary<string, DestructibleTileData>();
+    
     private void Awake()
     {
         Debug.Log("-------GameSaveManager instance-------");
@@ -25,6 +26,7 @@ public class GameSaveManager : MonoBehaviour
         else
         {
             instance = this;
+            DontDestroyOnLoad(gameObject);
         }
     }
     
@@ -52,6 +54,9 @@ public class GameSaveManager : MonoBehaviour
         currentGameData.scene = SceneManager.GetActiveScene().name;
         currentGameData.inventoryItems = weaponSlotsManager.GetObtainedWeaponsName();
         
+        // 保存地形数据
+        currentGameData.destroyedTiles = GetAllDestroyedTiles();
+        
         string jsonData = JsonUtility.ToJson(currentGameData, prettyPrint: true);
         
         string savePath = GetSavePath();
@@ -59,6 +64,7 @@ public class GameSaveManager : MonoBehaviour
         {
             File.WriteAllText(savePath, jsonData);
             Debug.Log("游戏保存成功: " + savePath);
+            Debug.Log($"保存了 {currentGameData.destroyedTiles?.Count ?? 0} 个被摧毁的地形对象");
         }
         catch (Exception e)
         {
@@ -66,6 +72,44 @@ public class GameSaveManager : MonoBehaviour
         }
     }
     
+    // 地形保存相关方法
+    public void SaveTileState(DestructibleTileData tileData)
+    {
+        tileData.sceneName = SceneManager.GetActiveScene().name;
+        destroyedTiles[tileData.tileId] = tileData;
+    }
+    
+    public bool IsTileDestroyed(string tileId)
+    {
+        return destroyedTiles.ContainsKey(tileId) && destroyedTiles[tileId].isDestroyed;
+    }
+    
+    public List<DestructibleTileData> GetAllDestroyedTiles()
+    {
+        return new List<DestructibleTileData>(destroyedTiles.Values);
+    }
+    
+    public void LoadTileStates(List<DestructibleTileData> tileDataList)
+    {
+        destroyedTiles.Clear();
+        foreach (var tileData in tileDataList)
+        {
+            destroyedTiles[tileData.tileId] = tileData;
+        }
+    }
+    
+    public void ClearAllTileStates()
+    {
+        destroyedTiles.Clear();
+    }
+    
+    public void RemoveTileState(string tileId)
+    {
+        if (destroyedTiles.ContainsKey(tileId))
+        {
+            destroyedTiles.Remove(tileId);
+        }
+    }
     
     public static bool DoesSaveExist()
     {
@@ -74,17 +118,16 @@ public class GameSaveManager : MonoBehaviour
     
     public static string GetSavePath()
     {
-        //todo 保存路径优化（去除空格等因素）
-        string gameDirectory = Path.GetDirectoryName(Application.dataPath);     //获取游戏可执行文件所在目录
-        if (Application.isEditor)                                               //如果是在编辑器中运行，路径会有所不同
+        string gameDirectory = Path.GetDirectoryName(Application.dataPath);
+        if (Application.isEditor)
         {
             gameDirectory = Application.persistentDataPath;
         }
-        string saveDirectory = Path.Combine(gameDirectory, "Saves");            //创建保存目录（如果不存在
+        string saveDirectory = Path.Combine(gameDirectory, "Saves");
         if (!Directory.Exists(saveDirectory))
         {
             Directory.CreateDirectory(saveDirectory);
         }
-        return Path.Combine(saveDirectory, "gameSave.dat");                     //返回完整的保存文件路径
+        return Path.Combine(saveDirectory, "gameSave.dat");
     }
 }

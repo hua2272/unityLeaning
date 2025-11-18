@@ -23,17 +23,16 @@ public class GameLoadManager : MonoBehaviour
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
     
-    // 确保在销毁时移除事件监听
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
     
-    // 添加场景加载完成后的处理
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         Debug.Log($"场景 {scene.name} 加载完成");
-        // 设置玩家位置（如果是从传送门进入）
+        
+        // 设置玩家位置
         if (scene.name == targetScene)
         {
             player = GameObject.FindGameObjectWithTag("Player");
@@ -57,13 +56,16 @@ public class GameLoadManager : MonoBehaviour
 
     public void StartNewGame()
     {
-        // TODO 重置玩家数据、关卡状态等
+        // 新游戏时清空地形破坏记录
+        if (GameSaveManager.instance != null)
+        {
+            GameSaveManager.instance.ClearAllTileStates();
+        }
         SceneTransitionManager.Instance.LoadSceneWithFade("GameScene");
     }
 
     public void LoadGame()
     {
-        // todo 多存档管理
         if (GameSaveManager.DoesSaveExist())
         {
             StartCoroutine(LoadGameCoroutine(GameSaveManager.GetSavePath()));
@@ -92,13 +94,23 @@ public class GameLoadManager : MonoBehaviour
             Debug.LogError("Failed to parse save data!");
             yield break;
         }
+        
         Debug.Log("<color=#FF0000>--------DataPersistenceStart--------</color>");
+        
+        // 先加载地形数据
+        if (GameSaveManager.instance != null && gameData.destroyedTiles != null)
+        {
+            GameSaveManager.instance.LoadTileStates(gameData.destroyedTiles);
+            Debug.Log($"加载了 {gameData.destroyedTiles.Count} 个地形破坏记录");
+        }
+        
+        // 再加载玩家数据
         GameDataManager.instance.DataPersistence(gameData);
         
         SceneManager.LoadScene("Persistent");
-        //SceneTransitionManager.Instance.LoadSceneWithFade(gameData.scene);
-        yield return null;                                                              //等待一帧让场景开始加载
-        while (SceneManager.GetActiveScene().name != gameData.scene)                    //等待场景完全加载
+        yield return null;
+        
+        while (SceneManager.GetActiveScene().name != gameData.scene)
         {
             yield return null;
         }

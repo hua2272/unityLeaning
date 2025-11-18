@@ -15,11 +15,7 @@ public class PlayerNPCDetector : MonoBehaviour
     public Entity GetClosestVisibleNPC()
     {
         // 1. 先检测范围内的所有NPC
-        Collider2D[] hits = Physics2D.OverlapCircleAll(
-            transform.position, 
-            detectionRadius, 
-            npcLayerMask
-        );
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, detectionRadius, npcLayerMask);
 
         Entity closestNPC = null;
         float minDistance = float.MaxValue;
@@ -33,12 +29,7 @@ public class PlayerNPCDetector : MonoBehaviour
                 float distance = direction.sqrMagnitude; // 用平方距离优化计算
 
                 // 3. 检查视线是否被阻挡
-                RaycastHit2D obstacleCheck = Physics2D.Raycast(
-                    transform.position,
-                    direction.normalized,
-                    distance,
-                    obstacleLayerMask
-                );
+                RaycastHit2D obstacleCheck = Physics2D.Raycast(transform.position, direction.normalized, distance,obstacleLayerMask);
                 // 无障碍物且距离更近
                 if (obstacleCheck.collider == null && distance < minDistance)
                 {

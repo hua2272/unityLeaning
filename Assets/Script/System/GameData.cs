@@ -12,6 +12,7 @@ using UnityEngine;
     public Vector3 playerPosition;
     public string[] inventoryItems;
     public SerializableDictionary unlockedSkills; //JsonUtility无法解析字典类型
+    public List<DestructibleTileData> destroyedTiles = new List<DestructibleTileData>();
 
 
     [Serializable] public class SerializableDictionary

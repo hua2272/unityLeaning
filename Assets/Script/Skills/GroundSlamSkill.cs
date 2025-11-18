@@ -12,7 +12,7 @@ public class GroundSlamSkill : Skill
     public float slamSpeed = 25f;           // 下砸速度
     public float slamDamage = 30f;          // 伤害值
     public float detectionRadius = 2f;      // 伤害检测半径
-    public LayerMask enemyLayer;            // 敌人层级
+    public LayerMask targetLayer;            // 敌人层级
     public float verticalOffset = -0.5f;    // 伤害区域在玩家下方的垂直偏移
     
     [Header("输入设置")]
@@ -32,7 +32,7 @@ public class GroundSlamSkill : Skill
     void Start()
     {
         base.Start();
-        //CreateDamageArea();
+        CreateDamageArea();
     }
     
     void Update()
@@ -58,7 +58,7 @@ public class GroundSlamSkill : Skill
         {
             player.isSlamming = false;
             isSlamming = false;// 停止下砸
-            DetectAndDamageEnemies();// 检测并伤害敌人
+            DetectAndDamage();// 检测并伤害
             damageArea.SetActive(true);// 激活伤害区域（用于视觉效果）
             if (slamEffect != null)// 生成特效
             {
@@ -74,24 +74,26 @@ public class GroundSlamSkill : Skill
         }
     }
     
-    // 检测并伤害敌人（只检测一次）
-    void DetectAndDamageEnemies()
+    void DetectAndDamage()// 检测并伤害目标（只检测一次）
     {
-        // 检测范围内的所有敌人
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(damageArea.transform.position, detectionRadius, enemyLayer);
-        
-        foreach (Collider2D enemy in hitEnemies)
+        Collider2D[] targets = Physics2D.OverlapCircleAll(damageArea.transform.position, detectionRadius, targetLayer);
+        foreach (Collider2D obj in targets)
         {
-            // 对敌人造成伤害
-            //DealDamageToEnemy(enemy.gameObject);
+            if (obj.CompareTag("DestructibleTile"))
+            {
+                DestructibleTileController tileController = obj.GetComponentInParent<DestructibleTileController>();
+                if (tileController == null)
+                {
+                    Debug.Log($"wei找到DestructibleTileController，对 {obj.name} 造成伤害");
+                }
+                tileController.TakeDamage(1);
+            }
         }
     }
     
     void DetectSJComboWithTimeWindow()
     {
-        // 只能在空中且不在下砸状态时发动
-        if (player.isGroundDetected() || isSlamming) return;
-    
+        if (player.isGroundDetected() || isSlamming) return;// 只能在空中且不在下砸状态时发动
         // 记录按键时间
         if (Input.GetKeyDown(KeyCode.S))
         {

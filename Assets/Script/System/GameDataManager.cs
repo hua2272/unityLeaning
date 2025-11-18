@@ -12,7 +12,6 @@ public class GameDataManager : MonoBehaviour
     public string scene;
     public Vector3 playerPosition;
     public string[] inventoryItems;
-    //public Dictionary<string, int> unlockedSkills;
     public GameData.SerializableDictionary unlockedSkills;
     
     void Awake()
