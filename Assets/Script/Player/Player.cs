@@ -64,6 +64,7 @@ public class Player : Entity
         stateMachine.Initialize(idleState);
         npcDetector = GetComponent<PlayerNPCDetector>();
         PlayerInputManager = PlayerInputManager.instance;
+        DontDestroyOnLoad(this.gameObject);
     }
 
     protected override void Update()

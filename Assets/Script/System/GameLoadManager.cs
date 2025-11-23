@@ -30,26 +30,23 @@ public class GameLoadManager : MonoBehaviour
     
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        Debug.Log($"场景 {scene.name} 加载完成");
-        
-        // 设置玩家位置
         if (scene.name == targetScene)
         {
             player = GameObject.FindGameObjectWithTag("Player");
             if (player != null)
             {
-                player.transform.position = spawnPosition;
+                player.transform.position = spawnPosition;// 设置玩家位置
+                Debug.Log($"场景 {scene.name} 加载完成");
                 Debug.Log($"玩家位置已设置到: {spawnPosition}");
             }
         }
         
-        // 清理不属于当前场景的传送门
         SceneLoader[] allPortals = FindObjectsOfType<SceneLoader>();
         foreach (SceneLoader portal in allPortals)
         {
             if (portal.gameObject.scene.name != scene.name)
             {
-                Destroy(portal.gameObject);
+                Destroy(portal.gameObject);// 清理不属于当前场景的传送门
             }
         }
     }
@@ -70,10 +67,6 @@ public class GameLoadManager : MonoBehaviour
         {
             StartCoroutine(LoadGameCoroutine(GameSaveManager.GetSavePath()));
         }
-        else
-        {
-            Debug.LogWarning("Save file not found");
-        }
     }
     
     public void OnQuitClicked()
@@ -89,30 +82,17 @@ public class GameLoadManager : MonoBehaviour
     {
         string jsonData = File.ReadAllText(filePath);
         GameData gameData = JsonUtility.FromJson<GameData>(jsonData);
-        if (gameData == null)
-        {
-            Debug.LogError("Failed to parse save data!");
-            yield break;
-        }
-        
+        if (gameData == null) yield break;
         Debug.Log("<color=#FF0000>--------DataPersistenceStart--------</color>");
         
-        // 先加载地形数据
-        if (GameSaveManager.instance != null && gameData.destroyedTiles != null)
+        if (GameSaveManager.instance != null && gameData.destroyedTiles != null)// 先加载地形数据
         {
             GameSaveManager.instance.LoadTileStates(gameData.destroyedTiles);
             Debug.Log($"加载了 {gameData.destroyedTiles.Count} 个地形破坏记录");
         }
         
-        // 再加载玩家数据
-        GameDataManager.instance.DataPersistence(gameData);
-        
-        SceneManager.LoadScene("Persistent");
+        GameDataManager.instance.DataPersistence(gameData);// 再加载玩家数据
+        SceneManager.LoadScene("harbor");
         yield return null;
-        
-        while (SceneManager.GetActiveScene().name != gameData.scene)
-        {
-            yield return null;
-        }
     }
 }
