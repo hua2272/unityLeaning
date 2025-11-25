@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System.Collections;
-using Cinemachine; // 添加Cinemachine命名空间
+using Cinemachine;
 
 public class PersistentSceneLoader : MonoBehaviour
 {
@@ -14,12 +14,20 @@ public class PersistentSceneLoader : MonoBehaviour
     public TextMeshProUGUI pressCText;
     
     [Header("Camera Control")]
-    public CinemachineVirtualCamera virtualCamera; // 引用Cinemachine虚拟相机
-    public Transform cameraTargetPosition; // 相机停留的目标位置
+    public CinemachineVirtualCamera virtualCamera;
+    public Transform cameraTargetPosition;
+    
+    [Header("Audio Settings")]
+    public AudioSource backgroundMusicSource;
+    public AudioSource sfxSource;
+    [Range(0f, 1f)]
+    public float musicVolume = 0.7f;
+    [Range(0f, 1f)]
+    public float sfxVolume = 1f;
     
     private bool mainMenuLoaded = false;
     private bool waitingForInput = false;
-    private Transform originalFollowTarget; // 保存原始的跟随目标
+    private Transform originalFollowTarget;
     
     void Awake()
     {
@@ -34,26 +42,18 @@ public class PersistentSceneLoader : MonoBehaviour
             return;
         }
         
-        // 保存原始的跟随目标
-        if (virtualCamera != null)
-        {
-            originalFollowTarget = virtualCamera.Follow;
-        }
+        InitializeAudioSources();// 初始化音频源
         
-        // 确保Canvas在Awake中正确设置
-        if (introCanvas != null)
-        {
-            introCanvas.gameObject.SetActive(true);
-        }
+        originalFollowTarget = virtualCamera.Follow;
+        introCanvas.gameObject.SetActive(true);
         
-        // 设置相机到指定位置
-        SetCameraToTargetPosition();
+        SetCameraToTargetPosition();// 设置相机到指定位置
     }
     
     void Start()
     {
-        // 开始闪烁文本和等待输入
-        StartCoroutine(StartIntroSequence());
+        StartCoroutine(StartIntroSequence());// 开始闪烁文本和等待输入
+        backgroundMusicSource.Play();// 播放背景音乐
     }
     
     void Update()
@@ -61,39 +61,50 @@ public class PersistentSceneLoader : MonoBehaviour
         // 检测C键按下且主菜单尚未加载
         if (Input.GetKeyDown(KeyCode.C) && waitingForInput && !mainMenuLoaded)
         {
-            LoadMainMenu();
+            sfxSource.Play();
+            StartCoroutine(LoadMainMenuCoroutine());
         }
+    }
+    
+    private void InitializeAudioSources()
+    {
+        // 配置背景音乐源
+        backgroundMusicSource.loop = true;
+        backgroundMusicSource.volume = musicVolume;
+        backgroundMusicSource.spatialBlend = 0f; // 2D声音
+        // 配置音效源
+        sfxSource.loop = false;
+        sfxSource.volume = sfxVolume;
+        sfxSource.spatialBlend = 0f; // 2D声音
+    }
+    
+    private IEnumerator FadeMusicCoroutine(float fromVolume, float toVolume, float duration)
+    {
+        float timer = 0f;
+        
+        while (timer < duration)
+        {
+            timer += Time.deltaTime;
+            backgroundMusicSource.volume = Mathf.Lerp(fromVolume, toVolume, timer / duration);
+            yield return null;
+        }
+        backgroundMusicSource.volume = toVolume;
     }
     
     private void SetCameraToTargetPosition()
     {
-        if (virtualCamera != null && cameraTargetPosition != null)
-        {
-            // 禁用相机跟随，让它停留在指定位置
-            virtualCamera.Follow = null;
-            
-            // 将相机移动到目标位置
-            virtualCamera.transform.position = cameraTargetPosition.position;
-            virtualCamera.transform.rotation = cameraTargetPosition.rotation;
-        }
-    }
-    
-    private void RestoreCameraFollow()
-    {
-        if (virtualCamera != null && originalFollowTarget != null)
-        {
-            // 恢复相机跟随
-            virtualCamera.Follow = originalFollowTarget;
-        }
+        virtualCamera.Follow = null;// 禁用相机跟随，让它停留在指定位置
+        virtualCamera.transform.position = cameraTargetPosition.position;// 将相机移动到目标位置
+        virtualCamera.transform.rotation = cameraTargetPosition.rotation;
     }
     
     private IEnumerator StartIntroSequence()
     {
         introCanvas.gameObject.SetActive(true);
         canvasAnimator.SetTrigger("StartIntro");
-        yield return new WaitForSeconds(1f);// 等待动画播放一段时间
-        StartCoroutine(BlinkText());// 开始闪烁文本
-        waitingForInput = true;// 设置等待输入状态
+        yield return new WaitForSeconds(1f);
+        StartCoroutine(BlinkText());
+        waitingForInput = true;
     }
     
     private IEnumerator BlinkText()
@@ -102,7 +113,7 @@ public class PersistentSceneLoader : MonoBehaviour
         
         pressCText.gameObject.SetActive(true);
         bool isVisible = true;
-        float blinkRate = 0.5f; // 闪烁频率
+        float blinkRate = 0.5f;
         
         while (waitingForInput && !mainMenuLoaded)
         {
@@ -112,35 +123,22 @@ public class PersistentSceneLoader : MonoBehaviour
         }
     }
     
-    public void LoadMainMenu()
-    {
-        StartCoroutine(LoadMainMenuCoroutine());
-    }
-    
     private IEnumerator LoadMainMenuCoroutine()
     {
         mainMenuLoaded = true;
         waitingForInput = false;
-        
         Debug.Log("加载主菜单场景");
         
-        // 播放退出动画（如果有）
-        if (canvasAnimator != null)
-        {
-            canvasAnimator.SetTrigger("ExitIntro");
-            yield return new WaitForSeconds(0.5f); // 等待动画完成
-        }
+        StartCoroutine(FadeMusicCoroutine(backgroundMusicSource.volume, 0f, 1f));// 淡出当前音乐
+        yield return new WaitForSeconds(0.3f);
         
-        // 隐藏intro canvas
-        if (introCanvas != null)
-        {
-            introCanvas.gameObject.SetActive(false);
-        }
+        canvasAnimator.SetTrigger("ExitIntro");// 播放退出动画
+        yield return new WaitForSeconds(0.5f);
         
-        // 恢复相机跟随
-        RestoreCameraFollow();
+        introCanvas.gameObject.SetActive(false);// 隐藏intro canvas
+        virtualCamera.Follow = originalFollowTarget;// 恢复相机跟随
         
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainMenu", LoadSceneMode.Additive);
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainMenu", LoadSceneMode.Additive);// 加载主菜单场景
         while (!asyncLoad.isDone)
         {
             yield return null;

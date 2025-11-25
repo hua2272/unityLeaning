@@ -15,13 +15,14 @@ public class SkillTreeManager : MonoBehaviour
     private void Awake()
     {
         Debug.Log("<color=#FF0000>-------SkillTreeManager instance-------</color>");
-        if (instance != null)
+        if (instance == null)
         {
-            Destroy(gameObject);
+            instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
-            instance = this;
+            Destroy(gameObject);
         }
     }
     
