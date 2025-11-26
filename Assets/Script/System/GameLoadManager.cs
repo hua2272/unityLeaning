@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.IO;
 using UnityEngine;
@@ -14,12 +13,15 @@ public class GameLoadManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance != null && instance != this)
+        Debug.Log("<color=#FF0000>-------GameLoadManager instance-------</color>");
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
         {
             Destroy(gameObject);
-            return;
         }
-        instance = this;
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
     

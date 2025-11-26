@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameDataManager : MonoBehaviour
@@ -16,10 +14,10 @@ public class GameDataManager : MonoBehaviour
     
     void Awake()
     {
+        Debug.Log("<color=#FF0000>-------GameDataManager instance-------</color>");
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
         {

@@ -18,15 +18,15 @@ public class GameSaveManager : MonoBehaviour
     
     private void Awake()
     {
-        Debug.Log("-------GameSaveManager instance-------");
-        if (instance != null)
-        {
-            Destroy(gameObject);
-        }
-        else
+        Debug.Log("<color=#FF0000>-------GameSaveManager instance-------</color>");
+        if (instance == null)
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
         }
     }
     

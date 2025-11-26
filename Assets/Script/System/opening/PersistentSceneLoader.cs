@@ -7,6 +7,9 @@ using Cinemachine;
 public class PersistentSceneLoader : MonoBehaviour
 {
     public static PersistentSceneLoader instance;
+
+    [Header("Persistent")] 
+    public GameObject[] PersistObj;
     
     [Header("UI References")]
     public Canvas introCanvas;
@@ -34,20 +37,29 @@ public class PersistentSceneLoader : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            //DontDestroyOnLoad(gameObject);
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
             Destroy(gameObject);
             return;
         }
-        
+        PersistGameObjects();
         InitializeAudioSources();// 初始化音频源
         
         originalFollowTarget = virtualCamera.Follow;
         introCanvas.gameObject.SetActive(true);
         
         SetCameraToTargetPosition();// 设置相机到指定位置
+    }
+
+    void PersistGameObjects()
+    {
+        foreach (GameObject obj in PersistObj)
+        {
+            if (obj != null)
+                DontDestroyOnLoad(obj);
+        }
     }
     
     void Start()
@@ -138,7 +150,8 @@ public class PersistentSceneLoader : MonoBehaviour
         introCanvas.gameObject.SetActive(false);// 隐藏intro canvas
         virtualCamera.Follow = originalFollowTarget;// 恢复相机跟随
         
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainMenu", LoadSceneMode.Additive);// 加载主菜单场景
+        // AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainMenu", LoadSceneMode.Additive);// 加载主菜单场景
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainMenu", LoadSceneMode.Single);// 加载主菜单场景
         while (!asyncLoad.isDone)
         {
             yield return null;
