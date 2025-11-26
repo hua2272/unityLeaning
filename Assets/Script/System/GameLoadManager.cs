@@ -85,7 +85,7 @@ public class GameLoadManager : MonoBehaviour
         string jsonData = File.ReadAllText(filePath);
         GameData gameData = JsonUtility.FromJson<GameData>(jsonData);
         if (gameData == null) yield break;
-        Debug.Log("<color=#FF0000>--------DataPersistenceStart--------</color>");
+        Debug.Log("<color=#FF0000>--------DataPersistence Start--------</color>");
         
         if (GameSaveManager.instance != null && gameData.destroyedTiles != null)// 先加载地形数据
         {

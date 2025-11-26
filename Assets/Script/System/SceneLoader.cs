@@ -13,29 +13,8 @@ public class SceneLoader : MonoBehaviour
     private bool playerInRange;
     private bool isTransitioning = false;
 
-    // 使用字典保存每个场景的出生位置
-    public static Dictionary<string, Vector3> sceneSpawnPositions = new Dictionary<string, Vector3>();
-    
-    // 当前场景的玩家状态
-    private Vector3 currentSpawnPosition;
-
-    private void Start()
-    {
-        // 初始化当前出生位置
-        currentSpawnPosition = spawnPosition;
-    }
-
     public void LoadScene(string sceneName)
     {
-        // 保存当前场景的出生位置
-        if (!sceneSpawnPositions.ContainsKey(SceneManager.GetActiveScene().name))
-        {
-            sceneSpawnPositions.Add(SceneManager.GetActiveScene().name, currentSpawnPosition);
-        }
-        
-        // 保存目标位置到字典
-        sceneSpawnPositions[sceneName] = spawnPosition;
-        
         StartCoroutine(LoadSceneWithTransition(sceneName));
     }
 
@@ -59,7 +38,6 @@ public class SceneLoader : MonoBehaviour
             }
             yield return null;
         }
-        
         isTransitioning = false;
     }
     
