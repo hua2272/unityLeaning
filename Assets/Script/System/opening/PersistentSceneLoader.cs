@@ -14,7 +14,9 @@ public class PersistentSceneLoader : MonoBehaviour
     [Header("UI References")]
     public Canvas introCanvas;
     public Animator canvasAnimator;
-    public TextMeshProUGUI pressCText;
+    public TextMeshProUGUI prompt;
+    public TextMeshProUGUI title;
+    public GameObject buttonPanel;
     
     [Header("Camera Control")]
     public CinemachineVirtualCamera virtualCamera;
@@ -64,17 +66,19 @@ public class PersistentSceneLoader : MonoBehaviour
     
     void Start()
     {
-        StartCoroutine(StartIntroSequence());// 开始闪烁文本和等待输入
-        backgroundMusicSource.Play();// 播放背景音乐
+        StartCoroutine(StartIntroSequence());       //开始闪烁文本和等待输入
+        backgroundMusicSource.Play();                      //播放背景音乐
     }
     
     void Update()
     {
-        // 检测C键按下且主菜单尚未加载
         if (Input.GetKeyDown(KeyCode.C) && waitingForInput && !mainMenuLoaded)
         {
             sfxSource.Play();
-            StartCoroutine(LoadMainMenuCoroutine());
+            //StartCoroutine(LoadMainMenuCoroutine());
+            buttonPanel.SetActive(true);
+            title.gameObject.SetActive(true);
+            prompt.gameObject.SetActive(false);
         }
     }
     
@@ -121,16 +125,14 @@ public class PersistentSceneLoader : MonoBehaviour
     
     private IEnumerator BlinkText()
     {
-        if (pressCText == null) yield break;
-        
-        pressCText.gameObject.SetActive(true);
+        prompt.gameObject.SetActive(true);
         bool isVisible = true;
         float blinkRate = 0.5f;
         
         while (waitingForInput && !mainMenuLoaded)
         {
             isVisible = !isVisible;
-            pressCText.enabled = isVisible;
+            prompt.enabled = isVisible;
             yield return new WaitForSeconds(blinkRate);
         }
     }
@@ -140,23 +142,18 @@ public class PersistentSceneLoader : MonoBehaviour
         mainMenuLoaded = true;
         waitingForInput = false;
         Debug.Log("加载主菜单场景");
-        
-        StartCoroutine(FadeMusicCoroutine(backgroundMusicSource.volume, 0f, 1f));// 淡出当前音乐
+        StartCoroutine(FadeMusicCoroutine(backgroundMusicSource.volume, 0f, 1f));                 //淡出当前音乐
         yield return new WaitForSeconds(0.3f);
-        
-        canvasAnimator.SetTrigger("ExitIntro");// 播放退出动画
+        canvasAnimator.SetTrigger("ExitIntro");                                                             //播放退出动画
         yield return new WaitForSeconds(0.5f);
-        
-        introCanvas.gameObject.SetActive(false);// 隐藏intro canvas
-        virtualCamera.Follow = originalFollowTarget;// 恢复相机跟随
-        
-        // AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainMenu", LoadSceneMode.Additive);// 加载主菜单场景
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainMenu", LoadSceneMode.Single);// 加载主菜单场景
+        introCanvas.gameObject.SetActive(false);                                                                 //隐藏intro canvas
+        virtualCamera.Follow = originalFollowTarget;                                                             //恢复相机跟随
+        // AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainMenu", LoadSceneMode.Additive);           //加载主菜单场景
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainMenu", LoadSceneMode.Single);
         while (!asyncLoad.isDone)
         {
             yield return null;
         }
-        
         SceneManager.SetActiveScene(SceneManager.GetSceneByName("MainMenu"));
         Debug.Log("主菜单加载完成");
     }

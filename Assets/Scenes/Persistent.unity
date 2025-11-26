@@ -4752,7 +4752,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &523338323
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12342,7 +12342,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1375406882
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15296,7 +15296,9 @@ MonoBehaviour:
   - {fileID: 1741978459}
   introCanvas: {fileID: 408470903}
   canvasAnimator: {fileID: 449621259}
-  pressCText: {fileID: 937243652}
+  prompt: {fileID: 937243652}
+  title: {fileID: 523338324}
+  buttonPanel: {fileID: 1375406881}
   virtualCamera: {fileID: 1477930330}
   cameraTargetPosition: {fileID: 1902167150}
   backgroundMusicSource: {fileID: 1230987549}
