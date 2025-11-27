@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
-using System.Collections.Generic;
 
 public class SceneLoader : MonoBehaviour
 {
@@ -10,8 +9,14 @@ public class SceneLoader : MonoBehaviour
     [SerializeField] private string nextSceneName;
     [SerializeField] private Vector3 spawnPosition;
     
-    private bool playerInRange;
+    private Player player;
+    private bool playerInRange;//玩家是否在门范围
     private bool isTransitioning = false;
+
+    private void Start()
+    {
+        player = PlayerManager.instance.player;
+    }
 
     public void LoadScene(string sceneName)
     {
@@ -27,16 +32,27 @@ public class SceneLoader : MonoBehaviour
         
         yield return new WaitForSeconds(transitionTime);
         
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
-        asyncLoad.allowSceneActivation = false;
+        bool isSameScene = sceneName == SceneManager.GetActiveScene().name;             //判断是否是同场景传送
         
-        while (!asyncLoad.isDone)
+        if (!isSameScene)
         {
-            if (asyncLoad.progress >= 0.9f)
+            GameLoadManager.instance.spawnPosition = spawnPosition;                    //不同场景传送需持久化位置信息，并销毁传送门
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);          //异步加载新场景
+            asyncLoad.allowSceneActivation = false;
+            while (!asyncLoad.isDone)
             {
-                asyncLoad.allowSceneActivation = true;
+                if (asyncLoad.progress >= 0.9f)
+                {
+                    asyncLoad.allowSceneActivation = true;
+                }
+                yield return null;
             }
-            yield return null;
+        }
+        else
+        {
+            player.transform.position = spawnPosition;                                  //同场景传送则直接移动玩家，不销毁传送门
+            if (transitionAnimator != null)
+                transitionAnimator.SetTrigger("End");                              //结束过渡动画
         }
         isTransitioning = false;
     }
@@ -53,7 +69,7 @@ public class SceneLoader : MonoBehaviour
     
     private void Update()
     {
-        if (playerInRange && Input.GetKeyDown(KeyCode.F) && !isTransitioning)
+        if (playerInRange && Input.GetKeyDown(KeyCode.X) && !isTransitioning)
         {
             LoadScene(nextSceneName);
         }

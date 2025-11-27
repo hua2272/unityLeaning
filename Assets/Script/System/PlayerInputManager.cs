@@ -55,7 +55,7 @@ public class PlayerInputManager : MonoBehaviour
 
     void Awake()
     {
-        Debug.unityLogger.Log("-------PlayerInputManager instance-------");
+        Debug.unityLogger.Log("<color=#FF0000>-------PlayerInputManager instance-------</color>");
         if (instance == null)
         {
             instance = this;

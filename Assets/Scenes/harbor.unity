@@ -221,8 +221,8 @@ Transform:
   m_GameObject: {fileID: 436301755}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6.4678, y: -1.9299998, z: 0}
-  m_LocalScale: {x: 22.230642, y: 1, z: 1}
+  m_LocalPosition: {x: -34.82, y: -2.32, z: 0}
+  m_LocalScale: {x: 79.814674, y: 0.8398, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1921501409}
@@ -524,7 +524,7 @@ Transform:
   m_GameObject: {fileID: 1452113218}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -16.15, y: -0.82, z: 0}
+  m_LocalPosition: {x: -51.73, y: -1.15, z: 0}
   m_LocalScale: {x: 5.326078, y: 1.4985172, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -675,8 +675,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   transitionAnimator: {fileID: 0}
   transitionTime: 1
-  nextSceneName: city_1
-  spawnPosition: {x: 8, y: 7, z: 0}
+  nextSceneName: church
+  spawnPosition: {x: 1, y: 1, z: 0}
 --- !u!61 &1858361056
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -801,7 +801,7 @@ Transform:
   m_GameObject: {fileID: 1861089615}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.49, y: -0.26, z: 0}
+  m_LocalPosition: {x: 7.28, y: -2.59, z: 0}
   m_LocalScale: {x: 5.513404, y: 2.4886856, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

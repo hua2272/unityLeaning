@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.IO;
 using UnityEngine;
@@ -7,7 +8,7 @@ public class GameLoadManager : MonoBehaviour
 {
     public static GameLoadManager instance { get; private set; }
     
-    public GameObject player;
+    public Player player;
     public Vector3 spawnPosition;
     public string targetScene;
 
@@ -17,11 +18,16 @@ public class GameLoadManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
             Destroy(gameObject);
         }
+    }
+    
+    void OnEnable()
+    {
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
     
@@ -29,27 +35,26 @@ public class GameLoadManager : MonoBehaviour
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
-    
+
+    private void Start()
+    {
+        player = PlayerManager.instance.player;
+    }
+
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == targetScene)
         {
-            player = GameObject.FindGameObjectWithTag("Player");
-            if (player != null)
-            {
-                player.transform.position = spawnPosition;// 设置玩家位置
-                Debug.Log($"场景 {scene.name} 加载完成");
-                Debug.Log($"玩家位置已设置到: {spawnPosition}");
-            }
+            player.transform.position = spawnPosition;// 设置玩家位置
+            Debug.Log($"场景 {scene.name} 加载完成");
+            Debug.Log($"玩家位置已设置到: {spawnPosition}");
         }
         
         SceneLoader[] allPortals = FindObjectsOfType<SceneLoader>();
         foreach (SceneLoader portal in allPortals)
         {
             if (portal.gameObject.scene.name != scene.name)
-            {
                 Destroy(portal.gameObject);// 清理不属于当前场景的传送门
-            }
         }
     }
 
@@ -95,6 +100,7 @@ public class GameLoadManager : MonoBehaviour
         
         GameDataManager.instance.DataPersistence(gameData);// 再加载玩家数据
         SceneManager.LoadScene("harbor");
+        player.transform.position = new Vector3(gameData.playerPosition.x, gameData.playerPosition.y, gameData.playerPosition.z);
         yield return null;
     }
 }

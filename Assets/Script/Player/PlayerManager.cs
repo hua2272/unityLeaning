@@ -10,7 +10,7 @@ public class PlayerManager : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log("------PlayerManager instance------");
+        Debug.Log("<color=#FF0000>------PlayerManager instance------</color>");
         if (instance != null)
         {
             Destroy(gameObject);
@@ -26,15 +26,6 @@ public class PlayerManager : MonoBehaviour
         if (instance == this)
         {
             instance = null;
-        }
-    }
-
-    private void Start()
-    {
-        GameDataManager gameData = GameDataManager.instance;
-        if (gameData != null)
-        {
-            player.transform.position = new Vector3(gameData.playerPosition.x, gameData.playerPosition.y, gameData.playerPosition.z);
         }
     }
 }

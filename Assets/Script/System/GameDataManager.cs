@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameDataManager : MonoBehaviour
 {
@@ -11,9 +12,6 @@ public class GameDataManager : MonoBehaviour
     public Vector3 playerPosition;
     public string[] inventoryItems;
     public GameData.SerializableDictionary unlockedSkills;
-
-    [Header("temporary")]
-    public Vector3 targetPosition;
     
     void Awake()
     {
