@@ -1,6 +1,6 @@
-using System;
 using System.Collections;
 using System.IO;
+using Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,9 +8,10 @@ public class GameLoadManager : MonoBehaviour
 {
     public static GameLoadManager instance { get; private set; }
     
-    public Player player;
+    private Player player;
     public Vector3 spawnPosition;
     public string targetScene;
+    public CinemachineVirtualCamera virtualCamera;
 
     private void Awake()
     {
@@ -56,6 +57,7 @@ public class GameLoadManager : MonoBehaviour
             if (portal.gameObject.scene.name != scene.name)
                 Destroy(portal.gameObject);//todo 清理不属于当前场景的传送门，该功能放哪比较好
         }
+        virtualCamera.Follow = player.transform;
     }
 
     public void StartNewGame()

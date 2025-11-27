@@ -4,13 +4,8 @@ using TMPro;
 using System.Collections;
 using Cinemachine;
 
-public class PersistentSceneLoader : MonoBehaviour
+public class Prelude : MonoBehaviour
 {
-    public static PersistentSceneLoader instance;
-
-    [Header("Persistent")] 
-    public GameObject[] PersistObj;
-    
     [Header("UI References")]
     public Canvas introCanvas;
     public Animator canvasAnimator;
@@ -32,36 +27,12 @@ public class PersistentSceneLoader : MonoBehaviour
     
     private bool mainMenuLoaded = false;
     private bool waitingForInput = false;
-    private Transform originalFollowTarget;
     
     void Awake()
     {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
-        PersistGameObjects();
         InitializeAudioSources();// 初始化音频源
-        
-        originalFollowTarget = virtualCamera.Follow;
         introCanvas.gameObject.SetActive(true);
-        
         SetCameraToTargetPosition();// 设置相机到指定位置
-    }
-
-    void PersistGameObjects()
-    {
-        foreach (GameObject obj in PersistObj)
-        {
-            if (obj != null)
-                DontDestroyOnLoad(obj);
-        }
     }
     
     void Start()
@@ -75,7 +46,6 @@ public class PersistentSceneLoader : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C) && waitingForInput && !mainMenuLoaded)
         {
             sfxSource.Play();
-            //StartCoroutine(LoadMainMenuCoroutine());
             buttonPanel.SetActive(true);
             title.gameObject.SetActive(true);
             prompt.gameObject.SetActive(false);
@@ -135,26 +105,5 @@ public class PersistentSceneLoader : MonoBehaviour
             prompt.enabled = isVisible;
             yield return new WaitForSeconds(blinkRate);
         }
-    }
-    
-    private IEnumerator LoadMainMenuCoroutine()
-    {
-        mainMenuLoaded = true;
-        waitingForInput = false;
-        Debug.Log("加载主菜单场景");
-        StartCoroutine(FadeMusicCoroutine(backgroundMusicSource.volume, 0f, 1f));                 //淡出当前音乐
-        yield return new WaitForSeconds(0.3f);
-        canvasAnimator.SetTrigger("ExitIntro");                                                             //播放退出动画
-        yield return new WaitForSeconds(0.5f);
-        introCanvas.gameObject.SetActive(false);                                                                 //隐藏intro canvas
-        virtualCamera.Follow = originalFollowTarget;                                                             //恢复相机跟随
-        // AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainMenu", LoadSceneMode.Additive);           //加载主菜单场景
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MainMenu", LoadSceneMode.Single);
-        while (!asyncLoad.isDone)
-        {
-            yield return null;
-        }
-        SceneManager.SetActiveScene(SceneManager.GetSceneByName("MainMenu"));
-        Debug.Log("主菜单加载完成");
     }
 }
