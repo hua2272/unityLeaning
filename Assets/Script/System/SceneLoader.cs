@@ -26,35 +26,30 @@ public class SceneLoader : MonoBehaviour
     private IEnumerator LoadSceneWithTransition(string sceneName)
     {
         isTransitioning = true;
-        
-        if (transitionAnimator != null)
-            transitionAnimator.SetTrigger("Start");
+        if (transitionAnimator != null) transitionAnimator.SetTrigger("Start");// 开始过渡动画
         
         yield return new WaitForSeconds(transitionTime);
         
-        bool isSameScene = sceneName == SceneManager.GetActiveScene().name;             //判断是否是同场景传送
-        
+        bool isSameScene = sceneName == SceneManager.GetActiveScene().name;
         if (!isSameScene)
         {
-            GameLoadManager.instance.spawnPosition = spawnPosition;                    //不同场景传送需持久化位置信息，并销毁传送门
-            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);          //异步加载新场景
-            asyncLoad.allowSceneActivation = false;
-            while (!asyncLoad.isDone)
+            GameLoadManager.instance.spawnPosition = spawnPosition;// 设置重生位置
+            GameLoadManager.instance.targetScene = sceneName;
+            
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);// 直接加载场景，确保激活
+            asyncLoad.allowSceneActivation = true; // 确保场景激活
+            
+            while (!asyncLoad.isDone)// 等待加载完成
             {
-                if (asyncLoad.progress >= 0.9f)
-                {
-                    asyncLoad.allowSceneActivation = true;
-                }
                 yield return null;
             }
         }
         else
         {
             player.transform.position = spawnPosition;                                  //同场景传送则直接移动玩家，不销毁传送门
-            if (transitionAnimator != null)
-                transitionAnimator.SetTrigger("End");                              //结束过渡动画
+            if (transitionAnimator != null) transitionAnimator.SetTrigger("End");
+            isTransitioning = false;
         }
-        isTransitioning = false;
     }
     
     private void OnTriggerEnter2D(Collider2D collision)

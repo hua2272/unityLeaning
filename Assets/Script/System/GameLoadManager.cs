@@ -45,7 +45,7 @@ public class GameLoadManager : MonoBehaviour
     {
         if (scene.name == targetScene)
         {
-            player.transform.position = spawnPosition;// 设置玩家位置
+            player.transform.position = spawnPosition;
             Debug.Log($"场景 {scene.name} 加载完成");
             Debug.Log($"玩家位置已设置到: {spawnPosition}");
         }
@@ -54,7 +54,7 @@ public class GameLoadManager : MonoBehaviour
         foreach (SceneLoader portal in allPortals)
         {
             if (portal.gameObject.scene.name != scene.name)
-                Destroy(portal.gameObject);// 清理不属于当前场景的传送门
+                Destroy(portal.gameObject);//todo 清理不属于当前场景的传送门，该功能放哪比较好
         }
     }
 
