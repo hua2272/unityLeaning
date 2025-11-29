@@ -19,15 +19,14 @@ public class WeaponSlotsManager : MonoBehaviour
     
     private void Awake()
     {
-        Debug.Log("-------WeaponSlotsManager instance------->");
-        if (instance != null)
+        Debug.Log("<color=#FF0000>-------WeaponSlotsManager instance-------</color>");
+        if (instance == null)
         {
-            Destroy(instance.gameObject);
+            instance = this;
         }
         else
         {
-            instance = this;
-            //DontDestroyOnLoad(gameObject);
+            Destroy(gameObject);
         }
     }
     

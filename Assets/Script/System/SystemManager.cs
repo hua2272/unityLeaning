@@ -71,51 +71,33 @@ public class SystemManager : MonoBehaviour
         playerInputManager.OnButtonsCreated.AddListener(OnInputButtonsCreated);
     }
     
-    private void CollectPanelScrollRects()                          // 收集所有面板的ScrollRect组件
+    private void CollectPanelScrollRects()
     {
         panelScrollRects.Clear();
         ScrollRect scrollRectMain = mainPanel.GetComponentInChildren<ScrollRect>();
-        if (scrollRectMain != null)
-        {
+        if (scrollRectMain != null) 
             panelScrollRects[mainPanel] = scrollRectMain;
-        }
         
         foreach (var subPanel in subPanels)
         {
             ScrollRect scrollRect = subPanel.GetComponentInChildren<ScrollRect>();
             if (scrollRect != null)
-            {
-                panelScrollRects[subPanel] = scrollRect;            // 收集二级面板的ScrollRect
-            }
+                panelScrollRects[subPanel] = scrollRect;
         }
         UpdateCurrentScrollRect();
     }
     
     private void UpdateCurrentScrollRect()                          // 更新当前ScrollRect
     {
-        GameObject currentPanel = GetCurrentPanel();
-        if (currentPanel != null && panelScrollRects.ContainsKey(currentPanel))
-        {
-            currentScrollRect = panelScrollRects[currentPanel];
-        }
-        else
-        {
-            currentScrollRect = null;
-        }
-    }
-    
-    // 获取当前面板
-    private GameObject GetCurrentPanel()
-    {
+        GameObject currentPanel = null;
+        currentScrollRect = null;
         if (currentPanelLevel == PanelLevel.Main)
-        {
-            return mainPanel;
-        }
+            currentPanel =  mainPanel;
         if (currentPanelLevel == PanelLevel.Sub && currentSubPanelIndex >= 0 && currentSubPanelIndex < subPanels.Length)
-        {
-            return subPanels[currentSubPanelIndex];
-        }
-        return null;
+            currentPanel =  subPanels[currentSubPanelIndex];
+        
+        if (currentPanel != null && panelScrollRects.ContainsKey(currentPanel))
+            currentScrollRect = panelScrollRects[currentPanel];
     }
 
     // 当输入按钮创建完成后调用
@@ -135,17 +117,12 @@ public class SystemManager : MonoBehaviour
 
     private void InitializePanels()
     {
-        // 初始化所有面板为未激活状态
-        if (mainPanel != null)
-            mainPanel.SetActive(false);
-            
+        panel.SetActive(false);
+        mainPanel.SetActive(false);
         foreach (var subPanel in subPanels)
         {
-            if (subPanel != null)
-                subPanel.SetActive(false);
+            subPanel.SetActive(false);
         }
-        
-        panel.SetActive(false);
         currentPanelLevel = PanelLevel.Main;
         currentSubPanelIndex = -1;
     }
@@ -203,14 +180,10 @@ public class SystemManager : MonoBehaviour
     private void FindAllButtonTexts()
     {
         buttonTexts.Clear();
-        
         // 遍历主面板按钮
         foreach (var button in mainPanelButtons)
         {
-            if (button != null)
-            {
-                FindButtonTexts(button);
-            }
+            FindButtonTexts(button);
         }
         
         // 遍历所有二级面板按钮
@@ -218,10 +191,7 @@ public class SystemManager : MonoBehaviour
         {
             foreach (var button in buttonList)
             {
-                if (button != null)
-                {
-                    FindButtonTexts(button);
-                }
+                FindButtonTexts(button);
             }
         }
     }
@@ -262,11 +232,7 @@ public class SystemManager : MonoBehaviour
 
     private void Update()
     {
-        // 如果正在重绑定，完全跳过所有输入处理
-        if (playerInputManager != null && playerInputManager.isRebinding)
-        {
-            return;
-        }
+        if (playerInputManager != null && playerInputManager.isRebinding) return;// 如果正在重绑定，完全跳过所有输入处理
         
         if (playerInputManager.GetButtonDown("UIMenu"))
         {
@@ -311,15 +277,17 @@ public class SystemManager : MonoBehaviour
         }
         else if (playerInputManager.GetButtonDown("UILeft"))
         {
-            HandleLeftOption();
+            OnOptionChanged?.Invoke(-1);
         }
         else if (playerInputManager.GetButtonDown("UIRight"))
         {
-            HandleRightOption();
+            OnOptionChanged?.Invoke(1);
         }
         else if (playerInputManager.GetButtonDown("UIConfirm"))
         {
-            TriggerCurrentButton();
+            Button currentButton = GetCurrentSelectedButton();
+            if (currentButton != null)
+                currentButton.onClick.Invoke();
         }
     }
     
@@ -327,19 +295,15 @@ public class SystemManager : MonoBehaviour
     {
         int buttonCount = currentPanelButtons.Count;
         float thresholdBottom = buttonCount - thresholdTop;
-        Debug.Log("--------buttonCount: " + buttonCount);
-        Debug.Log("--------buttonIndex: " + buttonIndex);
         if (currentScrollRect == null || buttonCount == 0) return;
         if (buttonIndex == 0 && isUpward)
         {
-            Debug.Log("--------2top");
             currentScrollRect.verticalNormalizedPosition = 0f;
             return;
         }
 
         if (buttonIndex == buttonCount - 1 && !isUpward)
         {
-            Debug.Log("--------!2top");
             currentScrollRect.verticalNormalizedPosition = 1f;
             return;
         }
@@ -350,10 +314,7 @@ public class SystemManager : MonoBehaviour
     
     private void ScrollContent(bool scrollUp)                                                     //滚动内容
     {
-        if (currentScrollRect == null) return;
-        
-        // 获取当前滚动位置
-        float currentPosition = currentScrollRect.verticalNormalizedPosition;
+        float currentPosition = currentScrollRect.verticalNormalizedPosition;// 获取当前滚动位置
         
         // 计算滚动步长（基于内容高度）
         RectTransform content = currentScrollRect.content;
@@ -366,30 +327,12 @@ public class SystemManager : MonoBehaviour
         
         // 根据方向调整滚动位置
         if (scrollUp)
-        {
             currentScrollRect.verticalNormalizedPosition = Mathf.Clamp01(currentPosition + scrollAmount);
-        }
         else
-        {
             currentScrollRect.verticalNormalizedPosition = Mathf.Clamp01(currentPosition - scrollAmount);
-        }
     }
-
-    // 修改后的左右方向键处理 - 通过事件通知
-    private void HandleLeftOption()
-    {
-        // 触发左方向键事件
-        OnOptionChanged?.Invoke(-1);
-    }
-
-    private void HandleRightOption()
-    {
-        // 触发右方向键事件
-        OnOptionChanged?.Invoke(1);
-    }
-
-    // 获取当前选中的按钮
-    public Button GetCurrentSelectedButton()
+    
+    public Button GetCurrentSelectedButton()// 获取当前选中的按钮
     {
         if (currentButtonIndex >= 0 && currentButtonIndex < currentPanelButtons.Count)
         {
@@ -420,23 +363,10 @@ public class SystemManager : MonoBehaviour
     {
         foreach (var button in currentPanelButtons)
         {
-            if (button != null)
-            {
-                var colors = button.colors;
-                colors.normalColor = normalColor;
-                colors.selectedColor = normalColor;
-                button.colors = colors;
-            }
-        }
-    }
-
-    // 触发当前按钮
-    private void TriggerCurrentButton()
-    {
-        Button currentButton = GetCurrentSelectedButton();
-        if (currentButton != null)
-        {
-            currentButton.onClick.Invoke();
+            var colors = button.colors;
+            colors.normalColor = normalColor;
+            colors.selectedColor = normalColor;
+            button.colors = colors;
         }
     }
 
