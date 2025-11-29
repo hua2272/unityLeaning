@@ -39,9 +39,6 @@ public class SystemManager : MonoBehaviour
     // ScrollRect 管理
     private Dictionary<GameObject, ScrollRect> panelScrollRects = new Dictionary<GameObject, ScrollRect>();
     private ScrollRect currentScrollRect;
-    
-    private bool navigationEnabled = true;
-    private bool isInRebindingProcess = false; // 新增：标记是否在重绑定过程中
 
     // 按钮文本管理
     private Dictionary<Button, List<TextMeshProUGUI>> buttonTexts = new Dictionary<Button, List<TextMeshProUGUI>>();
@@ -232,32 +229,45 @@ public class SystemManager : MonoBehaviour
 
     private void Update()
     {
-        if (playerInputManager != null && playerInputManager.isRebinding) return;// 如果正在重绑定，完全跳过所有输入处理
-        
+        if (playerInputManager.isRebinding) return;// 如果正在重绑定，完全跳过所有输入处理
+
         if (playerInputManager.GetButtonDown("UIMenu"))
         {
-            ToggleSystemPanel();
+            if (panel.activeSelf)
+            {
+                panel.SetActive(false);
+                Time.timeScale = 1;
+                currentPanelLevel = PanelLevel.Main;
+                currentSubPanelIndex = -1;
+                ResetCurrentPanelButtonColors();
+            }
+            else
+            {
+                panel.SetActive(true);
+                Time.timeScale = 0;
+                ShowMainPanel();
+                UpdateButtonSelection();
+            }
         }
         if (playerInputManager.GetButtonDown("UICancel") && panel.activeSelf)
         {
             if (currentPanelLevel == PanelLevel.Sub)
-            {
-                ShowMainPanel();            // 如果在二级面板，返回主面板
-            }
+                ShowMainPanel();
             else
             {
-                ToggleSystemPanel();        // 如果在主面板，切换系统面板显示/隐藏
+                panel.SetActive(false);
+                Time.timeScale = 1;
+                currentPanelLevel = PanelLevel.Main;
+                currentSubPanelIndex = -1;
+                ResetCurrentPanelButtonColors();
             }
         }
-
-        if (panel.activeSelf && navigationEnabled)
-        {
+        
+        if (panel.activeSelf)
             HandleKeyboardNavigation();
-        }
     }
-
-    // 统一的键盘导航处理
-    private void HandleKeyboardNavigation()
+    
+    private void HandleKeyboardNavigation() //统一的键盘导航处理
     {
         if (playerInputManager.GetButtonDown("UIUp"))
         {
@@ -344,11 +354,9 @@ public class SystemManager : MonoBehaviour
     // 更新按钮选择状态
     private void UpdateButtonSelection()
     {
-        // 重置所有按钮颜色
-        ResetCurrentPanelButtonColors();
-
-        // 设置当前选中按钮的颜色
-        Button currentButton = GetCurrentSelectedButton();
+        ResetCurrentPanelButtonColors();// 重置所有按钮颜色
+        
+        Button currentButton = GetCurrentSelectedButton();// 设置当前选中按钮的颜色
         if (currentButton != null && currentButton.interactable)
         {
             var colors = currentButton.colors;
@@ -367,26 +375,6 @@ public class SystemManager : MonoBehaviour
             colors.normalColor = normalColor;
             colors.selectedColor = normalColor;
             button.colors = colors;
-        }
-    }
-
-    // 切换系统面板的显示/隐藏
-    public void ToggleSystemPanel()
-    {
-        bool isActive = !panel.activeSelf;
-        panel.SetActive(isActive);
-        Time.timeScale = isActive ? 0 : 1;
-        
-        if (isActive)
-        {
-            ShowMainPanel();
-            UpdateButtonSelection();
-        }
-        else
-        {
-            currentPanelLevel = PanelLevel.Main;                               //关闭面板时重置状态
-            currentSubPanelIndex = -1;
-            ResetCurrentPanelButtonColors();
         }
     }
     
