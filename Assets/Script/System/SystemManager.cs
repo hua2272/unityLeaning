@@ -193,37 +193,21 @@ public class SystemManager : MonoBehaviour
         }
     }
 
-    // 查找单个按钮的TextMeshPro子对象
+    // 查找单个按钮的TextMeshPro子对象，更新按钮文本显示
     private void FindButtonTexts(Button button)
     {
         TextMeshProUGUI[] textComponents = button.GetComponentsInChildren<TextMeshProUGUI>(true);
         List<TextMeshProUGUI> texts = new List<TextMeshProUGUI>(textComponents);
         buttonTexts[button] = texts;
-        
-        UpdateButtonTextDisplay(button);
-    }
 
-    // 更新按钮文本显示
-    private void UpdateButtonTextDisplay(Button button)
-    {
-        if (buttonTexts.ContainsKey(button))
+        if (texts.Count == 1)
         {
-            List<TextMeshProUGUI> texts = buttonTexts[button];
-            
-            if (texts.Count > 1)
-            {
-                for (int i = 0; i < texts.Count; i++)
-                {
-                    if (texts[i] != null)
-                    {
-                        texts[i].gameObject.SetActive(i == globalOptionIndex);
-                    }
-                }
-            }
-            else if (texts.Count == 1 && texts[0] != null)
-            {
-                texts[0].gameObject.SetActive(true);
-            }
+            texts[0].gameObject.SetActive(true);
+            return;
+        }
+        for (int i = 0; i < texts.Count; i++)
+        {
+            texts[i].gameObject.SetActive(i == globalOptionIndex);
         }
     }
 

@@ -88,8 +88,7 @@ public class MenuController : MonoBehaviour
         buttonToMenuItemMap.Clear();
         foreach (var item in createdMenuItems)
         {
-            if (item != null)
-                Destroy(item);
+            Destroy(item);
         }
         createdMenuItems.Clear();
     }
@@ -98,57 +97,31 @@ public class MenuController : MonoBehaviour
     {
         for (int i = 0; i < menuItems.Count; i++)
         {
-            CreateMenuItem(menuItems[i], i);
+            GameObject menuItem = Instantiate(menuItemPrefab, contentParent);       // 实例化预制件
+            createdMenuItems.Add(menuItem);
+            menuItem.name = $"MenuItem_{i}";                                        // 设置对象名称
+            SetupRectTransform(menuItem, i);                                        // 获取RectTransform并设置基本属性
+            SetupUIElements(menuItem, menuItems[i]);                                // 设置UI元素
         }
     }
     
-    void CreateMenuItem(MenuItemData itemData, int index)
+    void SetupRectTransform(GameObject menuItem, int index)
     {
-        // 实例化预制件
-        GameObject menuItem = Instantiate(menuItemPrefab, contentParent);
-        createdMenuItems.Add(menuItem);
-        
-        // 设置对象名称
-        menuItem.name = $"MenuItem_{index}";
-        
-        // 获取RectTransform并设置基本属性
         RectTransform rectTransform = menuItem.GetComponent<RectTransform>();
-        SetupRectTransform(rectTransform, index);
-        
-        // 设置UI元素
-        SetupUIElements(menuItem, itemData, index);
-    }
-    
-    void SetupRectTransform(RectTransform rectTransform, int index)
-    {
-        // 重置变换
         rectTransform.localScale = Vector3.one;
         rectTransform.localPosition = Vector3.zero;
-    
-        // 使用顶部居中的锚点
-        rectTransform.anchorMin = new Vector2(0.5f, 1f);
+        rectTransform.anchorMin = new Vector2(0.5f, 1f);                                // 使用顶部居中的锚点
         rectTransform.anchorMax = new Vector2(0.5f, 1f);
         rectTransform.pivot = new Vector2(0.5f, 1f);
-    
-        // 设置固定尺寸
-        rectTransform.sizeDelta = itemSize;
-    
-        // 修正位置计算：从Content顶部开始向下排列
-        // 第一个菜单项应该在Content顶部，后续项依次向下
-        float yPosition = -index * (itemSize.y + itemSpacing) - (itemSize.y * 0.5f);
+        rectTransform.sizeDelta = itemSize;                                             // 设置固定尺寸
+        float yPosition = -index * (itemSize.y + itemSpacing) - (itemSize.y * 0.5f);    // 第一个菜单项应该在Content顶部，后续项依次向下
         rectTransform.anchoredPosition = new Vector2(0, yPosition);
-    
-        Debug.Log($"修正后 - 菜单项 {index} 位置: {rectTransform.anchoredPosition}");
+        //Debug.Log($"修正后 - 菜单项 {index} 位置: {rectTransform.anchoredPosition}");
     }
     
-    void SetupUIElements(GameObject menuItem, MenuItemData itemData, int index)
+    void SetupUIElements(GameObject menuItem, MenuItemData itemData)
     {
-        // 为菜单项添加水平布局组
-        HorizontalLayoutGroup itemLayout = menuItem.GetComponent<HorizontalLayoutGroup>();
-        if (itemLayout == null)
-        {
-            itemLayout = menuItem.AddComponent<HorizontalLayoutGroup>();
-        }
+        HorizontalLayoutGroup itemLayout = menuItem.AddComponent<HorizontalLayoutGroup>();// 为菜单项添加水平布局组
         itemLayout.padding = new RectOffset(10, 10, 5, 5);
         itemLayout.spacing = 15f;
         itemLayout.childAlignment = TextAnchor.MiddleCenter;
@@ -161,19 +134,10 @@ public class MenuController : MonoBehaviour
         Transform titleTransform = menuItem.transform.Find("Title");
         TextMeshProUGUI titleText = titleTransform.GetComponent<TextMeshProUGUI>();
         titleText.text = itemData.title;
-                
-        // 设置标题的布局元素
-        LayoutElement titleLayout = titleTransform.GetComponent<LayoutElement>();
-        if (titleLayout == null)
-        {
-            titleLayout = titleTransform.gameObject.AddComponent<LayoutElement>();
-        }
-
+        LayoutElement titleLayout = titleTransform.gameObject.AddComponent<LayoutElement>();// 设置标题的布局元素
         titleLayout.flexibleWidth = 1f;
         titleLayout.preferredWidth = -1f;
-        
-        // 设置文本自适应
-        titleText.enableAutoSizing = true;
+        titleText.enableAutoSizing = true;// 设置文本自适应
         titleText.fontSizeMin = 12f;
         titleText.fontSizeMax = 24f;
         titleText.overflowMode = TextOverflowModes.Ellipsis;
@@ -181,86 +145,56 @@ public class MenuController : MonoBehaviour
         // 查找Button组件
         Transform buttonTransform = menuItem.transform.Find("Button");
         Button button = buttonTransform.GetComponent<Button>();
-        
-        // 将按钮与菜单项数据关联
-        buttonToMenuItemMap[button] = itemData;
-        
+        buttonToMenuItemMap[button] = itemData;// 将按钮与菜单项数据关联
         button.onClick.AddListener(() =>
         {
             itemData.Invoke();
-            // 如果是选项按钮，更新按钮文本
             if (itemData.isOptionButton)
-            {
-                UpdateButtonText(buttonTransform, itemData);
-            }
+                UpdateButtonText(buttonTransform, itemData);// 如果是选项按钮，更新按钮文本
         });
-
-        // 设置按钮的布局元素
-        LayoutElement buttonLayout = buttonTransform.GetComponent<LayoutElement>();
-        if (buttonLayout == null)
-        {
-            buttonLayout = buttonTransform.gameObject.AddComponent<LayoutElement>();
-        }
-
+        LayoutElement buttonLayout = buttonTransform.gameObject.AddComponent<LayoutElement>();// 设置按钮的布局元素
         buttonLayout.preferredWidth = 120f; // 稍微加宽以容纳选项文本
         buttonLayout.minWidth = 80f;
         buttonLayout.preferredHeight = 40f;
         buttonLayout.minHeight = 30f;
-
-        // 设置按钮的RectTransform
-        RectTransform buttonRect = buttonTransform.GetComponent<RectTransform>();
-        if (buttonRect != null)
-        {
-            buttonRect.sizeDelta = new Vector2(120f, 40f);
-        }
-
-        // 设置按钮文本
-        UpdateButtonText(buttonTransform, itemData);
+        RectTransform buttonRect = buttonTransform.GetComponent<RectTransform>();// 设置按钮的RectTransform
+        buttonRect.sizeDelta = new Vector2(120f, 40f);
+        UpdateButtonText(buttonTransform, itemData);// 设置按钮文本
 
         // 设置按钮文本自适应
         Transform buttonTextTransform = buttonTransform.Find("Text");
         TextMeshProUGUI buttonText = buttonTextTransform.GetComponent<TextMeshProUGUI>();
-
-        // 设置按钮文本自适应
-        buttonText.enableAutoSizing = true;
+        buttonText.enableAutoSizing = true;// 设置按钮文本自适应
         buttonText.fontSizeMin = 10f;
         buttonText.fontSizeMax = 16f; // 稍微减小最大字体大小以容纳更长文本
         buttonText.overflowMode = TextOverflowModes.Ellipsis;
         buttonText.alignment = TextAlignmentOptions.Center;
-
-        // 确保按钮文本填满整个按钮
-        RectTransform textRect = buttonTextTransform.GetComponent<RectTransform>();
-        if (textRect != null)
-        {
-            textRect.anchorMin = Vector2.zero;
-            textRect.anchorMax = Vector2.one;
-            textRect.offsetMin = Vector2.zero;
-            textRect.offsetMax = Vector2.zero;
-        }
+        RectTransform textRect = buttonTextTransform.GetComponent<RectTransform>();// 确保按钮文本填满整个按钮
+        textRect.anchorMin = Vector2.zero;
+        textRect.anchorMax = Vector2.one;
+        textRect.offsetMin = Vector2.zero;
+        textRect.offsetMax = Vector2.zero;
     }
-
-    // 新增：处理左右方向键事件
-    private void HandleOptionChange(int direction)
+    
+    private void HandleOptionChange(int direction)// 新增：处理左右方向键事件
     {
-        // 获取当前选中的按钮
-        Button currentButton = systemManager.GetCurrentSelectedButton();
-        if (currentButton != null && buttonToMenuItemMap.ContainsKey(currentButton))
+        Button currentButton = systemManager.GetCurrentSelectedButton();// 获取当前选中的按钮
+        if (currentButton == null || !buttonToMenuItemMap.ContainsKey(currentButton)) return;
+        
+        MenuItemData menuItem = buttonToMenuItemMap[currentButton];
+        if (menuItem.isOptionButton)
         {
-            MenuItemData menuItem = buttonToMenuItemMap[currentButton];
-            if (menuItem.isOptionButton)
-            {
-                // 计算新的选项索引
-                int newIndex = (menuItem.currentOptionIndex + direction + menuItem.options.Count) % menuItem.options.Count;
-                
-                // 使用SetOptionIndex方法更新索引并触发回调
-                menuItem.SetOptionIndex(newIndex);
-                
-                // 更新按钮文本显示
-                Transform buttonTransform = currentButton.transform;
-                UpdateButtonText(buttonTransform, menuItem);
-                
-                Debug.Log($"选项改变: {menuItem.title} -> {menuItem.GetCurrentOptionText()} (索引: {menuItem.currentOptionIndex})");
-            }
+            // 计算新的选项索引
+            int newIndex = (menuItem.currentOptionIndex + direction + menuItem.options.Count) % menuItem.options.Count;
+            
+            // 使用SetOptionIndex方法更新索引并触发回调
+            menuItem.SetOptionIndex(newIndex);
+            
+            // 更新按钮文本显示
+            Transform buttonTransform = currentButton.transform;
+            UpdateButtonText(buttonTransform, menuItem);
+            
+            Debug.Log($"选项改变: {menuItem.title} -> {menuItem.GetCurrentOptionText()} (索引: {menuItem.currentOptionIndex})");
         }
     }
 
@@ -294,19 +228,6 @@ public class MenuController : MonoBehaviour
         if (Application.isPlaying && contentParent != null)
         {
             InitializeMenu();
-        }
-    }
-    
-    // 新增：调试方法，查看当前所有菜单项状态
-    [ContextMenu("Debug Menu Items")]
-    void DebugMenuItems()
-    {
-        foreach (var item in menuItems)
-        {
-            if (item.isOptionButton)
-            {
-                Debug.Log($"{item.title}: {item.GetCurrentOptionText()} (索引: {item.currentOptionIndex})");
-            }
         }
     }
     
