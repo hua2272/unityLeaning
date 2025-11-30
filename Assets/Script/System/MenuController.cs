@@ -78,7 +78,6 @@ public class MenuController : MonoBehaviour
             if (menuItem.isOptionButton)
             {
                 menuItem.ApplyCurrentOption();
-                Debug.Log($"应用已保存选项: {menuItem.title} -> {menuItem.currentOptionIndex}");
             }
         }
     }
@@ -146,12 +145,8 @@ public class MenuController : MonoBehaviour
         Transform buttonTransform = menuItem.transform.Find("Button");
         Button button = buttonTransform.GetComponent<Button>();
         buttonToMenuItemMap[button] = itemData;// 将按钮与菜单项数据关联
-        button.onClick.AddListener(() =>
-        {
-            itemData.Invoke();
-            if (itemData.isOptionButton)
-                UpdateButtonText(buttonTransform, itemData);// 如果是选项按钮，更新按钮文本
-        });
+        if (!itemData.isOptionButton)
+            button.onClick.AddListener(() => itemData.Invoke());        //非选项按钮才可以点击
         LayoutElement buttonLayout = buttonTransform.gameObject.AddComponent<LayoutElement>();// 设置按钮的布局元素
         buttonLayout.preferredWidth = 120f; // 稍微加宽以容纳选项文本
         buttonLayout.minWidth = 80f;
@@ -159,11 +154,11 @@ public class MenuController : MonoBehaviour
         buttonLayout.minHeight = 30f;
         RectTransform buttonRect = buttonTransform.GetComponent<RectTransform>();// 设置按钮的RectTransform
         buttonRect.sizeDelta = new Vector2(120f, 40f);
-        UpdateButtonText(buttonTransform, itemData);// 设置按钮文本
 
         // 设置按钮文本自适应
         Transform buttonTextTransform = buttonTransform.Find("Text");
         TextMeshProUGUI buttonText = buttonTextTransform.GetComponent<TextMeshProUGUI>();
+        buttonText.text = itemData.GetCurrentOptionText();// 设置按钮文本
         buttonText.enableAutoSizing = true;// 设置按钮文本自适应
         buttonText.fontSizeMin = 10f;
         buttonText.fontSizeMax = 16f; // 稍微减小最大字体大小以容纳更长文本
@@ -180,38 +175,14 @@ public class MenuController : MonoBehaviour
     {
         Button currentButton = systemManager.GetCurrentSelectedButton();// 获取当前选中的按钮
         if (currentButton == null || !buttonToMenuItemMap.ContainsKey(currentButton)) return;
-        
         MenuItemData menuItem = buttonToMenuItemMap[currentButton];
-        if (menuItem.isOptionButton)
-        {
-            // 计算新的选项索引
-            int newIndex = (menuItem.currentOptionIndex + direction + menuItem.options.Count) % menuItem.options.Count;
-            
-            // 使用SetOptionIndex方法更新索引并触发回调
-            menuItem.SetOptionIndex(newIndex);
-            
-            // 更新按钮文本显示
-            Transform buttonTransform = currentButton.transform;
-            UpdateButtonText(buttonTransform, menuItem);
-            
-            Debug.Log($"选项改变: {menuItem.title} -> {menuItem.GetCurrentOptionText()} (索引: {menuItem.currentOptionIndex})");
-        }
-    }
-
-    // 更新按钮文本的辅助方法
-    void UpdateButtonText(Transform buttonTransform, MenuItemData itemData)
-    {
-        Transform buttonTextTransform = buttonTransform.Find("Text");
-        TextMeshProUGUI buttonText = buttonTextTransform.GetComponent<TextMeshProUGUI>();
-
-        if (itemData.isOptionButton)
-        {
-            buttonText.text = itemData.GetCurrentOptionText();
-        }
-        else
-        {
-            buttonText.text = itemData.buttonText;
-        }
+        if (!menuItem.isOptionButton) return;
+        
+        int newIndex = (menuItem.currentOptionIndex + direction + menuItem.options.Count) % menuItem.options.Count;// 计算新的选项索引
+        menuItem.SetOptionIndex(newIndex);// 使用SetOptionIndex方法更新索引并触发回调
+        TextMeshProUGUI buttonText = currentButton.GetComponentInChildren<TextMeshProUGUI>();
+        buttonText.text = menuItem.GetCurrentOptionText();
+        //Debug.Log($"选项改变: {menuItem.title} -> {menuItem.GetCurrentOptionText()} (索引: {menuItem.currentOptionIndex})");
     }
 
     void UpdateContentSize()
