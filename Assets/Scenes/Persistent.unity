@@ -3242,13 +3242,13 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 2064249462}
   - {fileID: 1867104243}
   - {fileID: 1090580051}
   - {fileID: 400213639}
   - {fileID: 1627295130}
   - {fileID: 1693158611}
   - {fileID: 458934499}
-  - {fileID: 2064249462}
   - {fileID: 599855993}
   m_Father: {fileID: 1335408445}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -12028,6 +12028,7 @@ RectTransform:
   m_Children:
   - {fileID: 360215849}
   - {fileID: 1535819046}
+  - {fileID: 1922880451}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -12042,7 +12043,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1335408441}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f88905f12d91fe6459827a5878db6af8, type: 3}
   m_Name: 
@@ -13746,7 +13747,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1922880451}
   - {fileID: 1069662617}
   - {fileID: 1958639387}
   m_Father: {fileID: 1335408445}
@@ -15740,7 +15740,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1922880451
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15748,7 +15748,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1922880450}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -15756,7 +15756,7 @@ RectTransform:
   - {fileID: 1410359008}
   - {fileID: 616784256}
   - {fileID: 591676474}
-  m_Father: {fileID: 1535819046}
+  m_Father: {fileID: 1335408445}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -16748,6 +16748,9 @@ MonoBehaviour:
   scrollRect: {fileID: 1922880452}
   itemSpacing: 10
   itemSize: {x: 300, y: 80}
+  panel: {fileID: 1922880450}
+  thresholdTop: 5
+  scrollStep: 100
 --- !u!1 &2081604110
 GameObject:
   m_ObjectHideFlags: 0

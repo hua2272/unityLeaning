@@ -11,15 +11,25 @@ public class MenuController : MonoBehaviour
     [SerializeField] private ScrollRect scrollRect;
     [SerializeField] private float itemSpacing = 10f;
     [SerializeField] private Vector2 itemSize = new Vector2(300, 80);
+    [SerializeField] private GameObject panel;                                       // 总面板
+    private int currentPanelLevel = 0;
+    private int currentButtonIndex = 0;
     
     [Header("菜单项数据")]
     [SerializeField] private List<MenuItemData> menuItems = new List<MenuItemData>();
+    private List<Button> currentPanelButtons = new List<Button>();
+    
+    [Header("Scroll Settings")]
+    private ScrollRect currentScrollRect;
+    [SerializeField] private float thresholdTop = 5;                                 //滚动阈值（距离顶部/底部的按钮数量）
+    [SerializeField] private float scrollStep = 100f;                                //每次滚动的距离
     
     [Header("功能脚本")]
     private GameSaveManager gameSaveManager;
     private SystemManager systemManager;
     private ScreenController screenController;
     private AudioManager audioManager;
+    private PlayerInputManager playerInputManager;
     
     private List<GameObject> createdMenuItems = new List<GameObject>();
     private RectTransform contentRectTransform;
@@ -29,22 +39,232 @@ public class MenuController : MonoBehaviour
     
     void Start()
     {
+        playerInputManager = PlayerInputManager.instance;
         gameSaveManager = GameSaveManager.instance;
         systemManager = SystemManager.instance;
         screenController = ScreenController.instance;
         audioManager = AudioManager.instance;
-        
-        systemManager.OnOptionChanged += HandleOptionChange;// 订阅左右方向键事件
         InitializeMenu();
         ApplySavedOptions();// 应用已保存的选项
     }
     
-    void OnDestroy()// 取消订阅事件
+    private void Update()
     {
-        if (systemManager != null)
+        if (playerInputManager.isRebinding) return;// 如果正在重绑定，完全跳过所有输入处理
+
+        if (playerInputManager.GetButtonDown("UIMenu"))
         {
-            systemManager.OnOptionChanged -= HandleOptionChange;
+            if (panel.activeSelf)
+            {
+                panel.SetActive(false);
+                Time.timeScale = 1;
+                currentPanelLevel = 0;
+            }
+            else
+            {
+                panel.SetActive(true);
+                Time.timeScale = 0;
+                ShowButtons(0);
+                UpdateButtonSelection();
+            }
         }
+        if (playerInputManager.GetButtonDown("UICancel") && panel.activeSelf)
+        {
+            currentPanelLevel -= 1;
+            ShowButtons(currentPanelLevel);
+        }
+        
+        if (panel.activeSelf)
+            HandleKeyboardNavigation();
+    }
+    
+    private void HandleKeyboardNavigation() //统一的键盘导航处理
+    {
+        if (playerInputManager.GetButtonDown("UIUp"))
+        {
+            HandleScroll(currentButtonIndex, true);
+            currentButtonIndex--;
+            if (currentButtonIndex < 0)
+                currentButtonIndex = currentPanelButtons.Count - 1;
+            UpdateButtonSelection();
+        }
+        else if (playerInputManager.GetButtonDown("UIDown"))
+        {
+            HandleScroll(currentButtonIndex, false);
+            currentButtonIndex++;
+            if (currentButtonIndex >= currentPanelButtons.Count)
+                currentButtonIndex = 0;
+            UpdateButtonSelection();
+        }
+        else if (playerInputManager.GetButtonDown("UILeft"))
+        {
+            HandleOptionChange(-1);
+        }
+        else if (playerInputManager.GetButtonDown("UIRight"))
+        {
+            HandleOptionChange(1);
+        }
+        else if (playerInputManager.GetButtonDown("UIConfirm"))
+        {
+            Button currentButton = GetCurrentSelectedButton();
+            if (currentButton != null)
+                currentButton.onClick.Invoke();
+        }
+    }
+    
+    private Button GetCurrentSelectedButton()
+    {
+        if (currentPanelButtons == null || currentPanelButtons.Count == 0)
+            return null;
+        
+        // 确保索引在有效范围内
+        if (currentButtonIndex < 0)
+            currentButtonIndex = 0;
+        if (currentButtonIndex >= currentPanelButtons.Count)
+            currentButtonIndex = currentPanelButtons.Count - 1;
+        
+        return currentPanelButtons[currentButtonIndex];
+    }
+    
+    
+
+    void ShowButtons(int panelId)
+    {
+        if (panelId < 0)
+        {
+            panel.SetActive(false);
+            Time.timeScale = 1;
+            return;
+        }
+        
+        currentPanelButtons.Clear();
+        
+        // 计算当前面板的按钮数量
+        int panelButtonCount = 0;
+        foreach (var menuItem in menuItems)
+        {
+            if (menuItem.PanelId == panelId)
+                panelButtonCount++;
+        }
+        
+        int buttonIndex = 0;
+        // 遍历所有创建的菜单项
+        for (int i = 0; i < createdMenuItems.Count; i++)
+        {
+            GameObject menuItem = createdMenuItems[i];
+            
+            // 检查菜单项是否属于当前面板
+            if (i < menuItems.Count && menuItems[i].PanelId == panelId)
+            {
+                menuItem.SetActive(true);
+                
+                // 重新计算并设置位置 - 关键修改！
+                RectTransform rectTransform = menuItem.GetComponent<RectTransform>();
+                float yPosition = -buttonIndex * (itemSize.y + itemSpacing) - (itemSize.y * 0.5f);
+                rectTransform.anchoredPosition = new Vector2(0, yPosition);
+                buttonIndex++;
+                
+                // 获取按钮组件并添加到当前面板按钮列表
+                Button button = menuItem.GetComponentInChildren<Button>();
+                if (button != null)
+                {
+                    currentPanelButtons.Add(button);
+                    // 如果是选项按钮，确保文本是最新的
+                    if (menuItems[i].isOptionButton)
+                    {
+                        TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
+                        if (buttonText != null)
+                        {
+                            buttonText.text = menuItems[i].GetCurrentOptionText();
+                        }
+                    }
+                }
+            }
+            else
+            {
+                menuItem.SetActive(false);
+            }
+        }
+        
+        // 设置当前滚动区域
+        currentScrollRect = scrollRect;
+        // 重置当前选中的按钮索引
+        currentButtonIndex = 0;
+        // 更新内容大小以确保滚动正常工作
+        UpdateContentSize();
+        // 如果需要，重置滚动位置到顶部
+        if (currentScrollRect != null)
+        {
+            currentScrollRect.verticalNormalizedPosition = 1f; // 顶部
+        }
+        // 更新按钮选中状态
+        UpdateButtonSelection();
+        // 调试信息
+        Debug.Log($"显示面板 {panelId}，找到 {currentPanelButtons.Count} 个按钮");
+    }
+    
+    private void UpdateButtonSelection()
+    {
+        ResetCurrentPanelButtonColors();// 重置所有按钮颜色
+        Button currentButton = GetCurrentSelectedButton();// 设置当前选中按钮的颜色
+        if (currentButton != null && currentButton.interactable)
+        {
+            var colors = currentButton.colors;
+            colors.normalColor = Color.yellow;
+            colors.selectedColor = Color.yellow;
+            currentButton.colors = colors;
+        }
+    }
+    private void ResetCurrentPanelButtonColors()
+    {
+        foreach (var button in currentPanelButtons)
+        {
+            var colors = button.colors;
+            colors.normalColor = Color.white;
+            colors.selectedColor = Color.white;
+            button.colors = colors;
+        }
+    }
+    
+    private void HandleScroll(int buttonIndex, bool isUpward)                                     //处理滚动逻辑
+    {
+        int buttonCount = currentPanelButtons.Count;
+        float thresholdBottom = buttonCount - thresholdTop;
+        if (currentScrollRect == null || buttonCount == 0) return;
+        if (buttonIndex == 0 && isUpward)
+        {
+            currentScrollRect.verticalNormalizedPosition = 0f;
+            return;
+        }
+
+        if (buttonIndex == buttonCount - 1 && !isUpward)
+        {
+            currentScrollRect.verticalNormalizedPosition = 1f;
+            return;
+        }
+        if (isUpward && (buttonIndex < thresholdTop || buttonIndex > thresholdBottom)) return;    //向上滚动：如果新索引在顶部阈值范围内
+        if (!isUpward && (buttonIndex < thresholdTop || buttonIndex > thresholdBottom)) return;   //向下滚动：如果新索引在底部阈值范围内
+        ScrollContent(isUpward);
+    }
+    
+    private void ScrollContent(bool scrollUp)                                                     //滚动内容
+    {
+        float currentPosition = currentScrollRect.verticalNormalizedPosition;// 获取当前滚动位置
+        
+        // 计算滚动步长（基于内容高度）
+        RectTransform content = currentScrollRect.content;
+        float contentHeight = content.rect.height;
+        float viewportHeight = currentScrollRect.viewport.rect.height;
+        
+        if (contentHeight <= viewportHeight) return; // 内容不足一屏，不需要滚动
+        
+        float scrollAmount = scrollStep / (contentHeight - viewportHeight);
+        
+        // 根据方向调整滚动位置
+        if (scrollUp)
+            currentScrollRect.verticalNormalizedPosition = Mathf.Clamp01(currentPosition + scrollAmount);
+        else
+            currentScrollRect.verticalNormalizedPosition = Mathf.Clamp01(currentPosition - scrollAmount);
     }
     
     void InitializeMenu()
@@ -60,13 +280,19 @@ public class MenuController : MonoBehaviour
     void InitializeMenuItems()
     {
         menuItems.Clear();
-        menuItems.Add(new MenuItemData("保存游戏", "保存", () => gameSaveManager.SaveGame()));
-        menuItems.Add(new MenuItemData("键盘按键设置", "设置", () => systemManager.EnterSubPanel(0)));
-        menuItems.Add(new MenuItemData("屏幕", new List<string> {"无边框全屏", "窗口化"}, 
+        menuItems.Add(new MenuItemData(0, -1, null, "继续游戏", null));
+        menuItems.Add(new MenuItemData(0, -1, null, "保存游戏", () => gameSaveManager.SaveGame()));
+        menuItems.Add(new MenuItemData(0, 1, null, "设置", () =>
+        {
+            currentPanelLevel = 1;
+            ShowButtons(1);
+        }));
+        menuItems.Add(new MenuItemData(1, 2f, null, "键盘按键设置", () => systemManager.EnterSubPanel(0)));
+        menuItems.Add(new MenuItemData(1, 0, "屏幕", new List<string> {"无边框全屏", "窗口化"}, 
             0, (index) => screenController.ScreenModeChange(index), "ScreenMode"));
-        menuItems.Add(new MenuItemData("音乐", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 
+        menuItems.Add(new MenuItemData(1, 0, "音乐", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 
             4, (index) => audioManager.SetMusicVolume(index), "MusicVolume"));
-        menuItems.Add(new MenuItemData("音效", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 
+        menuItems.Add(new MenuItemData(1, 0, "音效", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 
             4, (index) => audioManager.SetSFXVolume(index), "SFXVolume"));
     }
     
@@ -131,16 +357,20 @@ public class MenuController : MonoBehaviour
         
         // 查找TextMeshPro组件 - 标题
         Transform titleTransform = menuItem.transform.Find("Title");
-        titleTransform.gameObject.SetActive(false);
-        /*TextMeshProUGUI titleText = titleTransform.GetComponent<TextMeshProUGUI>();
-        titleText.text = itemData.title;
-        LayoutElement titleLayout = titleTransform.gameObject.AddComponent<LayoutElement>();// 设置标题的布局元素
-        titleLayout.flexibleWidth = 1f;
-        titleLayout.preferredWidth = -1f;
-        titleText.enableAutoSizing = true;// 设置文本自适应
-        titleText.fontSizeMin = 12f;
-        titleText.fontSizeMax = 24f;
-        titleText.overflowMode = TextOverflowModes.Ellipsis;*/
+        if (itemData.title == null)
+            titleTransform.gameObject.SetActive(false);
+        else
+        {
+            TextMeshProUGUI titleText = titleTransform.GetComponent<TextMeshProUGUI>();
+            titleText.text = itemData.title;
+            LayoutElement titleLayout = titleTransform.gameObject.AddComponent<LayoutElement>();// 设置标题的布局元素
+            titleLayout.flexibleWidth = 1f;
+            titleLayout.preferredWidth = -1f;
+            titleText.enableAutoSizing = true;// 设置文本自适应
+            titleText.fontSizeMin = 12f;
+            titleText.fontSizeMax = 24f;
+            titleText.overflowMode = TextOverflowModes.Ellipsis;
+        }
         
         // 查找Button组件
         Transform buttonTransform = menuItem.transform.Find("Button");
@@ -174,7 +404,7 @@ public class MenuController : MonoBehaviour
     
     private void HandleOptionChange(int direction)// 新增：处理左右方向键事件
     {
-        Button currentButton = systemManager.GetCurrentSelectedButton();// 获取当前选中的按钮
+        Button currentButton = GetCurrentSelectedButton();// 获取当前选中的按钮
         if (currentButton == null || !buttonToMenuItemMap.ContainsKey(currentButton)) return;
         MenuItemData menuItem = buttonToMenuItemMap[currentButton];
         if (!menuItem.isOptionButton) return;

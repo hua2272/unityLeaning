@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class MenuItemData
 {
+    public float PanelId;
+    public float NextPanelId;
     public string title;
     public string buttonText;
     [NonSerialized] public Action action;
@@ -14,12 +16,13 @@ public class MenuItemData
     public int currentOptionIndex = 0;
     [NonSerialized] private Action<int> onOptionChanged; // 选项改变时的回调
     
-    // 新增：保存标识符
-    private string saveKey;
+    private string saveKey;//保存标识符
 
     // 普通按钮构造函数
-    public MenuItemData(string title, string buttonText, Action action)
+    public MenuItemData(float panelId, float nextPanelId, string title, string buttonText, Action action)
     {
+        this.PanelId = panelId;
+        this.NextPanelId = nextPanelId;
         this.title = title;
         this.buttonText = buttonText;
         this.action = action;
@@ -27,8 +30,10 @@ public class MenuItemData
     }
 
     // 选项按钮构造函数
-    public MenuItemData(string title, List<string> options, int defaultIndex, Action<int> onOptionChanged, string saveKey = null)
+    public MenuItemData(float panelId, float nextPanelId, string title, List<string> options, int defaultIndex, Action<int> onOptionChanged, string saveKey = null)
     {
+        this.PanelId = panelId;
+        this.NextPanelId = nextPanelId;
         this.title = title;
         this.options = options;
         this.currentOptionIndex = defaultIndex;
