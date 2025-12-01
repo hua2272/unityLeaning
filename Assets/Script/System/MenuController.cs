@@ -131,7 +131,8 @@ public class MenuController : MonoBehaviour
         
         // 查找TextMeshPro组件 - 标题
         Transform titleTransform = menuItem.transform.Find("Title");
-        TextMeshProUGUI titleText = titleTransform.GetComponent<TextMeshProUGUI>();
+        titleTransform.gameObject.SetActive(false);
+        /*TextMeshProUGUI titleText = titleTransform.GetComponent<TextMeshProUGUI>();
         titleText.text = itemData.title;
         LayoutElement titleLayout = titleTransform.gameObject.AddComponent<LayoutElement>();// 设置标题的布局元素
         titleLayout.flexibleWidth = 1f;
@@ -139,14 +140,14 @@ public class MenuController : MonoBehaviour
         titleText.enableAutoSizing = true;// 设置文本自适应
         titleText.fontSizeMin = 12f;
         titleText.fontSizeMax = 24f;
-        titleText.overflowMode = TextOverflowModes.Ellipsis;
+        titleText.overflowMode = TextOverflowModes.Ellipsis;*/
         
         // 查找Button组件
         Transform buttonTransform = menuItem.transform.Find("Button");
         Button button = buttonTransform.GetComponent<Button>();
         buttonToMenuItemMap[button] = itemData;// 将按钮与菜单项数据关联
         if (!itemData.isOptionButton)
-            button.onClick.AddListener(() => itemData.Invoke());        //非选项按钮才可以点击
+            button.onClick.AddListener(() => itemData.action.Invoke());        //非选项按钮才可以点击
         LayoutElement buttonLayout = buttonTransform.gameObject.AddComponent<LayoutElement>();// 设置按钮的布局元素
         buttonLayout.preferredWidth = 120f; // 稍微加宽以容纳选项文本
         buttonLayout.minWidth = 80f;

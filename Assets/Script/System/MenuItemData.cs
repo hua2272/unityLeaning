@@ -6,7 +6,7 @@ public class MenuItemData
 {
     public string title;
     public string buttonText;
-    [NonSerialized] private Action action;
+    [NonSerialized] public Action action;
 
     // 选项相关字段
     public bool isOptionButton = false;
@@ -40,25 +40,6 @@ public class MenuItemData
         LoadOption();
         UpdateButtonText();
     }
-    
-    public void Invoke()
-    {
-        if (isOptionButton)
-        {
-            CycleOption(1); // 默认向右循环
-        }
-        else
-        {
-            action?.Invoke();
-        }
-    }
-
-    // 修改：添加方向参数的选项循环
-    public void CycleOption(int direction)
-    {
-        int newIndex = (currentOptionIndex + direction + options.Count) % options.Count;
-        SetOptionIndex(newIndex);
-    }
 
     // 新增：直接设置选项索引
     public void SetOptionIndex(int newIndex)
@@ -66,7 +47,7 @@ public class MenuItemData
         if (options.Count > 0 && newIndex >= 0 && newIndex < options.Count)
         {
             currentOptionIndex = newIndex;
-            UpdateButtonText();
+            buttonText = options[currentOptionIndex];
             SaveOption(); // 保存选项
             onOptionChanged?.Invoke(currentOptionIndex);
         }
