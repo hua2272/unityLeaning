@@ -101,13 +101,4 @@ public class MenuItemData
             }
         }
     }
-    
-    // 新增：强制应用当前选项（用于初始化时调用回调）
-    public void ApplyCurrentOption()
-    {
-        if (isOptionButton)
-        {
-            onOptionChanged?.Invoke(currentOptionIndex);
-        }
-    }
 }

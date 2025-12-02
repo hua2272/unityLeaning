@@ -34,7 +34,7 @@ public class MenuController : MonoBehaviour
     private List<GameObject> createdMenuItems = new List<GameObject>();
     private RectTransform contentRectTransform;
     
-    // 新增：按钮与菜单项的映射
+    // 按钮与菜单项的映射
     private Dictionary<Button, MenuItemData> buttonToMenuItemMap = new Dictionary<Button, MenuItemData>();
     
     void Start()
@@ -45,7 +45,6 @@ public class MenuController : MonoBehaviour
         screenController = ScreenController.instance;
         audioManager = AudioManager.instance;
         InitializeMenu();
-        ApplySavedOptions();// 应用已保存的选项
     }
     
     private void Update()
@@ -82,6 +81,7 @@ public class MenuController : MonoBehaviour
     {
         if (playerInputManager.GetButtonDown("UIUp"))
         {
+            audioManager.PlayUISound(UISoundType.Navigate);
             HandleScroll(currentButtonIndex, true);
             currentButtonIndex--;
             if (currentButtonIndex < 0)
@@ -90,6 +90,7 @@ public class MenuController : MonoBehaviour
         }
         else if (playerInputManager.GetButtonDown("UIDown"))
         {
+            audioManager.PlayUISound(UISoundType.Navigate);
             HandleScroll(currentButtonIndex, false);
             currentButtonIndex++;
             if (currentButtonIndex >= currentPanelButtons.Count)
@@ -98,10 +99,12 @@ public class MenuController : MonoBehaviour
         }
         else if (playerInputManager.GetButtonDown("UILeft"))
         {
+            audioManager.PlayUISound(UISoundType.Navigate);
             HandleOptionChange(-1);
         }
         else if (playerInputManager.GetButtonDown("UIRight"))
         {
+            audioManager.PlayUISound(UISoundType.Navigate);
             HandleOptionChange(1);
         }
         else if (playerInputManager.GetButtonDown("UIConfirm"))
@@ -281,12 +284,14 @@ public class MenuController : MonoBehaviour
     {
         menuItems.Clear();
         menuItems.Add(new MenuItemData(0, -1, null, "继续游戏", null));
+        menuItems.Add(new MenuItemData(0, -1, null, "读取存档", null));
         menuItems.Add(new MenuItemData(0, -1, null, "保存游戏", () => gameSaveManager.SaveGame()));
         menuItems.Add(new MenuItemData(0, 1, null, "设置", () =>
         {
             currentPanelLevel = 1;
             ShowButtons(1);
         }));
+        menuItems.Add(new MenuItemData(0, -1, null, "返回主界面", null));
         menuItems.Add(new MenuItemData(1, 2f, null, "键盘按键设置", () => systemManager.EnterSubPanel(0)));
         menuItems.Add(new MenuItemData(1, 0, "屏幕", new List<string> {"无边框全屏", "窗口化"}, 
             0, (index) => screenController.ScreenModeChange(index), "ScreenMode"));
@@ -294,18 +299,6 @@ public class MenuController : MonoBehaviour
             4, (index) => audioManager.SetMusicVolume(index), "MusicVolume"));
         menuItems.Add(new MenuItemData(1, 0, "音效", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 
             4, (index) => audioManager.SetSFXVolume(index), "SFXVolume"));
-    }
-    
-    // 新增：应用已保存的选项
-    private void ApplySavedOptions()
-    {
-        foreach (var menuItem in menuItems)
-        {
-            if (menuItem.isOptionButton)
-            {
-                menuItem.ApplyCurrentOption();
-            }
-        }
     }
     
     void ClearMenuItems()
