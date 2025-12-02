@@ -343,63 +343,92 @@ public class MenuController : MonoBehaviour
         rectTransform.anchoredPosition = new Vector2(0, yPosition);
         //Debug.Log($"修正后 - 菜单项 {index} 位置: {rectTransform.anchoredPosition}");
     }
-    
+
     void SetupUIElements(GameObject menuItem, MenuItemData itemData)
     {
-        HorizontalLayoutGroup itemLayout = menuItem.AddComponent<HorizontalLayoutGroup>();// 为菜单项添加水平布局组
+        ContentSizeFitter sizeFitter = menuItem.AddComponent<ContentSizeFitter>();                  //ContentSizeFitter 组件来自动调整宽度
+        sizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+        sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        
+        HorizontalLayoutGroup itemLayout = menuItem.AddComponent<HorizontalLayoutGroup>();
         itemLayout.padding = new RectOffset(10, 10, 5, 5);
-        itemLayout.spacing = 15f;
-        itemLayout.childAlignment = TextAnchor.MiddleCenter;
+        itemLayout.spacing = 800f;                                                                  //标题和按钮之间创建空隙
         itemLayout.childControlWidth = true;
         itemLayout.childControlHeight = true;
         itemLayout.childForceExpandWidth = false;
         itemLayout.childForceExpandHeight = true;
-        
-        // 查找TextMeshPro组件 - 标题
+
+        // 查找 TextMeshPro 组件 - 标题
         Transform titleTransform = menuItem.transform.Find("Title");
-        if (itemData.title == null)
+        TextMeshProUGUI titleText = titleTransform.GetComponent<TextMeshProUGUI>();
+
+        // 查找 Button 组件
+        Transform buttonTransform = menuItem.transform.Find("Button");
+        Button button = buttonTransform.GetComponent<Button>();
+        buttonToMenuItemMap[button] = itemData; // 将按钮与菜单项数据关联
+
+        // 设置标题文本
+        if (string.IsNullOrEmpty(itemData.title))
+        {
             titleTransform.gameObject.SetActive(false);
+            itemLayout.childAlignment = TextAnchor.MiddleCenter; // 标题为空时，按钮居中
+            LayoutElement buttonLayout = buttonTransform.gameObject.AddComponent<LayoutElement>(); // 配置按钮的布局元素
+            buttonLayout.preferredWidth = 120f;
+            buttonLayout.minWidth = 80f;
+            buttonLayout.preferredHeight = 40f;
+            buttonLayout.minHeight = 30f;
+        }
         else
         {
-            TextMeshProUGUI titleText = titleTransform.GetComponent<TextMeshProUGUI>();
             titleText.text = itemData.title;
-            LayoutElement titleLayout = titleTransform.gameObject.AddComponent<LayoutElement>();// 设置标题的布局元素
-            titleLayout.flexibleWidth = 1f;
+            titleTransform.gameObject.SetActive(true);
+            itemLayout.childAlignment = TextAnchor.MiddleLeft; // 标题不为空时，左对齐（标题在左，按钮在右）
+            LayoutElement titleLayout = titleTransform.gameObject.AddComponent<LayoutElement>(); // 配置标题的布局元素 - 占据左侧空间
+            titleLayout.flexibleWidth = 1f; // 标题占据剩余空间
             titleLayout.preferredWidth = -1f;
-            titleText.enableAutoSizing = true;// 设置文本自适应
+            titleLayout.minWidth = 50f;
+
+            LayoutElement buttonLayout = buttonTransform.gameObject.AddComponent<LayoutElement>(); // 配置按钮的布局元素 - 固定宽度在右侧
+            buttonLayout.preferredWidth = 120f;
+            buttonLayout.minWidth = 80f;
+            buttonLayout.preferredHeight = 40f;
+            buttonLayout.minHeight = 30f;
+            buttonLayout.flexibleWidth = 0f; // 按钮不拉伸
+            
+            titleText.enableAutoSizing = true;// 设置标题文本自适应
             titleText.fontSizeMin = 12f;
             titleText.fontSizeMax = 24f;
             titleText.overflowMode = TextOverflowModes.Ellipsis;
+            titleText.alignment = TextAlignmentOptions.Left;
         }
-        
-        // 查找Button组件
-        Transform buttonTransform = menuItem.transform.Find("Button");
-        Button button = buttonTransform.GetComponent<Button>();
-        buttonToMenuItemMap[button] = itemData;// 将按钮与菜单项数据关联
+
         if (!itemData.isOptionButton)
-            button.onClick.AddListener(() => itemData.action.Invoke());        //非选项按钮才可以点击
-        LayoutElement buttonLayout = buttonTransform.gameObject.AddComponent<LayoutElement>();// 设置按钮的布局元素
-        buttonLayout.preferredWidth = 120f; // 稍微加宽以容纳选项文本
-        buttonLayout.minWidth = 80f;
-        buttonLayout.preferredHeight = 40f;
-        buttonLayout.minHeight = 30f;
-        RectTransform buttonRect = buttonTransform.GetComponent<RectTransform>();// 设置按钮的RectTransform
+            button.onClick.AddListener(() => itemData.action.Invoke());
+
+        // 设置按钮的RectTransform
+        RectTransform buttonRect = buttonTransform.GetComponent<RectTransform>();
         buttonRect.sizeDelta = new Vector2(120f, 40f);
 
-        // 设置按钮文本自适应
+        // 设置按钮文本
         Transform buttonTextTransform = buttonTransform.Find("Text");
         TextMeshProUGUI buttonText = buttonTextTransform.GetComponent<TextMeshProUGUI>();
-        buttonText.text = itemData.GetCurrentOptionText();// 设置按钮文本
-        buttonText.enableAutoSizing = true;// 设置按钮文本自适应
+        buttonText.text = itemData.GetCurrentOptionText();
+        buttonText.enableAutoSizing = true;
         buttonText.fontSizeMin = 10f;
-        buttonText.fontSizeMax = 16f; // 稍微减小最大字体大小以容纳更长文本
+        buttonText.fontSizeMax = 16f;
         buttonText.overflowMode = TextOverflowModes.Ellipsis;
         buttonText.alignment = TextAlignmentOptions.Center;
-        RectTransform textRect = buttonTextTransform.GetComponent<RectTransform>();// 确保按钮文本填满整个按钮
+        RectTransform textRect = buttonTextTransform.GetComponent<RectTransform>();     // 确保按钮文本填满整个按钮
         textRect.anchorMin = Vector2.zero;
         textRect.anchorMax = Vector2.one;
         textRect.offsetMin = Vector2.zero;
         textRect.offsetMax = Vector2.zero;
+
+        if (titleTransform.gameObject.activeSelf)                                       // 重新排列子对象顺序：标题在左，按钮在右
+        {
+            titleTransform.SetAsFirstSibling();
+            buttonTransform.SetAsLastSibling();
+        }
     }
     
     private void HandleOptionChange(int direction)// 新增：处理左右方向键事件
