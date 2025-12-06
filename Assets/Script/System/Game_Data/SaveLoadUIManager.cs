@@ -102,13 +102,17 @@ public class SaveLoadUIManager : MonoBehaviour
     {
         contentRectTransform = contentParent.GetComponent<RectTransform>();
 
+        // 设置Content的布局 - 确保它在中心开始布局
+        contentRectTransform.anchorMin = new Vector2(0.5f, 1f);  // 锚点在顶部中心
+        contentRectTransform.anchorMax = new Vector2(0.5f, 1f);
+        contentRectTransform.pivot = new Vector2(0.5f, 1f);     // 轴心点在顶部中心
+        
         // 清除现有槽位
         foreach (Transform child in contentParent)
         {
             if (child != null)
                 Destroy(child.gameObject);
         }
-
         saveSlots.Clear();
 
         // 创建10个存档槽位UI
@@ -149,7 +153,6 @@ public class SaveLoadUIManager : MonoBehaviour
             Transform deleteTextTransform = deleteButtonTransform.Find("Text");// 获取删除按钮文本
             slotElements.deleteButtonText = deleteTextTransform.GetComponent<TextMeshProUGUI>();
         }
-        //UpdateContentSize();// 更新内容区域大小
     }
 
     private void RefreshSaveSlots()
@@ -373,6 +376,7 @@ public class SaveLoadUIManager : MonoBehaviour
 
     private void HandleKeyboardNavigation()
     {
+        Debug.Log("------------------------------------------------");
         if (playerInputManager.GetButtonDown("UIUp"))
         {
             audioManager.PlayUISound(UISoundType.Navigate);
@@ -472,13 +476,5 @@ public class SaveLoadUIManager : MonoBehaviour
             scrollRect.verticalNormalizedPosition = Mathf.Clamp01(currentPosition + scrollAmount);
         else
             scrollRect.verticalNormalizedPosition = Mathf.Clamp01(currentPosition - scrollAmount);
-    }
-
-    private void UpdateContentSize()
-    {
-        if (contentRectTransform == null) return;
-
-        float totalHeight = saveSlots.Count * (itemSize.y + itemSpacing) - itemSpacing;
-        contentRectTransform.sizeDelta = new Vector2(contentRectTransform.sizeDelta.x, totalHeight);
     }
 }
