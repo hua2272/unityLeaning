@@ -17,7 +17,6 @@ public class SaveLoadUIManager : MonoBehaviour
     [SerializeField] private GameObject saveLoadPanel;
 
     [Header("UI元素")] [SerializeField] private TextMeshProUGUI panelTitle;
-    [SerializeField] private Button backButton;
 
     [Header("按钮文本")] [SerializeField] private string saveButtonText = "保存";
     [SerializeField] private string loadButtonText = "读取";
@@ -115,20 +114,7 @@ public class SaveLoadUIManager : MonoBehaviour
         // 创建10个存档槽位UI
         for (int i = 0; i < GameSaveManager.MAX_SAVE_SLOTS; i++)
         {
-            // 检查预制件是否有效
-            if (saveSlotPrefab == null)
-            {
-                Debug.LogError("SaveSlotPrefab is not assigned!");
-                continue;
-            }
-
             GameObject slotObj = Instantiate(saveSlotPrefab, contentParent);
-            if (slotObj == null)
-            {
-                Debug.LogError($"Failed to instantiate save slot {i}");
-                continue;
-            }
-
             slotObj.name = $"SaveSlot_{i}";
 
             // 获取所有UI组件引用
@@ -137,76 +123,33 @@ public class SaveLoadUIManager : MonoBehaviour
                 slotObject = slotObj,
                 slotId = i
             };
-
-            // 通过Transform.Find获取组件引用
-            Transform slotTransform = slotObj.transform;
-
-            if (slotTransform == null)
-            {
-                Debug.LogError($"Slot transform is null for slot {i}");
-                continue;
-            }
+            
+            // 设置RectTransform - 关键修改部分
+            Transform canvas = slotObj.transform.Find("Canvas");
+            RectTransform rectTransform = canvas.GetComponentInChildren<RectTransform>();
+            rectTransform.localScale = Vector3.one;
+            rectTransform.localPosition = Vector3.zero;
+            rectTransform.anchorMin = new Vector2(0.5f, 1f);                                // 使用顶部居中的锚点
+            rectTransform.anchorMax = new Vector2(0.5f, 1f);
+            rectTransform.pivot = new Vector2(0.5f, 1f);
+            rectTransform.sizeDelta = itemSize; 
+            float yPosition = -i * (itemSize.y + itemSpacing) - (itemSize.y * 0.5f);    // 第一个菜单项应该在Content顶部，后续项依次向下
+            rectTransform.anchoredPosition = new Vector2(0, yPosition);
 
             // 获取背景Image
-            slotElements.backgroundImage = slotObj.GetComponent<Image>();
-            if (slotElements.backgroundImage == null)
-            {
-                slotElements.backgroundImage = slotObj.AddComponent<Image>();
-                slotElements.backgroundImage.color = normalBackgroundColor;
-            }
-
-            // 获取按钮 - 添加空值检查
-            if (slotTransform != null)
-            {
-                Transform actionButtonTransform = slotTransform.Find("ActionButton");
-                if (actionButtonTransform != null)
-                {
-                    slotElements.actionButton = actionButtonTransform.GetComponent<Button>();
-
-                    // 获取按钮文本
-                    Transform buttonTextTransform = actionButtonTransform.Find("Text");
-                    if (buttonTextTransform != null)
-                    {
-                        slotElements.actionButtonText = buttonTextTransform.GetComponent<TextMeshProUGUI>();
-                    }
-                }
-
-                Transform deleteButtonTransform = slotTransform.Find("DeleteButton");
-                if (deleteButtonTransform != null)
-                {
-                    slotElements.deleteButton = deleteButtonTransform.GetComponent<Button>();
-
-                    // 获取删除按钮文本
-                    Transform deleteTextTransform = deleteButtonTransform.Find("Text");
-                    if (deleteTextTransform != null)
-                    {
-                        slotElements.deleteButtonText = deleteTextTransform.GetComponent<TextMeshProUGUI>();
-                    }
-                }
-            }
-
-            // 剩余代码保持不变...
+            slotElements.backgroundImage = canvas.Find("Background").GetComponent<Image>();
+            
+            Transform actionButtonTransform = canvas.Find("ActionButton");// 获取按钮
+            slotElements.actionButton = actionButtonTransform.GetComponent<Button>();
+            Transform buttonTextTransform = actionButtonTransform.Find("Text");// 获取按钮文本
+            slotElements.actionButtonText = buttonTextTransform.GetComponent<TextMeshProUGUI>();
+            
+            Transform deleteButtonTransform = canvas.Find("DeleteButton");
+            slotElements.deleteButton = deleteButtonTransform.GetComponent<Button>();
+            Transform deleteTextTransform = deleteButtonTransform.Find("Text");// 获取删除按钮文本
+            slotElements.deleteButtonText = deleteTextTransform.GetComponent<TextMeshProUGUI>();
         }
-
-        // 更新内容区域大小
-        UpdateContentSize();
-
-        // 返回按钮监听
-        if (backButton != null)
-        {
-            backButton.onClick.AddListener(ClosePanel);
-        }
-    }
-
-    private TextMeshProUGUI GetTextComponent(Transform parent, string name)
-    {
-        Transform textTransform = parent.Find(name);
-        if (textTransform != null)
-        {
-            return textTransform.GetComponent<TextMeshProUGUI>();
-        }
-
-        return null;
+        //UpdateContentSize();// 更新内容区域大小
     }
 
     private void RefreshSaveSlots()
