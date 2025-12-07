@@ -1,14 +1,18 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MenuItemData
 {
     public float PanelId;
-    public float NextPanelId;
+    public float buttonType;
     public string title;
     public string buttonText;
     [NonSerialized] public Action action;
+    public string screenshotImage;//图片存储路径
+    public string saveTime;
+    public string playTime;
 
     // 选项相关字段
     public bool isOptionButton = false;
@@ -19,10 +23,10 @@ public class MenuItemData
     private string saveKey;//保存标识符
 
     // 普通按钮构造函数
-    public MenuItemData(float panelId, float nextPanelId, string title, string buttonText, Action action)
+    public MenuItemData(float panelId, float buttonType, string title, string buttonText, Action action)
     {
         this.PanelId = panelId;
-        this.NextPanelId = nextPanelId;
+        this.buttonType = buttonType;
         this.title = title;
         this.buttonText = buttonText;
         this.action = action;
@@ -30,10 +34,10 @@ public class MenuItemData
     }
 
     // 选项按钮构造函数
-    public MenuItemData(float panelId, float nextPanelId, string title, List<string> options, int defaultIndex, Action<int> onOptionChanged, string saveKey = null)
+    public MenuItemData(float panelId, float buttonType, string title, List<string> options, int defaultIndex, Action<int> onOptionChanged, string saveKey = null)
     {
         this.PanelId = panelId;
-        this.NextPanelId = nextPanelId;
+        this.buttonType = buttonType;
         this.title = title;
         this.options = options;
         this.currentOptionIndex = defaultIndex;
@@ -44,6 +48,17 @@ public class MenuItemData
         // 加载保存的选项
         LoadOption();
         UpdateButtonText();
+    }
+    
+    public MenuItemData(float panelId, float buttonType, string buttonText, Action action, string screenshotImage, string saveTime, string playTime)
+    {
+        this.PanelId = panelId;
+        this.buttonType = buttonType;
+        this.buttonText = buttonText;
+        this.action = action;
+        this.screenshotImage = screenshotImage;
+        this.saveTime = saveTime;
+        this.playTime = playTime;
     }
 
     // 新增：直接设置选项索引

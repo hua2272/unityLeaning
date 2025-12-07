@@ -1,7 +1,9 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using System.IO;
 
 public class MenuController : MonoBehaviour
 {
@@ -14,6 +16,7 @@ public class MenuController : MonoBehaviour
     [SerializeField] private GameObject panel;                                       // 总面板
     private int currentPanelLevel = 0;
     private int currentButtonIndex = 0;
+    [SerializeField] private Sprite defaultThumbnail;
     
     [Header("菜单项数据")]
     [SerializeField] private List<MenuItemData> menuItems = new List<MenuItemData>();
@@ -283,14 +286,14 @@ public class MenuController : MonoBehaviour
     void InitializeMenuItems()
     {
         menuItems.Clear();
-        menuItems.Add(new MenuItemData(0, -1, null, "继续游戏", null));
-        menuItems.Add(new MenuItemData(0, -1, null, "读取存档", null));
-        menuItems.Add(new MenuItemData(0, -1, null, "保存游戏", () =>
+        menuItems.Add(new MenuItemData(0, 0, null, "继续游戏", null));
+        menuItems.Add(new MenuItemData(0, 0, null, "读取存档", null));
+        menuItems.Add(new MenuItemData(0, 0, null, "保存游戏", () =>
         {
             currentPanelLevel = 1;
             ShowButtons(1.1f);
         }));
-        menuItems.Add(new MenuItemData(0, 1, null, "设置", () =>
+        menuItems.Add(new MenuItemData(0, 0, null, "设置", () =>
         {
             currentPanelLevel = 1;
             ShowButtons(1);
@@ -372,6 +375,23 @@ public class MenuController : MonoBehaviour
         Transform buttonTransform = menuItem.transform.Find("Button");
         Button button = buttonTransform.GetComponent<Button>();
         buttonToMenuItemMap[button] = itemData; // 将按钮与菜单项数据关联
+        
+        if (itemData.buttonType == 1)
+        {
+            titleTransform.gameObject.SetActive(false);
+            Transform infoTransform = menuItem.transform.Find("Info");
+            
+            Transform picTransform = infoTransform.Find("screenshotImage");
+            Image image = picTransform.GetComponent<Image>();
+            
+            Transform playTimeTransform = infoTransform.Find("playTime");
+            TextMeshProUGUI playTime = playTimeTransform.GetComponent<TextMeshProUGUI>();
+            
+            Transform saveTimeTransform = infoTransform.Find("saveTime");
+            TextMeshProUGUI saveTime = saveTimeTransform.GetComponent<TextMeshProUGUI>();
+
+            LoadThumbnailAsync(image, itemData.screenshotImage);
+        }
 
         // 设置标题文本
         if (string.IsNullOrEmpty(itemData.title))
@@ -477,6 +497,69 @@ public class MenuController : MonoBehaviour
             {
                 menuItem.SetOptionIndex(0); // 重置到第一个选项
             }
+        }
+    }
+    
+    public void LoadThumbnailAsync(Image thumbnailImage, string thumbnailPath)
+    {
+        StartCoroutine(LoadThumbnailCoroutine(thumbnailImage, thumbnailPath));
+    }
+    
+    private IEnumerator LoadThumbnailCoroutine(Image thumbnailImage, string thumbnailPath)
+    {
+        // 先显示默认图片
+        thumbnailImage.sprite = defaultThumbnail;
+        
+        if (!File.Exists(thumbnailPath))
+        {
+            Debug.LogWarning($"缩略图不存在: {thumbnailPath}");// todo 不存在则采用默认图片
+            yield break;
+        }
+        
+        // 1. 异步读取文件
+        byte[] imageData = null;
+        using (FileStream stream = new FileStream(
+                   thumbnailPath, 
+                   FileMode.Open, 
+                   FileAccess.Read, 
+                   FileShare.Read, 
+                   4096, 
+                   true)) // 异步读取
+        {
+            imageData = new byte[stream.Length];
+            yield return stream.ReadAsync(imageData, 0, (int)stream.Length);
+        }
+        
+        // 2. 在主线程中创建纹理（必须在主线程）
+        yield return null; // 确保下一帧在主线程
+        
+        Texture2D texture = new Texture2D(2, 2);
+        if (texture.LoadImage(imageData))
+        {
+            // 3. 创建Sprite
+            Sprite sprite = Sprite.Create(
+                texture,
+                new Rect(0, 0, texture.width, texture.height),
+                new Vector2(0.5f, 0.5f),
+                100f, // pixelsPerUnit
+                0,    // extra border
+                SpriteMeshType.Tight,
+                Vector4.zero,
+                false
+            );
+            
+            // 4. 赋值给Image
+            thumbnailImage.sprite = sprite;
+            
+            // 5. 清理旧纹理
+            if (thumbnailImage.sprite != null && thumbnailImage.sprite.texture != texture)
+            {
+                Destroy(thumbnailImage.sprite.texture);
+            }
+        }
+        else
+        {
+            Debug.LogError("无法加载缩略图: " + thumbnailPath);
         }
     }
 }
