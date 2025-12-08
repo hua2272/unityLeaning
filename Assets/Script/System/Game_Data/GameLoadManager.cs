@@ -70,11 +70,11 @@ public class GameLoadManager : MonoBehaviour
         SceneTransitionManager.Instance.LoadSceneWithFade("GameScene");
     }
 
-    public void LoadGame()
+    public void LoadGame(int slotId)
     {
-        if (GameSaveManager.DoesSaveExist())
+        if (GameSaveManager.DoesSaveExist(slotId))
         {
-            StartCoroutine(LoadGameCoroutine(GameSaveManager.GetSavePath()));
+            StartCoroutine(LoadGameCoroutine(GameSaveManager.GetSavePath(slotId)));
         }
     }
     

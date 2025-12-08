@@ -5,6 +5,8 @@ public class GameDataManager : MonoBehaviour
 {
     public static GameDataManager instance;
     
+    public string saveTime = "";
+    public string playTime = "";
     public int playerLevel;
     public int playerHealth;
     public int equippedSlotId;
@@ -12,6 +14,9 @@ public class GameDataManager : MonoBehaviour
     public Vector3 playerPosition;
     public string[] inventoryItems;
     public GameData.SerializableDictionary unlockedSkills;
+    
+    // 新增：当前选择的存档槽位
+    private int currentSaveSlot = 0;
     
     void Awake()
     {
@@ -35,5 +40,8 @@ public class GameDataManager : MonoBehaviour
         playerPosition = gameData.playerPosition;
         inventoryItems = gameData.inventoryItems;
         unlockedSkills = gameData.unlockedSkills;
+        saveTime = gameData.saveTime;
+        playTime = gameData.playTime;
+        currentSaveSlot = gameData.saveSlotId;
     }
 }

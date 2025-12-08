@@ -59,7 +59,7 @@ public class GameSaveManager : MonoBehaviour
         
         string jsonData = JsonUtility.ToJson(currentGameData, prettyPrint: true);
         
-        string savePath = GetSavePath();
+        string savePath = GetSavePath(0);
         try
         {
             File.WriteAllText(savePath, jsonData);
@@ -111,12 +111,12 @@ public class GameSaveManager : MonoBehaviour
         }
     }
     
-    public static bool DoesSaveExist()
+    public static bool DoesSaveExist(int slotId)
     {
-        return File.Exists(GetSavePath());
+        return File.Exists(GetSavePath(slotId));//todo 是否有逻辑问题，查询文件目录却新建了文件目录
     }
     
-    public static string GetSavePath()
+    public static string GetSavePath(int slotId)
     {
         string gameDirectory = Path.GetDirectoryName(Application.dataPath);
         if (Application.isEditor)

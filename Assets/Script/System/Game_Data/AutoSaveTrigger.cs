@@ -43,7 +43,7 @@ public class AutoSaveTrigger : MonoBehaviour
     private void TriggerAutoSave()
     {
         if (!canSave) return;
-        GameSaveManager.instance.SaveGame();// 执行存档
+        //GameSaveManager.instance.SaveGame();// 执行存档
         Debug.Log($"在 {savePointName} 自动存档成功");
         savePointText.text = $"已存档 - {savePointName}";
         StartCoroutine(SaveCooldown());// 进入冷却
