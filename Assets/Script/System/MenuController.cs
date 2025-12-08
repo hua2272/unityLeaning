@@ -300,22 +300,19 @@ public class MenuController : MonoBehaviour
         }));
         menuItems.Add(new MenuItemData(0, 0, null, "返回主界面", null));
         menuItems.Add(new MenuItemData(1, 0, null, "键盘按键设置", () => systemManager.EnterSubPanel(0)));
-        menuItems.Add(new MenuItemData(1, 0, "屏幕", new List<string> {"无边框全屏", "窗口化"}, 
-            0, (index) => screenController.ScreenModeChange(index), "ScreenMode"));
-        menuItems.Add(new MenuItemData(1, 0, "音乐", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 
-            4, (index) => audioManager.SetMusicVolume(index), "MusicVolume"));
-        menuItems.Add(new MenuItemData(1, 0, "音效", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 
-            4, (index) => audioManager.SetSFXVolume(index), "SFXVolume"));
-        menuItems.Add(new MenuItemData(1.1f, 1, "保存游戏1",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
-        menuItems.Add(new MenuItemData(1.1f, 1, "保存游戏2",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
-        menuItems.Add(new MenuItemData(1.1f, 1, "保存游戏3",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
-        menuItems.Add(new MenuItemData(1.1f, 1, "保存游戏4",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
-        menuItems.Add(new MenuItemData(1.1f, 1, "保存游戏5",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
-        menuItems.Add(new MenuItemData(1.1f, 1, "保存游戏6",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
-        menuItems.Add(new MenuItemData(1.1f, 1, "保存游戏7",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
-        menuItems.Add(new MenuItemData(1.1f, 1, "保存游戏8",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
-        menuItems.Add(new MenuItemData(1.1f, 1, "保存游戏9",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
-        menuItems.Add(new MenuItemData(1.1f, 1, "保存游戏10",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
+        menuItems.Add(new MenuItemData(1, 1, "屏幕", new List<string> {"无边框全屏", "窗口化"}, 0, (index) => screenController.ScreenModeChange(index), "ScreenMode"));
+        menuItems.Add(new MenuItemData(1, 1, "音乐", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 4, (index) => audioManager.SetMusicVolume(index), "MusicVolume"));
+        menuItems.Add(new MenuItemData(1, 1, "音效", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 4, (index) => audioManager.SetSFXVolume(index), "SFXVolume"));
+        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏1",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
+        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏2",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
+        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏3",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
+        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏4",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
+        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏5",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
+        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏6",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
+        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏7",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
+        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏8",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
+        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏9",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
+        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏10",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
     }
     
     void ClearMenuItems()
@@ -366,21 +363,18 @@ public class MenuController : MonoBehaviour
         itemLayout.childControlHeight = true;
         itemLayout.childForceExpandWidth = false;
         itemLayout.childForceExpandHeight = true;
-
-        // 查找 TextMeshPro 组件 - 标题
-        Transform titleTransform = menuItem.transform.Find("Title");
-        TextMeshProUGUI titleText = titleTransform.GetComponent<TextMeshProUGUI>();
-
-        // 查找 Button 组件
-        Transform buttonTransform = menuItem.transform.Find("Button");
+        
+        Transform titleTransform = menuItem.transform.Find("Title");// 查找 标题
+        Transform infoTransform = menuItem.transform.Find("Info");// 查找 info
+        Transform buttonTransform = menuItem.transform.Find("Button");// 查找 Button
+        
         Button button = buttonTransform.GetComponent<Button>();
         buttonToMenuItemMap[button] = itemData; // 将按钮与菜单项数据关联
         
-        if (itemData.buttonType == 1)
+        if (itemData.buttonType == 2)
         {
             titleTransform.gameObject.SetActive(false);
-            Transform infoTransform = menuItem.transform.Find("Info");
-            
+            infoTransform.gameObject.SetActive(true);
             Transform picTransform = infoTransform.Find("screenshotImage");
             Image image = picTransform.GetComponent<Image>();
             
@@ -389,13 +383,36 @@ public class MenuController : MonoBehaviour
             
             Transform saveTimeTransform = infoTransform.Find("saveTime");
             TextMeshProUGUI saveTime = saveTimeTransform.GetComponent<TextMeshProUGUI>();
+            
+            // ContentSizeFitter infoSizeFitter = infoTransform.AddComponent<ContentSizeFitter>();
+            // infoSizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            // infoSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             LoadThumbnailAsync(image, itemData.screenshotImage);
+            playTime.text = itemData.playTime;
+            saveTime.text = itemData.saveTime;
+            
+            itemLayout.childAlignment = TextAnchor.MiddleLeft; // 标题不为空时，左对齐（标题在左，按钮在右）
+            LayoutElement infoLayout = infoTransform.gameObject.AddComponent<LayoutElement>(); // 配置标题的布局元素 - 占据左侧空间
+            infoLayout.flexibleWidth = 1f; // 标题占据剩余空间
+            infoLayout.preferredWidth = -1f;
+            infoLayout.minWidth = 50f;
+            
+            LayoutElement buttonLayout = buttonTransform.gameObject.AddComponent<LayoutElement>(); // 配置按钮的布局元素 - 固定宽度在右侧
+            buttonLayout.preferredWidth = 120f;
+            buttonLayout.minWidth = 80f;
+            buttonLayout.preferredHeight = 40f;
+            buttonLayout.minHeight = 30f;
+            buttonLayout.flexibleWidth = 0f; // 按钮不拉伸
+            
+            // infoTransform.SetAsFirstSibling();
+            // buttonTransform.SetAsLastSibling();
         }
 
         // 设置标题文本
-        if (string.IsNullOrEmpty(itemData.title))
+        if (itemData.buttonType == 0)
         {
+            infoTransform.gameObject.SetActive(false);
             titleTransform.gameObject.SetActive(false);
             itemLayout.childAlignment = TextAnchor.MiddleCenter; // 标题为空时，按钮居中
             LayoutElement buttonLayout = buttonTransform.gameObject.AddComponent<LayoutElement>(); // 配置按钮的布局元素
@@ -404,10 +421,12 @@ public class MenuController : MonoBehaviour
             buttonLayout.preferredHeight = 40f;
             buttonLayout.minHeight = 30f;
         }
-        else
+        if (itemData.buttonType == 1)
         {
-            titleText.text = itemData.title;
+            infoTransform.gameObject.SetActive(false);
             titleTransform.gameObject.SetActive(true);
+            TextMeshProUGUI titleText = titleTransform.GetComponent<TextMeshProUGUI>();
+            titleText.text = itemData.title;
             itemLayout.childAlignment = TextAnchor.MiddleLeft; // 标题不为空时，左对齐（标题在左，按钮在右）
             LayoutElement titleLayout = titleTransform.gameObject.AddComponent<LayoutElement>(); // 配置标题的布局元素 - 占据左侧空间
             titleLayout.flexibleWidth = 1f; // 标题占据剩余空间
@@ -426,6 +445,9 @@ public class MenuController : MonoBehaviour
             titleText.fontSizeMax = 24f;
             titleText.overflowMode = TextOverflowModes.Ellipsis;
             titleText.alignment = TextAlignmentOptions.Left;
+            
+            titleTransform.SetAsFirstSibling();
+            buttonTransform.SetAsLastSibling();
         }
 
         if (!itemData.isOptionButton)
@@ -449,12 +471,6 @@ public class MenuController : MonoBehaviour
         textRect.anchorMax = Vector2.one;
         textRect.offsetMin = Vector2.zero;
         textRect.offsetMax = Vector2.zero;
-
-        if (titleTransform.gameObject.activeSelf)                                       // 重新排列子对象顺序：标题在左，按钮在右
-        {
-            titleTransform.SetAsFirstSibling();
-            buttonTransform.SetAsLastSibling();
-        }
     }
     
     private void HandleOptionChange(int direction)// 新增：处理左右方向键事件
