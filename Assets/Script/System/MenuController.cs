@@ -40,6 +40,14 @@ public class MenuController : MonoBehaviour
     // 按钮与菜单项的映射
     private Dictionary<Button, MenuItemData> buttonToMenuItemMap = new Dictionary<Button, MenuItemData>();
     
+    // void OnValidate()// 在Inspector中修改数据时更新菜单
+    // {
+    //     if (Application.isPlaying && contentParent != null)
+    //     {
+    //         InitializeMenu();
+    //     }
+    // }
+    
     void Start()
     {
         playerInputManager = PlayerInputManager.instance;
@@ -488,15 +496,6 @@ public class MenuController : MonoBehaviour
         
         float totalHeight = menuItems.Count * (itemSize.y + itemSpacing) - itemSpacing;
         contentRectTransform.sizeDelta = new Vector2(contentRectTransform.sizeDelta.x, totalHeight);
-    }
-    
-    // 在Inspector中修改数据时更新菜单
-    void OnValidate()
-    {
-        if (Application.isPlaying && contentParent != null)
-        {
-            InitializeMenu();
-        }
     }
     
     // 新增：重置所有选项到默认值
