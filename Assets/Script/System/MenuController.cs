@@ -383,10 +383,6 @@ public class MenuController : MonoBehaviour
             
             Transform saveTimeTransform = infoTransform.Find("saveTime");
             TextMeshProUGUI saveTime = saveTimeTransform.GetComponent<TextMeshProUGUI>();
-            
-            // ContentSizeFitter infoSizeFitter = infoTransform.AddComponent<ContentSizeFitter>();
-            // infoSizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-            // infoSizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             LoadThumbnailAsync(image, itemData.screenshotImage);
             playTime.text = itemData.playTime;
@@ -523,59 +519,72 @@ public class MenuController : MonoBehaviour
     
     private IEnumerator LoadThumbnailCoroutine(Image thumbnailImage, string thumbnailPath)
     {
-        // 先显示默认图片
-        thumbnailImage.sprite = defaultThumbnail;
-        
+        Transform thumbnailTransform = thumbnailImage.transform;// 保存引用
+        thumbnailImage.sprite = defaultThumbnail;// 先显示默认图片
+    
+        yield return null; // 等待一帧，确保默认图片已显示
+    
+        // 检查对象是否被销毁
+        if (thumbnailImage == null || thumbnailTransform == null)
+            yield break; // 静默退出，不打印日志
+    
         if (!File.Exists(thumbnailPath))
-        {
-            Debug.LogWarning($"缩略图不存在: {thumbnailPath}");// todo 不存在则采用默认图片
-            yield break;
-        }
+            yield break;// 使用默认图片，不打印警告
         
-        // 1. 异步读取文件
-        byte[] imageData = null;
-        using (FileStream stream = new FileStream(
-                   thumbnailPath, 
-                   FileMode.Open, 
-                   FileAccess.Read, 
-                   FileShare.Read, 
-                   4096, 
-                   true)) // 异步读取
+        try
         {
-            imageData = new byte[stream.Length];
-            yield return stream.ReadAsync(imageData, 0, (int)stream.Length);
-        }
+            // 同步读取文件（适用于小文件）
+            byte[] imageData = File.ReadAllBytes(thumbnailPath);
         
-        // 2. 在主线程中创建纹理（必须在主线程）
-        yield return null; // 确保下一帧在主线程
-        
-        Texture2D texture = new Texture2D(2, 2);
-        if (texture.LoadImage(imageData))
-        {
-            // 3. 创建Sprite
-            Sprite sprite = Sprite.Create(
-                texture,
-                new Rect(0, 0, texture.width, texture.height),
-                new Vector2(0.5f, 0.5f),
-                100f, // pixelsPerUnit
-                0,    // extra border
-                SpriteMeshType.Tight,
-                Vector4.zero,
-                false
-            );
-            
-            // 4. 赋值给Image
-            thumbnailImage.sprite = sprite;
-            
-            // 5. 清理旧纹理
-            if (thumbnailImage.sprite != null && thumbnailImage.sprite.texture != texture)
+            // 再次检查对象是否存在
+            if (thumbnailImage == null)
             {
-                Destroy(thumbnailImage.sprite.texture);
+                yield break;
+            }
+        
+            // 创建纹理
+            Texture2D texture = new Texture2D(2, 2);
+        
+            if (texture.LoadImage(imageData))
+            {
+                // 再次检查对象是否存在
+                if (thumbnailImage == null)
+                {
+                    Destroy(texture);
+                    yield break;
+                }
+            
+                // 创建Sprite
+                Sprite sprite = Sprite.Create(
+                    texture,
+                    new Rect(0, 0, texture.width, texture.height),
+                    new Vector2(0.5f, 0.5f),
+                    100f,
+                    0,
+                    SpriteMeshType.Tight,
+                    Vector4.zero,
+                    false
+                );
+            
+                // 赋值给Image
+                thumbnailImage.sprite = sprite;
+            
+                // 清理旧纹理
+                Sprite oldSprite = thumbnailImage.sprite;
+                if (oldSprite != null && oldSprite.texture != texture && oldSprite != defaultThumbnail)
+                {
+                    Destroy(oldSprite.texture);
+                }
+            }
+            else
+            {
+                Destroy(texture);
             }
         }
-        else
+        catch (System.Exception)
         {
-            Debug.LogError("无法加载缩略图: " + thumbnailPath);
+            // 读取失败，使用默认图片
+            // 不打印错误，避免日志污染
         }
     }
 }
