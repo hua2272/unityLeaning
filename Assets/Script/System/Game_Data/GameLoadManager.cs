@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using Cinemachine;
 using UnityEngine;
@@ -9,6 +10,7 @@ public class GameLoadManager : MonoBehaviour
     public static GameLoadManager instance { get; private set; }
     
     private Player player;
+    private GameSaveManager gameSaveManager;
     public Vector3 spawnPosition;
     public string targetScene;
     public CinemachineVirtualCamera virtualCamera;
@@ -19,7 +21,6 @@ public class GameLoadManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -40,10 +41,12 @@ public class GameLoadManager : MonoBehaviour
     private void Start()
     {
         player = PlayerManager.instance.player;
+        gameSaveManager =  GameSaveManager.instance;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        if (scene.name == "Persistent") return;
         if (scene.name == targetScene)
         {
             player.transform.position = spawnPosition;
@@ -62,19 +65,20 @@ public class GameLoadManager : MonoBehaviour
 
     public void StartNewGame()
     {
-        // 新游戏时清空地形破坏记录
-        if (GameSaveManager.instance != null)
-        {
-            GameSaveManager.instance.ClearAllTileStates();
-        }
+        gameSaveManager.ClearAllTileStates();// 新游戏时清空地形破坏记录
         SceneTransitionManager.Instance.LoadSceneWithFade("GameScene");
     }
 
     public void LoadGame(int slotId)
     {
-        if (GameSaveManager.DoesSaveExist(slotId))
+        // if (GameSaveManager.DoesSaveExist(slotId))
+        // {
+        //     StartCoroutine(LoadGameCoroutine(GameSaveManager.GetSavePath(slotId)));
+        // }
+        string savePath = GameSaveManager.GetSavePath(slotId);
+        if (File.Exists(savePath))
         {
-            StartCoroutine(LoadGameCoroutine(GameSaveManager.GetSavePath(slotId)));
+            StartCoroutine(LoadGameCoroutine(savePath));
         }
     }
     
@@ -99,7 +103,6 @@ public class GameLoadManager : MonoBehaviour
             GameSaveManager.instance.LoadTileStates(gameData.destroyedTiles);
             Debug.Log($"加载了 {gameData.destroyedTiles.Count} 个地形破坏记录");
         }
-        
         GameDataManager.instance.DataPersistence(gameData);// 再加载玩家数据
         SceneManager.LoadScene("harbor");
         player.transform.position = new Vector3(gameData.playerPosition.x, gameData.playerPosition.y, gameData.playerPosition.z);

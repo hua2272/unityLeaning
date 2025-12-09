@@ -22,7 +22,6 @@ public class GameSaveManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -44,7 +43,7 @@ public class GameSaveManager : MonoBehaviour
         gameDataManager = GameDataManager.instance;
     }
 
-    public void SaveGame()
+    public void SaveGame(int slotId)
     {
         currentGameData.unlockedSkills = gameDataManager.unlockedSkills;
         currentGameData.playerLevel = 5;
@@ -59,7 +58,7 @@ public class GameSaveManager : MonoBehaviour
         
         string jsonData = JsonUtility.ToJson(currentGameData, prettyPrint: true);
         
-        string savePath = GetSavePath(0);
+        string savePath = GetSavePath(slotId);
         try
         {
             File.WriteAllText(savePath, jsonData);
@@ -111,10 +110,10 @@ public class GameSaveManager : MonoBehaviour
         }
     }
     
-    public static bool DoesSaveExist(int slotId)
-    {
-        return File.Exists(GetSavePath(slotId));//todo 是否有逻辑问题，查询文件目录却新建了文件目录
-    }
+    // public static bool DoesSaveExist(int slotId)
+    // {
+    //     return File.Exists(GetSavePath(slotId));
+    // }
     
     public static string GetSavePath(int slotId)
     {
@@ -128,6 +127,22 @@ public class GameSaveManager : MonoBehaviour
         {
             Directory.CreateDirectory(saveDirectory);
         }
-        return Path.Combine(saveDirectory, "gameSave.dat");
+        string fileName = "gameSave" + slotId + ".dat";
+        return Path.Combine(saveDirectory, fileName);
+    }
+
+    public static string GetParentSavePath()
+    {
+        string gameDirectory = Path.GetDirectoryName(Application.dataPath);
+        if (Application.isEditor)
+        {
+            gameDirectory = Application.persistentDataPath;
+        }
+        string saveDirectory = Path.Combine(gameDirectory, "Saves");
+        if (!Directory.Exists(saveDirectory))
+        {
+            Directory.CreateDirectory(saveDirectory);
+        }
+        return saveDirectory;
     }
 }
