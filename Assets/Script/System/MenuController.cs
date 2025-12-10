@@ -404,6 +404,32 @@ public class MenuController : MonoBehaviour
             
             Transform saveTimeTransform = infoTransform.Find("saveTime");
             TextMeshProUGUI saveTime = saveTimeTransform.GetComponent<TextMeshProUGUI>();
+            
+            RectTransform imageRect = picTransform.GetComponent<RectTransform>();
+            imageRect.anchorMin = Vector2.zero;      // 左下角
+            imageRect.anchorMax = Vector2.one;        // 右上角
+            imageRect.offsetMin = Vector2.zero;       // 左下的偏移为0
+            imageRect.offsetMax = Vector2.zero;       // 右上的偏移为0
+            imageRect.pivot = new Vector2(0.5f, 0.5f); // 中心点
+            AspectRatioFitter aspectFitter = picTransform.gameObject.AddComponent<AspectRatioFitter>();// 需要保持图片的宽高比
+            aspectFitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+            aspectFitter.aspectRatio = 16f / 9f; // 根据你的截图比例调整
+            
+            // 设置第一个文本的位置（中间偏左）
+            RectTransform playTimeRect = playTimeTransform.GetComponent<RectTransform>();
+            playTimeRect.anchorMin = new Vector2(0.4f, 0.6f); // 水平居中，垂直偏上
+            playTimeRect.anchorMax = new Vector2(0.8f, 0.8f);
+            playTimeRect.pivot = new Vector2(0, 0.5f);
+            playTimeRect.offsetMin = new Vector2(10, 0);
+            playTimeRect.offsetMax = new Vector2(-10, 0);
+    
+            // 设置第二个文本的位置（中间偏右）
+            RectTransform saveTimeRect = saveTimeTransform.GetComponent<RectTransform>();
+            saveTimeRect.anchorMin = new Vector2(0.4f, 0.4f); // 水平居中，垂直偏下
+            saveTimeRect.anchorMax = new Vector2(0.8f, 0.6f);
+            saveTimeRect.pivot = new Vector2(0, 0.5f);
+            saveTimeRect.offsetMin = new Vector2(10, 0);
+            saveTimeRect.offsetMax = new Vector2(-10, 0);
 
             LoadThumbnailAsync(image, itemData.screenshotImage);
             playTime.text = itemData.playTime;
@@ -422,8 +448,8 @@ public class MenuController : MonoBehaviour
             buttonLayout.minHeight = 30f;
             buttonLayout.flexibleWidth = 0f; // 按钮不拉伸
             
-            // infoTransform.SetAsFirstSibling();
-            // buttonTransform.SetAsLastSibling();
+            picTransform.SetAsFirstSibling();
+            buttonTransform.SetAsLastSibling();
         }
 
         // 设置标题文本

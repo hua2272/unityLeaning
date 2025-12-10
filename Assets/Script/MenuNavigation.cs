@@ -23,6 +23,9 @@ public class MenuNavigation : MonoBehaviour
     private List<GameObject> lightBars = new List<GameObject>();
     private List<Vector2> originalPositions = new List<Vector2>();
     
+    [Header("Audio Settings")]
+    private AudioManager audioManager;
+    
     private int currentSelectedIndex = 0;
     private bool inputAvailable = true;
     private float inputCooldown = 0.2f;
@@ -30,6 +33,7 @@ public class MenuNavigation : MonoBehaviour
 
     void Start()
     {
+        audioManager = AudioManager.instance;
         InitializeButtons();
         UpdateButtonAppearance();
     }
@@ -187,6 +191,10 @@ public class MenuNavigation : MonoBehaviour
     {
         if (buttons.Count > 0 && currentSelectedIndex >= 0 && currentSelectedIndex < buttons.Count)
         {
+            if (currentSelectedIndex == 1)
+            {
+                audioManager.StopBackgroundMusic();
+            }
             buttons[currentSelectedIndex].onClick.Invoke();
         }
     }
@@ -197,28 +205,5 @@ public class MenuNavigation : MonoBehaviour
         {
             SetButtonSelected(i, i == currentSelectedIndex);
         }
-    }
-
-    // 公共方法，用于外部改变选中项
-    public void SetSelectedIndex(int index)
-    {
-        if (index >= 0 && index < buttons.Count)
-        {
-            SetButtonSelected(currentSelectedIndex, false);
-            currentSelectedIndex = index;
-            SetButtonSelected(currentSelectedIndex, true);
-        }
-    }
-
-    // 公共方法，获取当前选中索引
-    public int GetSelectedIndex()
-    {
-        return currentSelectedIndex;
-    }
-
-    // 公共方法，启用/禁用输入
-    public void SetInputAvailable(bool available)
-    {
-        inputAvailable = available;
     }
 }

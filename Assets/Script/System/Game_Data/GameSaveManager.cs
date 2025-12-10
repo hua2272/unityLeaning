@@ -52,12 +52,11 @@ public class GameSaveManager : MonoBehaviour
         currentGameData.equippedSlotId = gameDataManager.equippedSlotId;
         currentGameData.scene = SceneManager.GetActiveScene().name;
         currentGameData.inventoryItems = weaponSlotsManager.GetObtainedWeaponsName();
+        currentGameData.screenshot = "";
         
-        // 保存地形数据
-        currentGameData.destroyedTiles = GetAllDestroyedTiles();
+        currentGameData.destroyedTiles = GetAllDestroyedTiles();// 保存地形数据
         
         string jsonData = JsonUtility.ToJson(currentGameData, prettyPrint: true);
-        
         string savePath = GetSavePath(slotId);
         try
         {
@@ -69,6 +68,37 @@ public class GameSaveManager : MonoBehaviour
         {
             Debug.LogError("保存游戏失败: " + e.Message);
         }
+    }
+    
+    public static string GetSavePath(int slotId)
+    {
+        string gameDirectory = Path.GetDirectoryName(Application.dataPath);
+        if (Application.isEditor)
+        {
+            gameDirectory = Application.persistentDataPath;
+        }
+        string saveDirectory = Path.Combine(gameDirectory, "Saves");
+        if (!Directory.Exists(saveDirectory))
+        {
+            Directory.CreateDirectory(saveDirectory);
+        }
+        string fileName = "gameSave" + slotId + ".dat";
+        return Path.Combine(saveDirectory, fileName);
+    }
+
+    public static string GetParentSavePath()
+    {
+        string gameDirectory = Path.GetDirectoryName(Application.dataPath);
+        if (Application.isEditor)
+        {
+            gameDirectory = Application.persistentDataPath;
+        }
+        string saveDirectory = Path.Combine(gameDirectory, "Saves");
+        if (!Directory.Exists(saveDirectory))
+        {
+            Directory.CreateDirectory(saveDirectory);
+        }
+        return saveDirectory;
     }
     
     // 地形保存相关方法
@@ -110,39 +140,37 @@ public class GameSaveManager : MonoBehaviour
         }
     }
     
-    // public static bool DoesSaveExist(int slotId)
-    // {
-    //     return File.Exists(GetSavePath(slotId));
-    // }
-    
-    public static string GetSavePath(int slotId)
+    private string CaptureScreenshot(int slotId)
     {
-        string gameDirectory = Path.GetDirectoryName(Application.dataPath);
-        if (Application.isEditor)
+        try
         {
-            gameDirectory = Application.persistentDataPath;
+            // 创建屏幕截图
+            Texture2D screenTexture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+            screenTexture.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
+            screenTexture.Apply();
+            
+            // 转换为PNG
+            byte[] textureBytes = screenTexture.EncodeToPNG();
+            Destroy(screenTexture);
+            
+            // 保存路径
+            string saveDirectory = GetParentSavePath();
+            string fileName = $"screenshot_{slotId}.png";
+            string fullPath = Path.Combine(saveDirectory, fileName);
+            
+            // 保存文件
+            File.WriteAllBytes(fullPath, textureBytes);
+            
+            Debug.Log($"截图保存成功: {fullPath}");
+            
+            // 返回相对路径或文件名（根据你的需求）
+            return fileName; // 或者返回 fullPath
+            
         }
-        string saveDirectory = Path.Combine(gameDirectory, "Saves");
-        if (!Directory.Exists(saveDirectory))
+        catch (Exception e)
         {
-            Directory.CreateDirectory(saveDirectory);
+            Debug.LogError("截图保存失败: " + e.Message);
+            return "";
         }
-        string fileName = "gameSave" + slotId + ".dat";
-        return Path.Combine(saveDirectory, fileName);
-    }
-
-    public static string GetParentSavePath()
-    {
-        string gameDirectory = Path.GetDirectoryName(Application.dataPath);
-        if (Application.isEditor)
-        {
-            gameDirectory = Application.persistentDataPath;
-        }
-        string saveDirectory = Path.Combine(gameDirectory, "Saves");
-        if (!Directory.Exists(saveDirectory))
-        {
-            Directory.CreateDirectory(saveDirectory);
-        }
-        return saveDirectory;
     }
 }

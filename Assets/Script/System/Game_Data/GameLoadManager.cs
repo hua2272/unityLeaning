@@ -71,10 +71,6 @@ public class GameLoadManager : MonoBehaviour
 
     public void LoadGame(int slotId)
     {
-        // if (GameSaveManager.DoesSaveExist(slotId))
-        // {
-        //     StartCoroutine(LoadGameCoroutine(GameSaveManager.GetSavePath(slotId)));
-        // }
         string savePath = GameSaveManager.GetSavePath(slotId);
         if (File.Exists(savePath))
         {
