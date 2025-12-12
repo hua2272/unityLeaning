@@ -10,7 +10,7 @@ public class PlayerManager : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log("<color=#FF0000>------PlayerManager instance------</color>");
+        Debug.Log("<color=#FF0000>-------PlayerManager instance-------</color>");
         if (instance != null)
         {
             Destroy(gameObject);

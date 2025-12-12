@@ -30,11 +30,11 @@ public class MenuController : MonoBehaviour
     [Header("功能脚本")]
     private GameSaveManager gameSaveManager;
     private GameLoadManager gameLoadManager;
-    private SystemManager systemManager;
     private ScreenController screenController;
     private AudioManager audioManager;
     private PlayerInputManager playerInputManager;
     private GameDataManager gameDataManager;
+    private UILangue uiLangue;
     
     private List<GameObject> createdMenuItems = new List<GameObject>();
     private RectTransform contentRectTransform;
@@ -55,10 +55,10 @@ public class MenuController : MonoBehaviour
         playerInputManager = PlayerInputManager.instance;
         gameSaveManager = GameSaveManager.instance;
         gameLoadManager = GameLoadManager.instance;
-        systemManager = SystemManager.instance;
         screenController = ScreenController.instance;
         audioManager = AudioManager.instance;
         gameDataManager = GameDataManager.instance;
+        uiLangue = UILangue.instance;
         InitializeMenu();
     }
     
@@ -315,12 +315,12 @@ public class MenuController : MonoBehaviour
             ShowButtons(1);
         }));
         menuItems.Add(new MenuItemData(0, 0, null, "返回主界面", null));
-        menuItems.Add(new MenuItemData(1, 0, null, "键盘按键设置", () => systemManager.EnterSubPanel(0)));
+        menuItems.Add(new MenuItemData(1, 0, null, "键盘按键设置", null));
         menuItems.Add(new MenuItemData(1, 1, "屏幕", new List<string> {"无边框全屏", "窗口化"}, 0, (index) => screenController.ScreenModeChange(index), "ScreenMode"));
         menuItems.Add(new MenuItemData(1, 1, "音乐", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 4, (index) => audioManager.SetMusicVolume(index), "MusicVolume"));
         menuItems.Add(new MenuItemData(1, 1, "音效", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 4, (index) => audioManager.SetSFXVolume(index), "SFXVolume"));
-        Dictionary<string, GameData> gameData = gameDataManager.LoadAllGameDataFromDirectory("C:\\Users\\Administrator\\AppData\\LocalLow\\DefaultCompany\\Platform Jump\\Saves");
-        Debug.Log("test1: " + gameData["gameSave1.dat"].saveTime);
+        menuItems.Add(new MenuItemData(1, 1, "语言", new List<string> {"中文", "English", "日本語"}, 1, (index) => uiLangue.ChangeLanguage(index), "Langue"));
+        
         menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏1", () => gameSaveManager.SaveGame(1), "E:\\pics\\Picture\\1.png", gameDataManager.saveTime, gameDataManager.playTime));
         menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏2", () => gameSaveManager.SaveGame(2), "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
         menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏3",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
