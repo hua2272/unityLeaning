@@ -5,17 +5,16 @@ using System.IO;
 
 public class DatabaseManager : MonoBehaviour
 {
-    public static DatabaseManager Instance { get; private set; }
+    public static DatabaseManager instance { get; private set; }
     
     private string dbPath;
     private IDbConnection dbConnection;
 
     void Awake()
     {
-        if (Instance == null)
+        if (instance == null)
         {
-            Instance = this;
-            //DontDestroyOnLoad(gameObject);
+            instance = this;
             InitializeDatabase();
         }
         else
@@ -48,7 +47,7 @@ public class DatabaseManager : MonoBehaviour
     {
         dbConnection = new SqliteConnection(dbPath);
         dbConnection.Open();
-        Debug.Log("Connected to database");
+        Debug.Log("<color=#FF0000>-------Connected to database-------</color>");
     }
 
     public IDataReader ExecuteQuery(string query)

@@ -19,22 +19,25 @@ public class DialogueManager : MonoBehaviour
     private int currentNpcId;
     private DialogueNode currentNode;
     private Stack<DialogueNode> nodeStack = new Stack<DialogueNode>();
-
-    void Start()
+    
+    void Awake()
     {
-        dialogueLoader = GetComponent<DialogueLoader>();
-        player = PlayerManager.instance.player;
+        Debug.Log("<color=#FF0000>-------DialogueManager instance-------</color>");
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
     
-    private void Awake()
+    void Start()
     {
-        if (instance != null && instance != this)
-        {
-            Destroy(this);
-            return;
-        }
-        instance = this;
         panel.SetActive(false);
+        dialogueLoader = GetComponent<DialogueLoader>();
+        player = PlayerManager.instance.player;
     }
     
     private void Update()
@@ -49,18 +52,13 @@ public class DialogueManager : MonoBehaviour
             if (closestNPC != null)
             {
                 Debug.Log($"与最近的NPC交互 ID: {closestNPC.npcId}");
-                StartDialogue(closestNPC.npcId);
+                currentNpcId = closestNPC.npcId;
+                currentNode = dialogueLoader.LoadDialogueNode(closestNPC.npcId);
+                nodeStack.Clear();
+                OnDialogueStart?.Invoke();
+                OnNodeUpdate?.Invoke(currentNode);
             }
         }
-    }
-
-    public void StartDialogue(int npcId)
-    {
-        currentNpcId = npcId;
-        currentNode = dialogueLoader.LoadDialogueNode(npcId);
-        nodeStack.Clear();
-        OnDialogueStart?.Invoke();
-        OnNodeUpdate?.Invoke(currentNode);
     }
 
     public bool CheckOptionConditions(DialogueOption option)

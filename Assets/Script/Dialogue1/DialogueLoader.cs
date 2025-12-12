@@ -16,7 +16,7 @@ public class DialogueLoader : MonoBehaviour
             LEFT JOIN dialogue_options o ON n.node_id = o.node_id
             WHERE n.node_id = {nodeId} AND (n.npc_id = {npcId} OR n.npc_id = 0)";
 
-        IDataReader reader = DatabaseManager.Instance.ExecuteQuery(query);
+        IDataReader reader = DatabaseManager.instance.ExecuteQuery(query);
         bool firstRow = true;
         while (reader.Read())
         {
