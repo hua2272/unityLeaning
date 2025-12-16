@@ -6,7 +6,6 @@ public class Player : Entity
     public bool isBusy { get; private set; }
     public GameObject sword { get; private set; }
     [SerializeField] private DeathMenuController deathMenu;
-    public PlayerInputManager PlayerInputManager { get; private set; }
     
     #region State
     public PlayerStateMachine stateMachine { get; private set; }
@@ -63,7 +62,6 @@ public class Player : Entity
         base.Start();
         stateMachine.Initialize(idleState);
         npcDetector = GetComponent<PlayerNPCDetector>();
-        PlayerInputManager = PlayerInputManager.instance;
     }
 
     protected override void Update()

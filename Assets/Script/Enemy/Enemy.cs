@@ -37,9 +37,9 @@ public class Enemy : Entity
         stateMachine.currentState.Update();
     }
 
-    public virtual void AssignLastAnimName(string _animBoolName)
+    public virtual void AssignLastAnimName(string animBoolName)
     {
-        lastAnimBoolName = _animBoolName;
+        lastAnimBoolName = animBoolName;
     }
 
     public virtual void OpenCounterAttackWindow()

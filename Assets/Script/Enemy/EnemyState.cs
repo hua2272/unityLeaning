@@ -12,11 +12,11 @@ public class EnemyState
     protected bool triggerCalled;
     protected float stateTimer;
 
-    public EnemyState(Enemy _enemyBase, EnemyStateMachine _stateMachine, string _animBoolName)
+    public EnemyState(Enemy enemyBase, EnemyStateMachine stateMachine, string animBoolName)
     {
-        this.enemyBase = _enemyBase;
-        this.stateMachine = _stateMachine;
-        this.animBoolName = _animBoolName;
+        this.enemyBase = enemyBase;
+        this.stateMachine = stateMachine;
+        this.animBoolName = animBoolName;
     }
 
     public virtual void Update()
