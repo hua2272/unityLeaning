@@ -15,50 +15,28 @@ public class FlyingInsectPatrolState : EnemyState
     {
         base.Update();
         if (enemy.patrolPoints.Length == 0) return;
-        // 移动到当前巡逻点
-        Vector2 targetPosition = enemy.patrolPoints[enemy.currentPatrolIndex].position;
+        
+        Vector2 targetPosition = enemy.patrolPoints[enemy.currentPatrolIndex].position;             //移动到当前巡逻点
         Vector2 direction = (targetPosition - (Vector2)enemy.transform.position).normalized;
         
-        // 保持巡逻高度
-        float currentHeight = enemy.transform.position.y;
-        float targetHeight = enemy.patrolHeight;
-        
-        // 垂直移动
-        if (Mathf.Abs(currentHeight - targetHeight) > 0.1f)
-        {
-            float verticalDirection = Mathf.Sign(targetHeight - currentHeight);
-            direction.y = verticalDirection * 0.5f; // 垂直移动速度较慢
-        }
-        
-        // 移动
         rb.velocity = direction * enemy.patrolSpeed;
-        Debug.Log("速度：" + rb.velocity);
-        // enemy.SetVelocity(1,2);
         
-        // 更新朝向
-        if (direction.x != 0)
+        if (enemy.facingDir > 0)//更新朝向 todo 优化
         {
-            //spriteRenderer.flipX = direction.x < 0;
-            enemy.transform.Rotate(0, 180, 0);
+            enemy.Flip();
         }
         
-        // 检查是否到达巡逻点
-        if (Vector2.Distance(enemy.transform.position, targetPosition) < 0.5f)
+        if (Vector2.Distance(enemy.transform.position, targetPosition) < 1f && stateTimer < 0)       //检查是否到达巡逻点，是否冷却
         {
-            stateTimer += Time.deltaTime;
-            if (stateTimer >= enemy.patrolWaitTime)
-            {
-                // 切换到下一个巡逻点
-                enemy.currentPatrolIndex = (enemy.currentPatrolIndex + 1) % enemy.patrolPoints.Length;
-                stateTimer = 0f;
-            }
+            enemy.currentPatrolIndex = (enemy.currentPatrolIndex + 1) % enemy.patrolPoints.Length;      //切换到下一个巡逻点
+            stateTimer = enemy.idleTime;
         }
     }
 
     public override void Enter()
     {
         base.Enter();
-        Debug.Log("Enter");
+        stateTimer = enemy.idleTime;
     }
 
     public override void Exist()

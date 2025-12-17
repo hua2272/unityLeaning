@@ -5620,7 +5620,7 @@ Transform:
   m_GameObject: {fileID: 596385010}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -13.61, y: 9.68, z: 0}
+  m_LocalPosition: {x: -2.27, y: 4.75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8166,7 +8166,7 @@ MonoBehaviour:
   stunDirection: {x: 0, y: 0}
   counterImage: {fileID: 0}
   moveSpeed: 0
-  idleTime: 0
+  idleTime: 2
   battleTime: 0
   attackDistance: 0
   attackCooldown: 0
@@ -8677,7 +8677,7 @@ Transform:
   m_GameObject: {fileID: 818595348}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10.37, y: 6.5, z: 0}
+  m_LocalPosition: {x: -9.47, y: -3.64, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14757,8 +14757,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1638779408}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.56, y: -3.9, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -17445,7 +17445,7 @@ Transform:
   m_GameObject: {fileID: 2050972581}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -12.06, y: 0.93, z: 0}
+  m_LocalPosition: {x: -19.39, y: 5.51, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
