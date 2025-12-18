@@ -1118,18 +1118,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e96991288f83d4da965e229b01d66c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockbackDirection: {x: 0, y: 0}
-  knockbackDuration: 0
-  attackCheck: {fileID: 1188472785}
-  attackCheckRadius: 0
-  groundCheck: {fileID: 1896012510}
-  groundCheckDistance: 0
-  wallCheck: {fileID: 1625546042}
-  wallCheckDistance: 0
-  whatIsGround:
-    serializedVersion: 2
-    m_Bits: 8
-  npcId: 0
   whatIsPlayer:
     serializedVersion: 2
     m_Bits: 64
@@ -1143,6 +1131,18 @@ MonoBehaviour:
   attackDistance: 0
   attackCooldown: 0
   lastTimeAttacked: 0
+  knockbackDirection: {x: 0, y: 0}
+  knockbackDuration: 0
+  attackCheck: {fileID: 1188472785}
+  attackCheckRadius: 0
+  groundCheck: {fileID: 1896012510}
+  groundCheckDistance: 0
+  wallCheck: {fileID: 1625546042}
+  wallCheckDistance: 0
+  whatIsGround:
+    serializedVersion: 2
+    m_Bits: 8
+  npcId: 0
   firePoint: {fileID: 1959216635}
   straightProjectilePrefab: {fileID: 7145265371048817460, guid: be0e4b4ee5e92fe48b3e8eae59ee7dc2, type: 3}
   parabolicProjectilePrefab: {fileID: 3896861469729050021, guid: 3c2b50bc87292e647b0bfa0681c5f2f4, type: 3}
@@ -4508,18 +4508,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6d6387084ca6e54cb1b8591a98c2234, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockbackDirection: {x: 7, y: 12}
-  knockbackDuration: 0.07
-  attackCheck: {fileID: 1516749319}
-  attackCheckRadius: 1
-  groundCheck: {fileID: 1106697770}
-  groundCheckDistance: 0.2
-  wallCheck: {fileID: 461929237}
-  wallCheckDistance: 0.92
-  whatIsGround:
-    serializedVersion: 2
-    m_Bits: 8
-  npcId: 1
   whatIsPlayer:
     serializedVersion: 2
     m_Bits: 64
@@ -4533,6 +4521,18 @@ MonoBehaviour:
   attackDistance: 2
   attackCooldown: 1
   lastTimeAttacked: 0
+  knockbackDirection: {x: 7, y: 12}
+  knockbackDuration: 0.07
+  attackCheck: {fileID: 1516749319}
+  attackCheckRadius: 1
+  groundCheck: {fileID: 1106697770}
+  groundCheckDistance: 0.2
+  wallCheck: {fileID: 461929237}
+  wallCheckDistance: 0.92
+  whatIsGround:
+    serializedVersion: 2
+    m_Bits: 8
+  npcId: 1
 --- !u!50 &473150277
 Rigidbody2D:
   serializedVersion: 4
@@ -8149,18 +8149,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bce64839e7104e5499d02c9ee883bbfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockbackDirection: {x: 0, y: 0}
-  knockbackDuration: 0
-  attackCheck: {fileID: 250789734}
-  attackCheckRadius: 0.62
-  groundCheck: {fileID: 1142537680}
-  groundCheckDistance: 0
-  wallCheck: {fileID: 120670808}
-  wallCheckDistance: 0
-  whatIsGround:
-    serializedVersion: 2
-    m_Bits: 8
-  npcId: 0
   whatIsPlayer:
     serializedVersion: 2
     m_Bits: 64
@@ -8174,6 +8162,18 @@ MonoBehaviour:
   attackDistance: 0
   attackCooldown: 0
   lastTimeAttacked: 0
+  knockbackDirection: {x: 0, y: 0}
+  knockbackDuration: 0
+  attackCheck: {fileID: 250789734}
+  attackCheckRadius: 0.62
+  groundCheck: {fileID: 1142537680}
+  groundCheckDistance: 0
+  wallCheck: {fileID: 120670808}
+  wallCheckDistance: 0
+  whatIsGround:
+    serializedVersion: 2
+    m_Bits: 8
+  npcId: 0
   patrolPoints:
   - {fileID: 2050972582}
   - {fileID: 596385011}
@@ -11081,18 +11081,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2188333f0c085df4ca07f09efea1d413, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  knockbackDirection: {x: 0, y: 0}
-  knockbackDuration: 0
-  attackCheck: {fileID: 714969014}
-  attackCheckRadius: 1.4
-  groundCheck: {fileID: 240347092}
-  groundCheckDistance: 0.5
-  wallCheck: {fileID: 888971743}
-  wallCheckDistance: 0.5
-  whatIsGround:
-    serializedVersion: 2
-    m_Bits: 8
-  npcId: 0
   detectionRadius: 5
   npcLayerMask:
     serializedVersion: 2
@@ -11113,6 +11101,18 @@ MonoBehaviour:
   dashSpeed: 20
   dashDuration: 0.3
   isSlamming: 0
+  knockbackDirection: {x: 0, y: 0}
+  knockbackDuration: 0
+  attackCheck: {fileID: 714969014}
+  attackCheckRadius: 1.4
+  groundCheck: {fileID: 240347092}
+  groundCheckDistance: 0.5
+  wallCheck: {fileID: 888971743}
+  wallCheckDistance: 0.5
+  whatIsGround:
+    serializedVersion: 2
+    m_Bits: 8
+  npcId: 0
 --- !u!4 &1142823683
 Transform:
   m_ObjectHideFlags: 0
