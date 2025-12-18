@@ -3,6 +3,12 @@ using UnityEngine;
 
 public class Player : Entity
 {
+    [Header("检测设置")]
+    [SerializeField] private float detectionRadius = 5f;
+    [SerializeField] private LayerMask npcLayerMask;
+    [SerializeField] private LayerMask obstacleLayerMask; // 障碍物图层（如墙壁）
+    [SerializeField] private bool showDebug = true;
+
     public bool isBusy { get; private set; }
     public GameObject sword { get; private set; }
     [SerializeField] private DeathMenuController deathMenu;
@@ -38,8 +44,6 @@ public class Player : Entity
     
     public bool isSlamming = false;
     
-    public PlayerNPCDetector npcDetector;
-    
     protected override void Awake()
     {
         base.Awake();
@@ -61,7 +65,6 @@ public class Player : Entity
     {
         base.Start();
         stateMachine.Initialize(idleState);
-        npcDetector = GetComponent<PlayerNPCDetector>();
     }
 
     protected override void Update()
@@ -96,5 +99,38 @@ public class Player : Entity
         stateMachine.ChangeState(deadState);
         //Time.timeScale = 0f; // TODO 清除页面
         deathMenu.ShowDeathMenu();
+    }
+    
+    public Entity GetClosestVisibleNPC()
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, detectionRadius, npcLayerMask);      //先检测范围内的所有NPC
+        Entity closestNPC = null;
+        float minDistance = float.MaxValue;
+        
+        foreach (var hit in hits)                                                                            //遍历所有NPC，找到最近的可见目标
+        {
+            if (hit.TryGetComponent<Entity>(out var npc))
+            {
+                Vector2 direction = npc.transform.position - transform.position;
+                float distance = direction.sqrMagnitude;                                                                //用平方距离优化计算
+                
+                RaycastHit2D obstacleCheck = Physics2D.Raycast(transform.position, direction.normalized, distance,obstacleLayerMask);   //检查视线是否被阻挡
+                if (obstacleCheck.collider == null && distance < minDistance)                                                                    //无障碍物且距离更近
+                {
+                    minDistance = distance;
+                    closestNPC = npc;
+                }
+            }
+        }
+        if (showDebug && closestNPC != null)
+            Debug.DrawLine(transform.position, closestNPC.transform.position, Color.green, 0.1f);
+        return closestNPC;
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (!showDebug) return;
+        Gizmos.color = new Color(0, 1, 0, 0.2f);
+        Gizmos.DrawWireSphere(transform.position, detectionRadius);
     }
 }

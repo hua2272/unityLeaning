@@ -48,7 +48,7 @@ public class DialogueManager : MonoBehaviour
             panel.SetActive(isActive);
             Time.timeScale = isActive ? 0 : 1;//暂停游戏
             
-            var closestNPC = player.npcDetector.GetClosestVisibleNPC();
+            var closestNPC = player.GetClosestVisibleNPC();
             if (closestNPC != null)
             {
                 Debug.Log($"与最近的NPC交互 ID: {closestNPC.npcId}");

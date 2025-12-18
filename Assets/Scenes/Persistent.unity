@@ -1135,6 +1135,7 @@ MonoBehaviour:
     m_Bits: 64
   stunDuration: 0
   stunDirection: {x: 0, y: 0}
+  canBeStunned: 0
   counterImage: {fileID: 0}
   moveSpeed: 0
   idleTime: 0
@@ -4524,6 +4525,7 @@ MonoBehaviour:
     m_Bits: 64
   stunDuration: 1
   stunDirection: {x: 10, y: 10}
+  canBeStunned: 0
   counterImage: {fileID: 1076101307}
   moveSpeed: 2
   idleTime: 2
@@ -8164,6 +8166,7 @@ MonoBehaviour:
     m_Bits: 64
   stunDuration: 0
   stunDirection: {x: 0, y: 0}
+  canBeStunned: 0
   counterImage: {fileID: 0}
   moveSpeed: 0
   idleTime: 2
@@ -8179,6 +8182,10 @@ MonoBehaviour:
   patrolWaitTime: 1
   patrolHeight: 5
   currentPatrolIndex: 0
+  origin: {x: 0, y: 0}
+  maxRadius: 0
+  direction: {x: 0, y: 0}
+  coneAngle: 0
   detectionRange: 10
   attackRange: 7
   minAttackDistance: 3
@@ -11055,7 +11062,6 @@ GameObject:
   - component: {fileID: 1142823684}
   - component: {fileID: 1142823685}
   - component: {fileID: 1142823686}
-  - component: {fileID: 1142823688}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -11087,6 +11093,14 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   npcId: 0
+  detectionRadius: 5
+  npcLayerMask:
+    serializedVersion: 2
+    m_Bits: 128
+  obstacleLayerMask:
+    serializedVersion: 2
+    m_Bits: 8
+  showDebug: 1
   deathMenu: {fileID: 179863629}
   attackMovement:
   - {x: 3, y: 2}
@@ -11099,7 +11113,6 @@ MonoBehaviour:
   dashSpeed: 20
   dashDuration: 0.3
   isSlamming: 0
-  npcDetector: {fileID: 0}
 --- !u!4 &1142823683
 Transform:
   m_ObjectHideFlags: 0
@@ -11243,26 +11256,6 @@ MonoBehaviour:
   onStaminaChange:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &1142823688
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1142823681}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a91df6569674d734fbdc73d4bf1524c9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  detectionRadius: 1.24
-  npcLayerMask:
-    serializedVersion: 2
-    m_Bits: 128
-  obstacleLayerMask:
-    serializedVersion: 2
-    m_Bits: 8
-  showDebug: 1
 --- !u!1 &1172545481
 GameObject:
   m_ObjectHideFlags: 0
