@@ -32,11 +32,6 @@ public class Enemy_Skeleton : Enemy
         base.Start();
         stateMachine.Initialize(idleState);
     }
-
-    public override bool CanBeCounter()
-    {
-        return base.CanBeCounter();
-    }
     
     public override void EnterStunnedState()
     {

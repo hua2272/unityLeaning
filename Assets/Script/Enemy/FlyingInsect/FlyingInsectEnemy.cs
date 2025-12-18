@@ -6,6 +6,7 @@ using UnityEngine;
 public class FlyingInsectEnemy : Enemy
 {
     public FlyingInsectPatrolState patrolState { get; private set; }
+    public FlyingInsectAttackState attackState { get; private set; }
     
     [Header("巡逻设置")]
     [SerializeField] public Transform[] patrolPoints; // 巡逻点
@@ -13,6 +14,10 @@ public class FlyingInsectEnemy : Enemy
     [SerializeField] public float patrolWaitTime = 1f; // 到达巡逻点后的等待时间
     [SerializeField] public float patrolHeight = 5f; // 巡逻飞行高度
     public int currentPatrolIndex = 0;
+    public Vector2 origin;
+    public float maxRadius;
+    public Vector2 direction;
+    public float coneAngle;
     
     [Header("视野设置")]
     [SerializeField] public float detectionRange = 10f;
@@ -26,6 +31,7 @@ public class FlyingInsectEnemy : Enemy
     {
         base.Awake();
         patrolState = new FlyingInsectPatrolState(this, stateMachine, "Patrol", this);
+        attackState = new FlyingInsectAttackState(this, stateMachine, "Attack", this);
     }
 
     protected override void Start()

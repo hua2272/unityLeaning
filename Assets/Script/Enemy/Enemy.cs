@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Enemy : Entity
@@ -9,7 +10,7 @@ public class Enemy : Entity
     [Header("Stunned Info")] 
     public float stunDuration;
     public Vector2 stunDirection;
-    protected bool canBeStunned;
+    public bool canBeStunned;
     [SerializeField] protected GameObject counterImage;
     
     [Header("Move Info")]
@@ -53,11 +54,6 @@ public class Enemy : Entity
         canBeStunned = false;
         counterImage.SetActive(false);
     }
-
-    public virtual bool CanBeCounter()
-    {
-        return canBeStunned;
-    }
     
     public virtual bool ActiveCounterImage()
     {
@@ -73,6 +69,27 @@ public class Enemy : Entity
     
     public virtual RaycastHit2D IsPlayerDetected() => Physics2D.Raycast(wallCheck.position, Vector2.right * facingDir, 50, whatIsPlayer);
 
+    public Collider2D[] ConeCast(Vector2 origin, float maxRadius, Vector2 direction, float coneAngle)
+    {
+        // 先获取圆形区域内的所有玩家碰撞体
+        Collider2D[] allColliders = Physics2D.OverlapCircleAll(origin, maxRadius, whatIsPlayer);
+    
+        // 筛选在锥形角度内的碰撞体
+        List<Collider2D> coneColliders = new List<Collider2D>();
+    
+        foreach (Collider2D collider in allColliders)
+        {
+            Vector2 toCollider = (Vector2)collider.transform.position - origin;
+            float angle = Vector2.Angle(direction, toCollider);
+        
+            if (angle <= coneAngle / 2)
+            {
+                coneColliders.Add(collider);
+            }
+        }
+        return coneColliders.ToArray();
+    }
+    
     protected override void OnDrawGizmos()
     {
         base.OnDrawGizmos();

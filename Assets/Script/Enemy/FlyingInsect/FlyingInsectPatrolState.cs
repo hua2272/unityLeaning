@@ -31,6 +31,11 @@ public class FlyingInsectPatrolState : EnemyState
             enemy.currentPatrolIndex = (enemy.currentPatrolIndex + 1) % enemy.patrolPoints.Length;      //切换到下一个巡逻点
             stateTimer = enemy.idleTime;
         }
+
+        if (enemy.ConeCast(enemy.origin, enemy.maxRadius, enemy.direction, enemy.coneAngle).Length > 0)
+        {
+            stateMachine.ChangeState(enemy.attackState);
+        }
     }
 
     public override void Enter()

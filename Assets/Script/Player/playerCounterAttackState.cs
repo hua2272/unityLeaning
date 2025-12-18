@@ -47,7 +47,7 @@ public class playerCounterAttackState : PlayerState
                     counterTimer = 0f;
                 }
             
-                if (counterTimer <= 0.5f && playerInputManager.GetButtonDown("Attack_1") && enemy.CanBeCounter())
+                if (counterTimer <= 0.5f && playerInputManager.GetButtonDown("Attack_1") && enemy.canBeStunned)
                 {
                     player.anim.SetFloat("CounterAttackState", 1);
                     enemy.EnterStunnedState();
