@@ -15,6 +15,7 @@ public class GameDataManager : MonoBehaviour
     public string scene;
     public Vector3 playerPosition;
     public string[] inventoryItems;
+    public string screenshot;
     public GameData.SerializableDictionary unlockedSkills;
     
     // 新增：当前选择的存档槽位
@@ -45,6 +46,7 @@ public class GameDataManager : MonoBehaviour
         saveTime = gameData.saveTime;
         playTime = gameData.playTime;
         currentSaveSlot = gameData.saveSlotId;
+        screenshot =  gameData.screenshot;
     }
     
     public Dictionary<string, GameData> LoadAllGameDataFromDirectory(string directoryPath)

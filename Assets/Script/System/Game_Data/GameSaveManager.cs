@@ -50,11 +50,8 @@ public class GameSaveManager : MonoBehaviour
         player = PlayerManager.instance.player;
         gameDataManager = GameDataManager.instance;
         
-        // 设置默认的截图层级（Player和Ground层）
         if (screenshotLayers.value == 0)
-        {
-            screenshotLayers = (1 << LayerMask.NameToLayer("Player")) | (1 << LayerMask.NameToLayer("Ground"));
-        }
+            screenshotLayers = (1 << LayerMask.NameToLayer("Player")) | (1 << LayerMask.NameToLayer("Ground"));// 设置默认的截图层级（Player和Ground层）
     }
 
     public void SaveGame(int slotId)
@@ -66,13 +63,10 @@ public class GameSaveManager : MonoBehaviour
         currentGameData.equippedSlotId = gameDataManager.equippedSlotId;
         currentGameData.scene = SceneManager.GetActiveScene().name;
         currentGameData.inventoryItems = weaponSlotsManager.GetObtainedWeaponsName();
-        currentGameData.screenshot = "";
         
         currentGameData.destroyedTiles = GetAllDestroyedTiles();// 保存地形数据
         
-        // 保存截图
-        string screenshotFileName = CaptureScreenshot(slotId);
-        currentGameData.screenshot = screenshotFileName;
+        currentGameData.screenshot = CaptureScreenshot(slotId);// 保存截图
         
         string jsonData = JsonUtility.ToJson(currentGameData, prettyPrint: true);
         string savePath = GetSavePath(slotId);
@@ -162,8 +156,7 @@ public class GameSaveManager : MonoBehaviour
     {
         try
         {
-            // 获取玩家当前位置
-            Vector3 playerPosition = player.transform.position;
+            Vector3 playerPosition = player.transform.position;// 获取玩家当前位置
             
             // 创建一个新的相机对象
             GameObject screenshotCameraObj = new GameObject("ScreenshotCamera");
@@ -181,9 +174,7 @@ public class GameSaveManager : MonoBehaviour
             // 创建RenderTexture
             RenderTexture renderTexture = new RenderTexture(screenshotWidth, screenshotHeight, 24);
             screenshotCamera.targetTexture = renderTexture;
-            
-            // 渲染一帧到RenderTexture
-            screenshotCamera.Render();
+            screenshotCamera.Render();// 渲染一帧到RenderTexture
             
             // 从RenderTexture读取数据到Texture2D
             RenderTexture.active = renderTexture;
@@ -196,25 +187,19 @@ public class GameSaveManager : MonoBehaviour
             screenshotCamera.targetTexture = null;
             Destroy(renderTexture);
             Destroy(screenshotCameraObj);
-            
-            // 转换为PNG
-            byte[] textureBytes = screenshot.EncodeToPNG();
+            byte[] textureBytes = screenshot.EncodeToPNG();// 转换为PNG
             Destroy(screenshot);
             
-            // 保存路径
+            // 保存路径（不使用下划线，文件生成会有问题）
             string saveDirectory = GetParentSavePath();
-            string fileName = $"screenshot_{slotId}.png";
+            string fileName = $"screenshot{slotId}.png";
             string fullPath = Path.Combine(saveDirectory, fileName);
-            
-            // 保存文件
-            File.WriteAllBytes(fullPath, textureBytes);
+            File.WriteAllBytes(fullPath, textureBytes);// 保存文件
             
             Debug.Log($"截图保存成功: {fullPath}");
             Debug.Log($"截图位置：玩家位置({playerPosition.x:F2}, {playerPosition.y:F2})，视野大小：{screenshotOrthographicSize}");
             
-            // 返回文件名（相对路径）
-            return fileName;
-            
+            return fullPath; //返回文件全路径
         }
         catch (Exception e)
         {

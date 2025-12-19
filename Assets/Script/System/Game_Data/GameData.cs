@@ -8,7 +8,7 @@ using UnityEngine;
     public string saveTime;
     public string playTime;
     public int saveSlotId;
-    public String screenshot; // 屏幕截图数据
+    public string screenshot; // 屏幕截图数据
     public int playerLevel;
     public int playerHealth;
     public int equippedSlotId;
