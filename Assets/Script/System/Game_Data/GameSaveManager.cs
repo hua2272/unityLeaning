@@ -13,6 +13,14 @@ public class GameSaveManager : MonoBehaviour
     public WeaponSlotsManager weaponSlotsManager;
     private GameData currentGameData = new GameData();
     
+    // 截图配置参数
+    [Header("截图设置")]
+    [SerializeField] private float screenshotOrthographicSize = 5f; // 相机正交大小（视野大小）
+    [SerializeField] private int screenshotWidth = 512; // 截图宽度
+    [SerializeField] private int screenshotHeight = 512; // 截图高度
+    [SerializeField] private LayerMask screenshotLayers; // 要渲染的层级
+    [SerializeField] private Color backgroundColor = Color.white; // 背景颜色
+    
     // 存储被摧毁的地形对象
     private Dictionary<string, DestructibleTileData> destroyedTiles = new Dictionary<string, DestructibleTileData>();
     
@@ -41,6 +49,12 @@ public class GameSaveManager : MonoBehaviour
     {
         player = PlayerManager.instance.player;
         gameDataManager = GameDataManager.instance;
+        
+        // 设置默认的截图层级（Player和Ground层）
+        if (screenshotLayers.value == 0)
+        {
+            screenshotLayers = (1 << LayerMask.NameToLayer("Player")) | (1 << LayerMask.NameToLayer("Ground"));
+        }
     }
 
     public void SaveGame(int slotId)
@@ -55,6 +69,10 @@ public class GameSaveManager : MonoBehaviour
         currentGameData.screenshot = "";
         
         currentGameData.destroyedTiles = GetAllDestroyedTiles();// 保存地形数据
+        
+        // 保存截图
+        string screenshotFileName = CaptureScreenshot(slotId);
+        currentGameData.screenshot = screenshotFileName;
         
         string jsonData = JsonUtility.ToJson(currentGameData, prettyPrint: true);
         string savePath = GetSavePath(slotId);
@@ -144,14 +162,44 @@ public class GameSaveManager : MonoBehaviour
     {
         try
         {
-            // 创建屏幕截图
-            Texture2D screenTexture = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
-            screenTexture.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
-            screenTexture.Apply();
+            // 获取玩家当前位置
+            Vector3 playerPosition = player.transform.position;
+            
+            // 创建一个新的相机对象
+            GameObject screenshotCameraObj = new GameObject("ScreenshotCamera");
+            Camera screenshotCamera = screenshotCameraObj.AddComponent<Camera>();
+            
+            // 设置相机属性
+            screenshotCamera.transform.position = new Vector3(playerPosition.x, playerPosition.y, -10f);
+            screenshotCamera.orthographic = true;
+            screenshotCamera.orthographicSize = screenshotOrthographicSize;
+            screenshotCamera.cullingMask = screenshotLayers;
+            screenshotCamera.clearFlags = CameraClearFlags.SolidColor;
+            screenshotCamera.backgroundColor = backgroundColor;
+            screenshotCamera.enabled = false; // 不启用相机，手动渲染
+            
+            // 创建RenderTexture
+            RenderTexture renderTexture = new RenderTexture(screenshotWidth, screenshotHeight, 24);
+            screenshotCamera.targetTexture = renderTexture;
+            
+            // 渲染一帧到RenderTexture
+            screenshotCamera.Render();
+            
+            // 从RenderTexture读取数据到Texture2D
+            RenderTexture.active = renderTexture;
+            Texture2D screenshot = new Texture2D(screenshotWidth, screenshotHeight, TextureFormat.RGB24, false);
+            screenshot.ReadPixels(new Rect(0, 0, screenshotWidth, screenshotHeight), 0, 0);
+            screenshot.Apply();
+            
+            // 清理资源
+            RenderTexture.active = null;
+            screenshotCamera.targetTexture = null;
+            Destroy(renderTexture);
+            Destroy(screenshotCameraObj);
             
             // 转换为PNG
-            byte[] textureBytes = screenTexture.EncodeToPNG();
-            Destroy(screenTexture);
+            byte[] textureBytes = screenshot.EncodeToPNG();
+            Destroy(screenshot);
             
             // 保存路径
             string saveDirectory = GetParentSavePath();
@@ -162,9 +210,10 @@ public class GameSaveManager : MonoBehaviour
             File.WriteAllBytes(fullPath, textureBytes);
             
             Debug.Log($"截图保存成功: {fullPath}");
+            Debug.Log($"截图位置：玩家位置({playerPosition.x:F2}, {playerPosition.y:F2})，视野大小：{screenshotOrthographicSize}");
             
-            // 返回相对路径或文件名（根据你的需求）
-            return fileName; // 或者返回 fullPath
+            // 返回文件名（相对路径）
+            return fileName;
             
         }
         catch (Exception e)
