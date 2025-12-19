@@ -50,29 +50,14 @@ public class PreludeMenu : MonoBehaviour
         gameDataManager = GameDataManager.instance;
         uiLangue = UILangue.instance;
         InitializeMenu();
+        ShowButtons(0);
     }
     
     private void Update()
     {
         if (playerInputManager.isRebinding) return;// 如果正在重绑定，完全跳过所有输入处理
-
-        if (playerInputManager.GetButtonDown("UIMenu"))
-        {
-            if (panel.activeSelf)
-            {
-                panel.SetActive(false);
-                Time.timeScale = 1;
-                currentPanelLevel = 0;
-            }
-            else
-            {
-                panel.SetActive(true);
-                Time.timeScale = 0;
-                ShowButtons(0);
-                UpdateButtonSelection();
-            }
-        }
-        if (playerInputManager.GetButtonDown("UICancel") && panel.activeSelf)
+        
+        if (playerInputManager.GetButtonDown("UICancel") && panel.activeSelf && currentPanelLevel != 0)
         {
             currentPanelLevel -= 1;
             ShowButtons(currentPanelLevel);
