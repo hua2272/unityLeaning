@@ -530,8 +530,9 @@ public class PreludeMenu : MonoBehaviour
         List<string> allSaveFiles = GameSaveManager.GetAllSaveFiles();
         for (var i = 0; i < allSaveFiles.Count; i++)
         {
-            string screenshotPath = Path.Combine(GameSaveManager.GetParentSavePath(), $"screenshot{i}.png");
-            menuItems.Add(new MenuItemData(1.2f, 2, "读取游戏", () => gameLoadManager.LoadGame(i), screenshotPath, gameDataManager.saveTime, gameDataManager.playTime));
+            int currentIndex = i;// 创建局部变量来捕获当前循环的值
+            string screenshotPath = Path.Combine(GameSaveManager.GetParentSavePath(), $"screenshot{currentIndex}.png");
+            menuItems.Add(new MenuItemData(1.2f, 2, "读取游戏", () => gameLoadManager.LoadGame(currentIndex), screenshotPath, gameDataManager.saveTime, gameDataManager.playTime));
         }
     }
     

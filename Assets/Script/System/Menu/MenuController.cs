@@ -321,19 +321,17 @@ public class MenuController : MonoBehaviour
         menuItems.Add(new MenuItemData(1, 1, "音效", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 4, (index) => audioManager.SetSFXVolume(index), "SFXVolume"));
         menuItems.Add(new MenuItemData(1, 1, "语言", new List<string> {"中文", "English", "日本語"}, 1, (index) => uiLangue.ChangeLanguage(index), "Langue"));
         
-        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏1", () => gameSaveManager.SaveGame(0), gameDataManager.screenshot, gameDataManager.saveTime, gameDataManager.playTime));
-        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏2", () => gameSaveManager.SaveGame(1), gameDataManager.screenshot, "2025/01/01", "25h"));
-        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏3",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
-        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏4",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
-        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏5",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
-        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏6",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
-        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏7",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
-        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏8",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
-        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏9",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
-        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏10",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
         
-        menuItems.Add(new MenuItemData(1.2f, 2, "读取游戏1", () => gameLoadManager.LoadGame(1), "E:\\pics\\Picture\\1.png", gameDataManager.saveTime, gameDataManager.playTime));
-        menuItems.Add(new MenuItemData(1.2f, 2, "读取游戏2", () => gameLoadManager.LoadGame(2), "E:\\pics\\Picture\\1.png", gameDataManager.saveTime, gameDataManager.playTime));
+        List<string> allSaveFiles = GameSaveManager.GetAllSaveFiles();
+        menuItems.Add(new MenuItemData(1.1f, 0, null,"新建存档", () => gameSaveManager.SaveGame(allSaveFiles.Count)));
+
+        for (var i = 0; i < allSaveFiles.Count; i++)
+        {
+            int currentIndex = i;// 创建局部变量来捕获当前循环的值
+            string screenshotPath = Path.Combine(GameSaveManager.GetParentSavePath(), $"screenshot{currentIndex}.png");
+            menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏", () => gameSaveManager.SaveGame(currentIndex), screenshotPath, gameDataManager.saveTime, gameDataManager.playTime));
+            menuItems.Add(new MenuItemData(1.2f, 2, "读取游戏", () => gameLoadManager.LoadGame(currentIndex), screenshotPath, gameDataManager.saveTime, gameDataManager.playTime));
+        }
     }
     
     void ClearMenuItems()
