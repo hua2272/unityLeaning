@@ -303,42 +303,30 @@ public class PreludeMenu : MonoBehaviour
         if (buttonStyleData.ContainsKey(button))
         {
             var (rectTransform, text, lightBar, originalPosition) = buttonStyleData[button];
-            
-            // 移动位置
             if (selected)
             {
-                rectTransform.anchoredPosition = new Vector2(
-                    originalPosition.x + selectedOffset, 
-                    originalPosition.y
-                );
-                
                 // 更新文字样式
                 if (text != null)
                 {
                     text.color = selectedColor;
                     text.fontWeight = selectedFontWeight;
                 }
-                
                 // 显示光线条
                 if (lightBar != null)
                     lightBar.SetActive(true);
             }
             else
             {
-                rectTransform.anchoredPosition = originalPosition;
-                
                 // 更新文字样式
                 if (text != null)
                 {
                     text.color = normalColor;
                     text.fontWeight = normalFontWeight;
                 }
-                
                 // 隐藏光线条
                 if (lightBar != null)
                     lightBar.SetActive(false);
             }
-            
             // 移除按钮的边框 - 设置颜色为透明
             ColorBlock colors = button.colors;
             colors.normalColor = Color.clear;
