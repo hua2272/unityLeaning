@@ -12700,7 +12700,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -17960,6 +17960,14 @@ MonoBehaviour:
   defaultThumbnail: {fileID: 21300000, guid: af8a72c2c1fd39b44b0a4ff9ca2394b0, type: 3}
   thresholdTop: 5
   scrollStep: 100
+  selectedOffset: 30
+  selectedColor: {r: 0.2, g: 0.4, b: 1, a: 1}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  selectedFontWeight: 700
+  normalFontWeight: 400
+  lightBarColor: {r: 0.2, g: 0.4, b: 1, a: 0.3}
+  lightBarSize: {x: 200, y: 10}
+  mainMenuContainer: {fileID: 0}
 --- !u!1 &2034163275
 GameObject:
   m_ObjectHideFlags: 0

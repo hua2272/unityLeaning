@@ -27,6 +27,15 @@ public class PreludeMenu : MonoBehaviour
     [SerializeField] private float thresholdTop = 5;                                 //滚动阈值（距离顶部/底部的按钮数量）
     [SerializeField] private float scrollStep = 100f;                                //每次滚动的距离
     
+    [Header("Navigation Style Settings")]
+    [SerializeField] private float selectedOffset = 30f;                            // 选中时向右偏移的距离
+    [SerializeField] private Color selectedColor = new Color(0.2f, 0.4f, 1f, 1f);   // 选中时的颜色
+    [SerializeField] private Color normalColor = Color.white;                       // 正常颜色
+    [SerializeField] private FontWeight selectedFontWeight = FontWeight.Bold;       // 选中时的字体粗细
+    [SerializeField] private FontWeight normalFontWeight = FontWeight.Regular;      // 正常字体粗细
+    [SerializeField] private Color lightBarColor = new Color(0.2f, 0.4f, 1f, 0.3f); // 光线条颜色
+    [SerializeField] private Vector2 lightBarSize = new Vector2(200f, 10f);         // 光线条尺寸
+    
     [Header("功能脚本")]
     private GameLoadManager gameLoadManager;
     private ScreenController screenController;
@@ -40,6 +49,14 @@ public class PreludeMenu : MonoBehaviour
     
     // 按钮与菜单项的映射
     private Dictionary<Button, MenuItemData> buttonToMenuItemMap = new Dictionary<Button, MenuItemData>();
+    
+    // 按钮样式数据存储
+    private Dictionary<Button, (RectTransform rectTransform, TextMeshProUGUI text, GameObject lightBar, Vector2 originalPosition)> buttonStyleData = 
+        new Dictionary<Button, (RectTransform, TextMeshProUGUI, GameObject, Vector2)>();
+    
+    // 主菜单容器（放在屏幕左下角）
+    [SerializeField] private Transform mainMenuContainer;
+    private List<GameObject> mainMenuItems = new List<GameObject>();
     
     void Start()
     {
@@ -119,8 +136,6 @@ public class PreludeMenu : MonoBehaviour
         return currentPanelButtons[currentButtonIndex];
     }
     
-    
-
     void ShowButtons(float panelId)
     {
         if (panelId < 0)
@@ -131,6 +146,9 @@ public class PreludeMenu : MonoBehaviour
         }
         
         currentPanelButtons.Clear();
+        
+        // 重置所有按钮样式
+        ResetAllButtonStyles();
         
         // 计算当前面板的按钮数量
         int panelButtonCount = 0;
@@ -151,10 +169,34 @@ public class PreludeMenu : MonoBehaviour
             {
                 menuItem.SetActive(true);
                 
-                // 重新计算并设置位置 - 关键修改！
-                RectTransform rectTransform = menuItem.GetComponent<RectTransform>();
-                float yPosition = -buttonIndex * (itemSize.y + itemSpacing) - (itemSize.y * 0.5f);
-                rectTransform.anchoredPosition = new Vector2(0, yPosition);
+                // 主菜单（面板0）特殊处理 - 放在屏幕左下角
+                if (panelId == 0)
+                {
+                    // 使用主菜单容器
+                    if (mainMenuContainer != null)
+                    {
+                        menuItem.transform.SetParent(mainMenuContainer, false);
+                        
+                        RectTransform rectTransform = menuItem.GetComponent<RectTransform>();
+                        rectTransform.anchorMin = new Vector2(0, 0);
+                        rectTransform.anchorMax = new Vector2(0, 0);
+                        rectTransform.pivot = new Vector2(0, 0);
+                        
+                        // 从屏幕左下角开始排列，向上排列
+                        float yPosition = buttonIndex * (itemSize.y + itemSpacing);
+                        rectTransform.anchoredPosition = new Vector2(selectedOffset, yPosition);
+                        
+                        mainMenuItems.Add(menuItem);
+                    }
+                }
+                else
+                {
+                    // 其他面板使用原来的滚动布局
+                    RectTransform rectTransform = menuItem.GetComponent<RectTransform>();
+                    float yPosition = -buttonIndex * (itemSize.y + itemSpacing) - (itemSize.y * 0.5f);
+                    rectTransform.anchoredPosition = new Vector2(0, yPosition);
+                }
+                
                 buttonIndex++;
                 
                 // 获取按钮组件并添加到当前面板按钮列表
@@ -162,6 +204,7 @@ public class PreludeMenu : MonoBehaviour
                 if (button != null)
                 {
                     currentPanelButtons.Add(button);
+                    
                     // 如果是选项按钮，确保文本是最新的
                     if (menuItems[i].isOptionButton)
                     {
@@ -171,6 +214,16 @@ public class PreludeMenu : MonoBehaviour
                             buttonText.text = menuItems[i].GetCurrentOptionText();
                         }
                     }
+                    
+                    // 存储按钮的原始位置（用于样式效果）
+                    if (!buttonStyleData.ContainsKey(button))
+                    {
+                        RectTransform btnRect = button.GetComponent<RectTransform>();
+                        TextMeshProUGUI btnText = button.GetComponentInChildren<TextMeshProUGUI>();
+                        GameObject lightBar = CreateLightBar(btnRect);
+                        
+                        buttonStyleData[button] = (btnRect, btnText, lightBar, btnRect.anchoredPosition);
+                    }
                 }
             }
             else
@@ -179,17 +232,25 @@ public class PreludeMenu : MonoBehaviour
             }
         }
         
-        // 设置当前滚动区域
-        currentScrollRect = scrollRect;
-        // 重置当前选中的按钮索引
-        currentButtonIndex = 0;
-        // 更新内容大小以确保滚动正常工作
-        UpdateContentSize();
-        // 如果需要，重置滚动位置到顶部
-        if (currentScrollRect != null)
+        // 设置当前滚动区域（非主菜单时）
+        if (panelId != 0)
         {
-            currentScrollRect.verticalNormalizedPosition = 1f; // 顶部
+            currentScrollRect = scrollRect;
+            // 重置当前选中的按钮索引
+            currentButtonIndex = 0;
+            // 更新内容大小以确保滚动正常工作
+            UpdateContentSize();
+            // 如果需要，重置滚动位置到顶部
+            if (currentScrollRect != null)
+            {
+                currentScrollRect.verticalNormalizedPosition = 1f; // 顶部
+            }
         }
+        else
+        {
+            currentScrollRect = null; // 主菜单不需要滚动
+        }
+        
         // 更新按钮选中状态
         UpdateButtonSelection();
         // 调试信息
@@ -198,25 +259,115 @@ public class PreludeMenu : MonoBehaviour
     
     private void UpdateButtonSelection()
     {
-        ResetCurrentPanelButtonColors();// 重置所有按钮颜色
-        Button currentButton = GetCurrentSelectedButton();// 设置当前选中按钮的颜色
+        // 重置所有按钮样式
+        ResetCurrentPanelButtonStyles();
+        
+        // 设置当前选中按钮的样式
+        Button currentButton = GetCurrentSelectedButton();
         if (currentButton != null && currentButton.interactable)
         {
-            var colors = currentButton.colors;
-            colors.normalColor = Color.yellow;
-            colors.selectedColor = Color.yellow;
-            currentButton.colors = colors;
+            SetButtonSelectedStyle(currentButton, true);
         }
     }
-    private void ResetCurrentPanelButtonColors()
+    
+    private void ResetCurrentPanelButtonStyles()
     {
         foreach (var button in currentPanelButtons)
         {
-            var colors = button.colors;
-            colors.normalColor = Color.white;
-            colors.selectedColor = Color.white;
+            SetButtonSelectedStyle(button, false);
+        }
+    }
+    
+    private void ResetAllButtonStyles()
+    {
+        foreach (var button in currentPanelButtons)
+        {
+            if (buttonStyleData.ContainsKey(button))
+            {
+                SetButtonSelectedStyle(button, false);
+            }
+        }
+    }
+    
+    private void SetButtonSelectedStyle(Button button, bool selected)
+    {
+        if (buttonStyleData.ContainsKey(button))
+        {
+            var (rectTransform, text, lightBar, originalPosition) = buttonStyleData[button];
+            
+            // 移动位置
+            if (selected)
+            {
+                rectTransform.anchoredPosition = new Vector2(
+                    originalPosition.x + selectedOffset, 
+                    originalPosition.y
+                );
+                
+                // 更新文字样式
+                if (text != null)
+                {
+                    text.color = selectedColor;
+                    text.fontWeight = selectedFontWeight;
+                }
+                
+                // 显示光线条
+                if (lightBar != null)
+                    lightBar.SetActive(true);
+            }
+            else
+            {
+                rectTransform.anchoredPosition = originalPosition;
+                
+                // 更新文字样式
+                if (text != null)
+                {
+                    text.color = normalColor;
+                    text.fontWeight = normalFontWeight;
+                }
+                
+                // 隐藏光线条
+                if (lightBar != null)
+                    lightBar.SetActive(false);
+            }
+            
+            // 移除按钮的边框 - 设置颜色为透明
+            ColorBlock colors = button.colors;
+            colors.normalColor = Color.clear;
+            colors.highlightedColor = new Color(1f, 1f, 1f, 0.1f);
+            colors.pressedColor = new Color(1f, 1f, 1f, 0.2f);
+            colors.selectedColor = Color.clear;
+            colors.disabledColor = Color.clear;
             button.colors = colors;
         }
+    }
+    
+    private GameObject CreateLightBar(RectTransform buttonTransform)
+    {
+        // 创建光线条对象
+        GameObject lightBar = new GameObject("LightBar");
+        lightBar.transform.SetParent(buttonTransform);
+        
+        // 添加Image组件
+        Image image = lightBar.AddComponent<Image>();
+        image.color = lightBarColor;
+        
+        // 设置RectTransform
+        RectTransform lightBarTransform = lightBar.GetComponent<RectTransform>();
+        lightBarTransform.sizeDelta = lightBarSize;
+        lightBarTransform.anchorMin = new Vector2(0f, 0.5f);
+        lightBarTransform.anchorMax = new Vector2(0f, 0.5f);
+        lightBarTransform.pivot = new Vector2(0f, 0.5f);
+        
+        // 将光线条放置在文字后方
+        lightBarTransform.SetAsFirstSibling();
+        
+        // 设置位置在按钮左侧
+        lightBarTransform.anchoredPosition = new Vector2(-20f, 0f);
+        
+        // 默认隐藏
+        lightBar.SetActive(false);
+        
+        return lightBar;
     }
     
     private void HandleScroll(int buttonIndex, bool isUpward)                                     //处理滚动逻辑
@@ -297,11 +448,19 @@ public class PreludeMenu : MonoBehaviour
     void ClearMenuItems()
     {
         buttonToMenuItemMap.Clear();
+        buttonStyleData.Clear();
+        
         foreach (var item in createdMenuItems)
         {
             Destroy(item);
         }
         createdMenuItems.Clear();
+        
+        foreach (var item in mainMenuItems)
+        {
+            Destroy(item);
+        }
+        mainMenuItems.Clear();
     }
     
     void CreateMenuItems()
@@ -321,11 +480,15 @@ public class PreludeMenu : MonoBehaviour
         RectTransform rectTransform = menuItem.GetComponent<RectTransform>();
         rectTransform.localScale = Vector3.one;
         rectTransform.localPosition = Vector3.zero;
-        rectTransform.anchorMin = new Vector2(0.5f, 1f);                                // 使用顶部居中的锚点
+        
+        // 默认使用顶部居中的锚点（用于滚动面板）
+        rectTransform.anchorMin = new Vector2(0.5f, 1f);
         rectTransform.anchorMax = new Vector2(0.5f, 1f);
         rectTransform.pivot = new Vector2(0.5f, 1f);
-        rectTransform.sizeDelta = itemSize;                                             // 设置固定尺寸
-        float yPosition = -index * (itemSize.y + itemSpacing) - (itemSize.y * 0.5f);    // 第一个菜单项应该在Content顶部，后续项依次向下
+        rectTransform.sizeDelta = itemSize;
+        
+        // 计算位置（主菜单会在ShowButtons中重新定位）
+        float yPosition = -index * (itemSize.y + itemSpacing) - (itemSize.y * 0.5f);
         rectTransform.anchoredPosition = new Vector2(0, yPosition);
     }
 
