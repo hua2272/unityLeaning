@@ -73,13 +73,15 @@ public class PreludeMenu : MonoBehaviour
     private void Update()
     {
         if (playerInputManager.isRebinding) return;// 如果正在重绑定，完全跳过所有输入处理
-        
+    
         if (playerInputManager.GetButtonDown("UICancel") && panel.activeSelf && currentPanelLevel != 0)
         {
+            // 当返回主菜单时，重置菜单项的父级
+            ResetMenuItemsParent();
             currentPanelLevel -= 1;
             ShowButtons(currentPanelLevel);
         }
-        
+    
         if (panel.activeSelf)
             HandleKeyboardNavigation();
     }
@@ -135,7 +137,7 @@ public class PreludeMenu : MonoBehaviour
         
         return currentPanelButtons[currentButtonIndex];
     }
-    
+
     void ShowButtons(float panelId)
     {
         if (panelId < 0)
@@ -144,12 +146,12 @@ public class PreludeMenu : MonoBehaviour
             Time.timeScale = 1;
             return;
         }
-        
+
         currentPanelButtons.Clear();
-        
+
         // 重置所有按钮样式
         ResetAllButtonStyles();
-        
+
         // 计算当前面板的按钮数量
         int panelButtonCount = 0;
         foreach (var menuItem in menuItems)
@@ -157,54 +159,61 @@ public class PreludeMenu : MonoBehaviour
             if (menuItem.PanelId == panelId)
                 panelButtonCount++;
         }
-        
+
         int buttonIndex = 0;
         // 遍历所有创建的菜单项
         for (int i = 0; i < createdMenuItems.Count; i++)
         {
             GameObject menuItem = createdMenuItems[i];
-            
+
             // 检查菜单项是否属于当前面板
             if (i < menuItems.Count && menuItems[i].PanelId == panelId)
             {
                 menuItem.SetActive(true);
-                
-                // 主菜单（面板0）特殊处理 - 放在屏幕左下角
+
+                // 主菜单（面板0）特殊处理 - 所有按钮都放在左下角
                 if (panelId == 0)
                 {
-                    // 使用主菜单容器
-                    if (mainMenuContainer != null)
-                    {
-                        menuItem.transform.SetParent(mainMenuContainer, false);
-                        
-                        RectTransform rectTransform = menuItem.GetComponent<RectTransform>();
-                        rectTransform.anchorMin = new Vector2(0, 0);
-                        rectTransform.anchorMax = new Vector2(0, 0);
-                        rectTransform.pivot = new Vector2(0, 0);
-                        
-                        // 从屏幕左下角开始排列，向上排列
-                        float yPosition = buttonIndex * (itemSize.y + itemSpacing);
-                        rectTransform.anchoredPosition = new Vector2(selectedOffset, yPosition);
-                        
-                        mainMenuItems.Add(menuItem);
-                    }
+                    // 设置父级为panel，而不是contentParent
+                    menuItem.transform.SetParent(panel.transform, false);
+
+                    RectTransform rectTransform = menuItem.GetComponent<RectTransform>();
+
+                    // 确保锚点在左下角
+                    rectTransform.anchorMin = new Vector2(0f, 0f);
+                    rectTransform.anchorMax = new Vector2(0f, 0f);
+                    rectTransform.pivot = new Vector2(0f, 0f);
+
+                    // 从屏幕左下角开始排列，向上排列
+                    float yPosition = buttonIndex * (itemSize.y + itemSpacing);
+                    rectTransform.anchoredPosition = new Vector2(selectedOffset, yPosition);
+
+                    mainMenuItems.Add(menuItem);
                 }
                 else
                 {
                     // 其他面板使用原来的滚动布局
+                    // 需要将菜单项移回contentParent
+                    menuItem.transform.SetParent(contentParent, false);
+
                     RectTransform rectTransform = menuItem.GetComponent<RectTransform>();
+                    // 设置滚动布局的锚点
+                    rectTransform.anchorMin = new Vector2(0.5f, 1f);
+                    rectTransform.anchorMax = new Vector2(0.5f, 1f);
+                    rectTransform.pivot = new Vector2(0.5f, 1f);
+
                     float yPosition = -buttonIndex * (itemSize.y + itemSpacing) - (itemSize.y * 0.5f);
                     rectTransform.anchoredPosition = new Vector2(0, yPosition);
                 }
-                
+
                 buttonIndex++;
-                
+
                 // 获取按钮组件并添加到当前面板按钮列表
                 Button button = menuItem.GetComponentInChildren<Button>();
                 if (button != null)
                 {
                     currentPanelButtons.Add(button);
-                    
+
                     // 如果是选项按钮，确保文本是最新的
                     if (menuItems[i].isOptionButton)
                     {
@@ -214,14 +223,14 @@ public class PreludeMenu : MonoBehaviour
                             buttonText.text = menuItems[i].GetCurrentOptionText();
                         }
                     }
-                    
+
                     // 存储按钮的原始位置（用于样式效果）
                     if (!buttonStyleData.ContainsKey(button))
                     {
                         RectTransform btnRect = button.GetComponent<RectTransform>();
                         TextMeshProUGUI btnText = button.GetComponentInChildren<TextMeshProUGUI>();
                         GameObject lightBar = CreateLightBar(btnRect);
-                        
+
                         buttonStyleData[button] = (btnRect, btnText, lightBar, btnRect.anchoredPosition);
                     }
                 }
@@ -231,7 +240,7 @@ public class PreludeMenu : MonoBehaviour
                 menuItem.SetActive(false);
             }
         }
-        
+
         // 设置当前滚动区域（非主菜单时）
         if (panelId != 0)
         {
@@ -250,7 +259,7 @@ public class PreludeMenu : MonoBehaviour
         {
             currentScrollRect = null; // 主菜单不需要滚动
         }
-        
+
         // 更新按钮选中状态
         UpdateButtonSelection();
         // 调试信息
@@ -480,16 +489,15 @@ public class PreludeMenu : MonoBehaviour
         RectTransform rectTransform = menuItem.GetComponent<RectTransform>();
         rectTransform.localScale = Vector3.one;
         rectTransform.localPosition = Vector3.zero;
-        
-        // 默认使用顶部居中的锚点（用于滚动面板）
-        rectTransform.anchorMin = new Vector2(0.5f, 1f);
-        rectTransform.anchorMax = new Vector2(0.5f, 1f);
-        rectTransform.pivot = new Vector2(0.5f, 1f);
+    
+        // 默认使用左下角的锚点，这样方便主菜单布局
+        rectTransform.anchorMin = new Vector2(0f, 0f);
+        rectTransform.anchorMax = new Vector2(0f, 0f);
+        rectTransform.pivot = new Vector2(0f, 0f);
         rectTransform.sizeDelta = itemSize;
-        
-        // 计算位置（主菜单会在ShowButtons中重新定位）
-        float yPosition = -index * (itemSize.y + itemSpacing) - (itemSize.y * 0.5f);
-        rectTransform.anchoredPosition = new Vector2(0, yPosition);
+    
+        // 暂时设置一个默认位置，实际位置会在ShowButtons中调整
+        rectTransform.anchoredPosition = new Vector2(0, 0);
     }
 
     void SetupUIElements(GameObject menuItem, MenuItemData itemData)
@@ -745,5 +753,17 @@ public class PreludeMenu : MonoBehaviour
             // 读取失败，使用默认图片
             // 不打印错误，避免日志污染
         }
+    }
+    
+    private void ResetMenuItemsParent()
+    {
+        // 将所有菜单项移回contentParent，以便在下次ShowButtons时正确设置位置
+        foreach (var menuItem in createdMenuItems)
+        {
+            menuItem.transform.SetParent(contentParent, false);
+        }
+    
+        // 清空主菜单项列表
+        mainMenuItems.Clear();
     }
 }
