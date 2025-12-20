@@ -321,8 +321,8 @@ public class MenuController : MonoBehaviour
         menuItems.Add(new MenuItemData(1, 1, "音效", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 4, (index) => audioManager.SetSFXVolume(index), "SFXVolume"));
         menuItems.Add(new MenuItemData(1, 1, "语言", new List<string> {"中文", "English", "日本語"}, 1, (index) => uiLangue.ChangeLanguage(index), "Langue"));
         
-        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏1", () => gameSaveManager.SaveGame(1), gameDataManager.screenshot, gameDataManager.saveTime, gameDataManager.playTime));
-        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏2", () => gameSaveManager.SaveGame(2), gameDataManager.screenshot, "2025/01/01", "25h"));
+        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏1", () => gameSaveManager.SaveGame(0), gameDataManager.screenshot, gameDataManager.saveTime, gameDataManager.playTime));
+        menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏2", () => gameSaveManager.SaveGame(1), gameDataManager.screenshot, "2025/01/01", "25h"));
         menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏3",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
         menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏4",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));
         menuItems.Add(new MenuItemData(1.1f, 2, "保存游戏5",null, "E:\\pics\\Picture\\1.png", "2025/01/01", "25h"));

@@ -508,6 +508,7 @@ public class PreludeMenu : MonoBehaviour
     {
         menuItems.Clear();
         menuItems.Add(new MenuItemData(0, 0, null, "继续游戏", null));
+        menuItems.Add(new MenuItemData(0, 0, null, "新游戏", null));
         menuItems.Add(new MenuItemData(0, 0, null, "读取存档", () =>
         {
             currentPanelLevel = 1;
@@ -518,14 +519,20 @@ public class PreludeMenu : MonoBehaviour
             currentPanelLevel = 1;
             ShowButtons(1);
         }));
+        menuItems.Add(new MenuItemData(0, 0, null, "退出游戏", gameLoadManager.OnQuitClicked));
+        
         menuItems.Add(new MenuItemData(1, 0, null, "键盘按键设置", null));
         menuItems.Add(new MenuItemData(1, 1, "屏幕", new List<string> {"无边框全屏", "窗口化"}, 0, (index) => screenController.ScreenModeChange(index), "ScreenMode"));
         menuItems.Add(new MenuItemData(1, 1, "音乐", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 4, (index) => audioManager.SetMusicVolume(index), "MusicVolume"));
         menuItems.Add(new MenuItemData(1, 1, "音效", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 4, (index) => audioManager.SetSFXVolume(index), "SFXVolume"));
         menuItems.Add(new MenuItemData(1, 1, "语言", new List<string> {"中文", "English", "日本語"}, 1, (index) => uiLangue.ChangeLanguage(index), "Langue"));
-        
-        menuItems.Add(new MenuItemData(1.2f, 2, "读取游戏1", () => gameLoadManager.LoadGame(1), "E:\\pics\\Picture\\1.png", gameDataManager.saveTime, gameDataManager.playTime));
-        menuItems.Add(new MenuItemData(1.2f, 2, "读取游戏2", () => gameLoadManager.LoadGame(2), "E:\\pics\\Picture\\1.png", gameDataManager.saveTime, gameDataManager.playTime));
+
+        List<string> allSaveFiles = GameSaveManager.GetAllSaveFiles();
+        for (var i = 0; i < allSaveFiles.Count; i++)
+        {
+            string screenshotPath = Path.Combine(GameSaveManager.GetParentSavePath(), $"screenshot{i}.png");
+            menuItems.Add(new MenuItemData(1.2f, 2, "读取游戏", () => gameLoadManager.LoadGame(i), screenshotPath, gameDataManager.saveTime, gameDataManager.playTime));
+        }
     }
     
     void ClearMenuItems()

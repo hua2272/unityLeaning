@@ -113,6 +113,27 @@ public class GameSaveManager : MonoBehaviour
         return saveDirectory;
     }
     
+    public static List<string> GetAllSaveFiles()
+    {
+        List<string> saveFiles = new List<string>();
+        try
+        {
+            string directoryPath = GetParentSavePath();
+            
+            string[] files = Directory.GetFiles(directoryPath, "*.dat");// 搜索所有.dat文件
+            foreach (string file in files)// 将文件路径添加到列表中
+            {
+                saveFiles.Add(file);
+            }
+            Debug.Log($"在目录 {directoryPath} 中找到 {saveFiles.Count} 个保存文件");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"获取保存文件列表失败: {e.Message}");
+        }
+        return saveFiles;
+    }
+    
     // 地形保存相关方法
     public void SaveTileState(DestructibleTileData tileData)
     {
