@@ -525,7 +525,7 @@ public class PreludeMenu : MonoBehaviour
         menuItems.Add(new MenuItemData(1, 1, "屏幕", new List<string> {"无边框全屏", "窗口化"}, 0, (index) => screenController.ScreenModeChange(index), "ScreenMode"));
         menuItems.Add(new MenuItemData(1, 1, "音乐", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 4, (index) => audioManager.SetMusicVolume(index), "MusicVolume"));
         menuItems.Add(new MenuItemData(1, 1, "音效", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 4, (index) => audioManager.SetSFXVolume(index), "SFXVolume"));
-        menuItems.Add(new MenuItemData(1, 1, "语言", new List<string> {"中文", "English", "日本語"}, 1, (index) => uiLangue.ChangeLanguage(index), "Langue"));
+        menuItems.Add(new MenuItemData(1, 1, "语言", new List<string> {"中文", "English", "日本語"}, 0, (index) => uiLangue.ChangeLanguage(index), "Langue"));
 
         List<string> allSaveFiles = GameSaveManager.GetAllSaveFiles();
         for (var i = 0; i < allSaveFiles.Count; i++)

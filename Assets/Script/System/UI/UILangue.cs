@@ -34,11 +34,11 @@ public class UILangue : MonoBehaviour
         {
             switch (PlayerPrefs.GetInt("Langue"))
             {
-                case 1:
+                case 0:
                     content = reader.GetString(reader.GetOrdinal("zh"));
                     Debug.Log("id = " + id + "content = " + content);
                     break;
-                case 2:
+                case 1:
                     content = reader.GetString(reader.GetOrdinal("en"));
                     Debug.Log("id = " + id + "content = " + content);
                     break;

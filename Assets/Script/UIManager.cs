@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    public static UIManager instance;
+    public static UIManager instance { get; private set; }
     
     [System.Serializable] public class UIComponent// 存储UI组件引用
     {
@@ -21,7 +21,6 @@ public class UIManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
         {

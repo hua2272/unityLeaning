@@ -24,6 +24,9 @@ public class Prelude : MonoBehaviour
     private bool mainMenuLoaded = false;
     private bool waitingForInput = false;
     private UILangue uiLangue;
+    private UIManager uiManager;
+
+    private int langueType;
     
     void Awake()
     {
@@ -35,8 +38,11 @@ public class Prelude : MonoBehaviour
     {
         audioManager = AudioManager.instance;
         uiLangue = UILangue.instance;
+        uiManager = UIManager.instance;
         StartCoroutine(StartIntroSequence());                             //开始闪烁文本和等待输入
         audioManager.PlayBackgroundMusic(background, true);                 //播放背景音乐
+        uiManager.SetUIVisibility(UIGroup.HealthBar, false, 0);
+        prompt.text = uiLangue.Content(3);
     }
     
     void Update()
@@ -48,7 +54,6 @@ public class Prelude : MonoBehaviour
             title.gameObject.SetActive(true);
             prompt.gameObject.SetActive(false);
             title.text = uiLangue.Content(1);
-            prompt.text = uiLangue.Content(3);
         }
     }
     
