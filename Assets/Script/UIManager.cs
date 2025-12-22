@@ -166,12 +166,14 @@ public class UIManager : MonoBehaviour
 
 public enum UIGroup
 {
-    HealthBar,      // 血条
-    StaminaBar,     // 精力条
+    Title,
+    PressStart,
     PlayerStatus,   // 玩家信息
     AutoSaveInfo,   // 自动保存信息
     CombatInfo,     // 战斗信息
     Dialogue,       // 对话
+    HealthBar,      // 血条
+    StaminaBar,     // 精力条
     Minimap         // 小地图
 }
 

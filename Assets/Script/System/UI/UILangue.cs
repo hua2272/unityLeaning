@@ -36,11 +36,11 @@ public class UILangue : MonoBehaviour
             {
                 case 0:
                     content = reader.GetString(reader.GetOrdinal("zh"));
-                    Debug.Log("id = " + id + "content = " + content);
+                    //Debug.Log("id = " + id + "content = " + content);
                     break;
                 case 1:
                     content = reader.GetString(reader.GetOrdinal("en"));
-                    Debug.Log("id = " + id + "content = " + content);
+                    //Debug.Log("id = " + id + "content = " + content);
                     break;
             }
         }
