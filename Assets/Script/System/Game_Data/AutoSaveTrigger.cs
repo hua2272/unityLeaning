@@ -11,6 +11,7 @@ public class AutoSaveTrigger : MonoBehaviour
     public float saveCooldown = 10f; // 存档冷却时间，防止频繁存档
     
     [Header("UI提示设置")]
+    private UIManager uiManager;
     public float displayTime = 2f;
     public TextMeshProUGUI savePointText;
     public Image saveIcon;
@@ -19,9 +20,9 @@ public class AutoSaveTrigger : MonoBehaviour
     
     private void Start()
     {
-        // 确保Collider2D是触发器
+        uiManager = UIManager.instance;
         Collider2D collider = GetComponent<Collider2D>();
-        collider.isTrigger = true;
+        collider.isTrigger = true;  // 确保Collider2D是触发器
     }
     
     private void OnTriggerEnter2D(Collider2D other)
@@ -43,9 +44,10 @@ public class AutoSaveTrigger : MonoBehaviour
     private void TriggerAutoSave()
     {
         if (!canSave) return;
-        //GameSaveManager.instance.SaveGame();// 执行存档
+        //GameSaveManager.instance.SaveGame();  // todo 执行存档
         Debug.Log($"在 {savePointName} 自动存档成功");
-        savePointText.text = $"已存档 - {savePointName}";
+        uiManager.SetUIVisibility(UIGroup.AutoSaveInfo, true, 0.5f);
+        //savePointText.text = $"已存档 - {savePointName}";
         StartCoroutine(SaveCooldown());// 进入冷却
     }
     

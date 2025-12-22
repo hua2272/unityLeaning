@@ -41,7 +41,7 @@ public class Prelude : MonoBehaviour
         uiManager = UIManager.instance;
         StartCoroutine(StartIntroSequence());                             //开始闪烁文本和等待输入
         audioManager.PlayBackgroundMusic(background, true);                 //播放背景音乐
-        uiManager.SetUIVisibility(UIGroup.HealthBar, false, 0);
+        uiManager.SetUIVisibility(UIGroup.PlayerStatus, false, 0);
         prompt.text = uiLangue.Content(3);
     }
     

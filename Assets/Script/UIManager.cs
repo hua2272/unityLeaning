@@ -137,7 +137,8 @@ public enum UIGroup
 {
     HealthBar,      // 血条
     StaminaBar,     // 精力条
-    PlayerAvatar,   // 头像
+    PlayerStatus,   // 玩家信息
+    AutoSaveInfo,   // 自动保存信息
     CombatInfo,     // 战斗信息
     Dialogue,       // 对话
     Minimap         // 小地图
