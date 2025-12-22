@@ -15738,6 +15738,11 @@ MonoBehaviour:
   uiComponents:
   - group: 2
     canvasGroup: {fileID: 1005821640}
+    textContentId: 0
+    isVisible: 0
+  - group: 3
+    canvasGroup: {fileID: 1973783613}
+    textContentId: 4
     isVisible: 0
 --- !u!4 &1772407651
 Transform:
@@ -16961,6 +16966,7 @@ GameObject:
   - component: {fileID: 1973783612}
   - component: {fileID: 1973783611}
   - component: {fileID: 1973783610}
+  - component: {fileID: 1973783613}
   m_Layer: 5
   m_Name: AutoSaveInfo
   m_TagString: Untagged
@@ -17051,6 +17057,18 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!225 &1973783613
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1973783608}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1990108850
 GameObject:
   m_ObjectHideFlags: 0

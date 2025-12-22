@@ -1,15 +1,20 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager instance { get; private set; }
     
-    [System.Serializable] public class UIComponent// 存储UI组件引用
+    private UILangue uiLangue;
+    
+    [Serializable] public class UIComponent// 存储UI组件引用
     {
         public UIGroup group;
         public CanvasGroup canvasGroup;
+        public int textContentId;
         public bool isVisible = true;
     }
     
@@ -33,7 +38,12 @@ public class UIManager : MonoBehaviour
             uiDictionary[component.group] = component;// 初始化字典
         }
     }
-    
+
+    private void Start()
+    { 
+        uiLangue = UILangue.instance;
+    }
+
     public void SetUIVisibility(UIGroup group, bool show, float fadeDuration = 0.2f)// 基础显示/隐藏方法
     {
         if (uiDictionary.TryGetValue(group, out UIComponent component))
@@ -49,40 +59,13 @@ public class UIManager : MonoBehaviour
         }
     }
     
-    public void SetCombatMode(bool inCombat)// 批量控制 - 战斗状态切换
-    {
-        if (inCombat)
-        {
-            // 进入战斗：显示战斗相关UI，隐藏非战斗UI
-            ShowUI(uiDictionary[UIGroup.HealthBar], 0.3f);
-            ShowUI(uiDictionary[UIGroup.StaminaBar], 0.3f);
-            ShowUI(uiDictionary[UIGroup.CombatInfo], 0.3f);
-        }
-        else
-        {
-            // 脱离战斗：隐藏战斗UI
-            HideUI(uiDictionary[UIGroup.HealthBar], 0.5f);
-            HideUI(uiDictionary[UIGroup.StaminaBar], 0.5f);
-            HideUI(uiDictionary[UIGroup.CombatInfo], 0.5f);
-        }
-    }
-    
-    
-    public void HideAllUI(float fadeDuration = 0.2f)// 转场时隐藏所有UI
-    {
-        foreach (var kvp in uiDictionary)
-        {
-            HideUI(kvp.Value, fadeDuration);
-        }
-    }
-    
     private void ShowUI(UIComponent component, float fadeDuration)
     {
         if (component == null || component.canvasGroup == null) return;
         
         component.isVisible = true;
         StopAllCoroutines();
-        StartCoroutine(FadeUI(component.canvasGroup, 1f, fadeDuration));
+        StartCoroutine(FadeUI(component, 1f, fadeDuration));
     }
     
     private void HideUI(UIComponent component, float fadeDuration)
@@ -91,22 +74,44 @@ public class UIManager : MonoBehaviour
         
         component.isVisible = false;
         StopAllCoroutines();
-        StartCoroutine(FadeUI(component.canvasGroup, 0f, fadeDuration));
+        StartCoroutine(FadeUI(component, 0f, fadeDuration));
     }
     
-    private IEnumerator FadeUI(CanvasGroup canvasGroup, float targetAlpha, float duration)
+    private IEnumerator FadeUI(UIComponent component, float targetAlpha, float duration)
     {
+        CanvasGroup canvasGroup = component.canvasGroup;
+        TextMeshProUGUI textComponent = component.canvasGroup.GetComponentInChildren<TextMeshProUGUI>();
+        
         float startAlpha = canvasGroup.alpha;
+        Color startTextColor = textComponent != null ? textComponent.color : Color.white;
+        
         float elapsed = 0f;
         
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            canvasGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, elapsed / duration);
+            float t = elapsed / duration;
+            
+            canvasGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, t);// 淡入淡出CanvasGroup
+            
+            if (textComponent != null)// 如果存在TextMeshProUGUI，单独处理它的颜色透明度
+            {
+                textComponent.text = uiLangue.Content(component.textContentId);
+                Color newColor = textComponent.color;
+                newColor.a = Mathf.Lerp(startTextColor.a, targetAlpha, t);
+                textComponent.color = newColor;
+            }
             yield return null;
         }
         
         canvasGroup.alpha = targetAlpha;
+        
+        if (textComponent != null)
+        {
+            Color finalColor = textComponent.color;
+            finalColor.a = targetAlpha;
+            textComponent.color = finalColor;
+        }
         canvasGroup.interactable = targetAlpha > 0.5f;
         canvasGroup.blocksRaycasts = targetAlpha > 0.5f;
     }
@@ -129,6 +134,32 @@ public class UIManager : MonoBehaviour
             case UIPreset.Cinematic:
                 HideAllUI(0.5f);
                 break;
+        }
+    }
+    
+    public void HideAllUI(float fadeDuration = 0.2f)// 转场时隐藏所有UI
+    {
+        foreach (var kvp in uiDictionary)
+        {
+            HideUI(kvp.Value, fadeDuration);
+        }
+    }
+    
+    public void SetCombatMode(bool inCombat)// 批量控制 - 战斗状态切换
+    {
+        if (inCombat)
+        {
+            // 进入战斗：显示战斗相关UI，隐藏非战斗UI
+            ShowUI(uiDictionary[UIGroup.HealthBar], 0.3f);
+            ShowUI(uiDictionary[UIGroup.StaminaBar], 0.3f);
+            ShowUI(uiDictionary[UIGroup.CombatInfo], 0.3f);
+        }
+        else
+        {
+            // 脱离战斗：隐藏战斗UI
+            HideUI(uiDictionary[UIGroup.HealthBar], 0.5f);
+            HideUI(uiDictionary[UIGroup.StaminaBar], 0.5f);
+            HideUI(uiDictionary[UIGroup.CombatInfo], 0.5f);
         }
     }
 }
