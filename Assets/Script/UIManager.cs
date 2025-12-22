@@ -59,6 +59,25 @@ public class UIManager : MonoBehaviour
         }
     }
     
+    public void SwitchScene(UIPreset preset)
+    {
+        switch (preset)
+        {
+            case UIPreset.PressStart:
+                HideUI(uiDictionary[UIGroup.Title], 0);
+                HideUI(uiDictionary[UIGroup.AutoSaveInfo], 0);
+                HideUI(uiDictionary[UIGroup.PlayerStatus], 0);
+                ShowUI(uiDictionary[UIGroup.PressStart], 1);
+                break;
+            case UIPreset.Title:
+                HideUI(uiDictionary[UIGroup.PressStart], 0);
+                HideUI(uiDictionary[UIGroup.AutoSaveInfo], 0);
+                HideUI(uiDictionary[UIGroup.PlayerStatus], 0);
+                ShowUI(uiDictionary[UIGroup.Title], 1);
+                break;
+        }
+    }
+    
     private void ShowUI(UIComponent component, float fadeDuration)
     {
         if (component == null || component.canvasGroup == null) return;
@@ -116,50 +135,11 @@ public class UIManager : MonoBehaviour
         canvasGroup.blocksRaycasts = targetAlpha > 0.5f;
     }
     
-    public void SetUIPreset(UIPreset preset)// 预定义UI配置
-    {
-        switch (preset)
-        {
-            case UIPreset.Combat:
-                SetCombatMode(true);
-                break;
-            case UIPreset.Exploration:
-                SetCombatMode(false);
-                break;
-            case UIPreset.Dialogue:
-                SetUIVisibility(UIGroup.Dialogue, true);
-                SetUIVisibility(UIGroup.HealthBar, false);
-                SetUIVisibility(UIGroup.StaminaBar, false);
-                break;
-            case UIPreset.Cinematic:
-                HideAllUI(0.5f);
-                break;
-        }
-    }
-    
     public void HideAllUI(float fadeDuration = 0.2f)// 转场时隐藏所有UI
     {
         foreach (var kvp in uiDictionary)
         {
             HideUI(kvp.Value, fadeDuration);
-        }
-    }
-    
-    public void SetCombatMode(bool inCombat)// 批量控制 - 战斗状态切换
-    {
-        if (inCombat)
-        {
-            // 进入战斗：显示战斗相关UI，隐藏非战斗UI
-            ShowUI(uiDictionary[UIGroup.HealthBar], 0.3f);
-            ShowUI(uiDictionary[UIGroup.StaminaBar], 0.3f);
-            ShowUI(uiDictionary[UIGroup.CombatInfo], 0.3f);
-        }
-        else
-        {
-            // 脱离战斗：隐藏战斗UI
-            HideUI(uiDictionary[UIGroup.HealthBar], 0.5f);
-            HideUI(uiDictionary[UIGroup.StaminaBar], 0.5f);
-            HideUI(uiDictionary[UIGroup.CombatInfo], 0.5f);
         }
     }
 }
@@ -179,6 +159,8 @@ public enum UIGroup
 
 public enum UIPreset// UI预设枚举
 {
+    PressStart,
+    Title,
     Combat,
     Exploration,
     Dialogue,

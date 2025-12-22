@@ -37,10 +37,7 @@ public class Prelude : MonoBehaviour
         uiManager = UIManager.instance;
         StartCoroutine(StartIntroSequence());                             //开始闪烁文本和等待输入
         audioManager.PlayBackgroundMusic(background, true);                 //播放背景音乐
-        uiManager.SetUIVisibility(UIGroup.PlayerStatus, false, 0);
-        uiManager.SetUIVisibility(UIGroup.AutoSaveInfo, false, 0);
-        uiManager.SetUIVisibility(UIGroup.Title, false, 0);
-        uiManager.SetUIVisibility(UIGroup.PressStart, true, 1);
+        uiManager.SwitchScene(UIPreset.PressStart);
     }
     
     void Update()
@@ -49,8 +46,7 @@ public class Prelude : MonoBehaviour
         {
             audioManager.PlayUISound(UISoundType.Click);
             buttonPanel.SetActive(true);
-            uiManager.SetUIVisibility(UIGroup.PressStart, false, 0);
-            uiManager.SetUIVisibility(UIGroup.Title, true, 1);
+            uiManager.SwitchScene(UIPreset.Title);
         }
     }
     
