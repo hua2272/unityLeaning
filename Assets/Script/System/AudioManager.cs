@@ -3,7 +3,7 @@ using UnityEngine.Audio;
 
 public class AudioManager : MonoBehaviour
 {
-    public static AudioManager instance;
+    public static AudioManager instance { get; private set; }
     
     [Header("音频源")]
     [SerializeField] private AudioSource musicSource;

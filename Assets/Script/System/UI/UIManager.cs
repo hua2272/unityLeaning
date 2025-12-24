@@ -30,18 +30,16 @@ public class UIManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
-            return;
-        }
-        
-        foreach (var component in uiComponents)
-        {
-            uiDictionary[component.group] = component;// 初始化字典
         }
     }
 
     private void Start()
-    { 
+    {
         uiLangue = UILangue.instance;
+        foreach (var component in uiComponents)
+        {
+            uiDictionary[component.group] = component;// 初始化字典
+        }
     }
 
     public void SetUIVisibility(UIGroup group, bool show, float fadeDuration = 0.2f)// 基础显示/隐藏方法
@@ -61,6 +59,7 @@ public class UIManager : MonoBehaviour
     
     public void SwitchScene(UIPreset preset)
     {
+        Debug.Log("Switching to " + preset);
         switch (preset)
         {
             case UIPreset.PressStart:
@@ -74,6 +73,12 @@ public class UIManager : MonoBehaviour
                 HideUI(uiDictionary[UIGroup.AutoSaveInfo], 0);
                 HideUI(uiDictionary[UIGroup.PlayerStatus], 0);
                 ShowUI(uiDictionary[UIGroup.Title], 1);
+                break;
+            case UIPreset.Normal:
+                HideUI(uiDictionary[UIGroup.PressStart], 0);
+                HideUI(uiDictionary[UIGroup.AutoSaveInfo], 0);
+                HideUI(uiDictionary[UIGroup.PlayerStatus], 0);
+                HideUI(uiDictionary[UIGroup.Title], 0);
                 break;
         }
     }
@@ -146,8 +151,8 @@ public class UIManager : MonoBehaviour
 
 public enum UIGroup
 {
-    Title,
-    PressStart,
+    PressStart,     // 按任意键开始游戏
+    Title,          // 标题
     PlayerStatus,   // 玩家信息
     AutoSaveInfo,   // 自动保存信息
     CombatInfo,     // 战斗信息
@@ -161,6 +166,7 @@ public enum UIPreset// UI预设枚举
 {
     PressStart,
     Title,
+    Normal,
     Combat,
     Exploration,
     Dialogue,

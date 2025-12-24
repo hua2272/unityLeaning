@@ -11,9 +11,9 @@ public class GameLoadManager : MonoBehaviour
     
     private Player player;
     private GameSaveManager gameSaveManager;
-    public Vector3 spawnPosition;
-    public string targetScene;
-    public CinemachineVirtualCamera virtualCamera;
+    private AudioManager audioManager;
+    private UIManager uiManager;
+    private string currentSceneName;
 
     private void Awake()
     {
@@ -28,39 +28,32 @@ public class GameLoadManager : MonoBehaviour
         }
     }
     
-    void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-    
     private void OnDestroy()
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
+        if (instance == this)
+        {
+            instance = null;
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
     }
 
     private void Start()
     {
         player = PlayerManager.instance.player;
         gameSaveManager =  GameSaveManager.instance;
+        audioManager = AudioManager.instance;
+        uiManager = UIManager.instance;
+        currentSceneName = SceneManager.GetActiveScene().name;
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
-
+        
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "Persistent") return;
-        if (scene.name == targetScene)
-        {
-            player.transform.position = spawnPosition;
-            Debug.Log($"场景 {scene.name} 加载完成");
-            Debug.Log($"玩家位置已设置到: {spawnPosition}");
-        }
-        
-        SceneLoader[] allPortals = FindObjectsOfType<SceneLoader>();
-        foreach (SceneLoader portal in allPortals)
-        {
-            if (portal.gameObject.scene.name != scene.name)
-                Destroy(portal.gameObject);//todo 清理不属于当前场景的传送门，该功能放哪比较好
-        }
-        virtualCamera.Follow = player.transform;
+        string newSceneName = scene.name;
+        if (newSceneName == currentSceneName) return;
+        currentSceneName = newSceneName;
+        audioManager.StopBackgroundMusic();
+        uiManager.SwitchScene(UIPreset.Normal);
     }
 
     public void StartNewGame()

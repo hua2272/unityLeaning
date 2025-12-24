@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.IO;
+using Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameDataManager : MonoBehaviour
 {
-    public static GameDataManager instance;
+    public static GameDataManager instance { get; private set; }
     
     public string saveTime = "";
     public string playTime = "";
@@ -21,6 +22,11 @@ public class GameDataManager : MonoBehaviour
     // 新增：当前选择的存档槽位
     private int currentSaveSlot = 0;
     
+    private Player player;
+    public Vector3 spawnPosition;
+    public string targetScene;
+    public CinemachineVirtualCamera virtualCamera;
+    
     void Awake()
     {
         Debug.Log("<color=#FF0000>-------GameDataManager instance-------</color>");
@@ -32,6 +38,41 @@ public class GameDataManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+    
+    private void Start()
+    {
+        player = PlayerManager.instance.player;
+    }
+    
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+    
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    
+    
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "Persistent") return;
+        if (scene.name == targetScene)
+        {
+            player.transform.position = spawnPosition;
+            Debug.Log($"场景 {scene.name} 加载完成");
+            Debug.Log($"玩家位置已设置到: {spawnPosition}");
+        }
+        
+        SceneLoader[] allPortals = FindObjectsOfType<SceneLoader>();
+        foreach (SceneLoader portal in allPortals)
+        {
+            if (portal.gameObject.scene.name != scene.name)
+                Destroy(portal.gameObject);//todo 清理不属于当前场景的传送门，该功能放哪比较好
+        }
+        virtualCamera.Follow = player.transform;
     }
 
     public void DataPersistence(GameData gameData)

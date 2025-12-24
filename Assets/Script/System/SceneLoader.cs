@@ -10,12 +10,14 @@ public class SceneLoader : MonoBehaviour
     [SerializeField] private Vector3 spawnPosition;
     
     private Player player;
+    private GameDataManager gameDataManager;
     private bool playerInRange;//玩家是否在门范围
     private bool isTransitioning = false;
 
     private void Start()
     {
         player = PlayerManager.instance.player;
+        gameDataManager =  GameDataManager.instance;
     }
 
     public void LoadScene(string sceneName)
@@ -33,8 +35,8 @@ public class SceneLoader : MonoBehaviour
         bool isSameScene = sceneName == SceneManager.GetActiveScene().name;
         if (!isSameScene)
         {
-            GameLoadManager.instance.spawnPosition = spawnPosition;// 设置重生位置
-            GameLoadManager.instance.targetScene = sceneName;
+            gameDataManager.spawnPosition = spawnPosition;// 设置重生位置
+            gameDataManager.targetScene = sceneName;
             
             AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);// 直接加载场景，确保激活
             asyncLoad.allowSceneActivation = true; // 确保场景激活
