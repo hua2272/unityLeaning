@@ -80,6 +80,55 @@ public class PlayerInputManager : MonoBehaviour
         waitingForInputPanel.SetActive(false);
     }
     
+    // 新增：获取当前按键显示名称的方法
+    public string GetCurrentKeyDisplayName(string actionName)
+    {
+        if (actionMap.ContainsKey(actionName))
+        {
+            return GetKeyDisplayName(actionMap[actionName].currentKeyboardKey);
+        }
+        return "None";
+    }
+    
+    // 新增：修改对应按键的方法
+    public void ChangeKeyBinding(string actionName, KeyCode newKey)
+    {
+        if (actionMap.ContainsKey(actionName))
+        {
+            actionMap[actionName].currentKeyboardKey = newKey;
+            SaveKeyBindings();
+            OnKeyBindingChanged?.Invoke(actionName, newKey);
+            
+            // 更新按钮显示
+            if (actionButtonObjects.ContainsKey(actionName))
+            {
+                UpdateButtonVisuals(actionButtonObjects[actionName], actionName);
+            }
+        }
+    }
+    
+    // 修改：公开StartRebinding方法供其他脚本调用
+    public void StartRebinding(string actionName)
+    {
+        if (isRebinding) return;
+        
+        if (!actionMap.ContainsKey(actionName))
+        {
+            Debug.LogWarning($"Input action '{actionName}' not found!");
+            return;
+        }
+        
+        waitingForInputPanel.SetActive(true);
+        waitingForInputText.text = $"等待输入...<size=70%> 为 {GetDisplayName(actionName)} 重新绑定</size>";
+        
+        SetAllButtonsInteractable(false);
+        
+        isRebinding = true;
+        rebindingAction = actionName;
+        
+        currentRebindingOperation = InputSystem.onAnyButtonPress.CallOnce(OnAnyButtonPressed);
+    }
+    
     // 输入缓冲方法
     private void EnableInputBuffer()
     {
@@ -93,6 +142,12 @@ public class PlayerInputManager : MonoBehaviour
         if (inputBufferEnabled && Time.unscaledTime - lastRebindTime > inputBufferTime)
         {
             inputBufferEnabled = false;
+        }
+        
+        // 如果正在重绑定，检测ESC键取消
+        if (isRebinding && Keyboard.current.escapeKey.wasPressedThisFrame)
+        {
+            CancelRebinding();
         }
     }
 
@@ -340,28 +395,28 @@ public class PlayerInputManager : MonoBehaviour
         }
     }
     
-    public void StartRebinding(string actionName)
-    {
-        if (isRebinding) return;
-        
-        if (!actionMap.ContainsKey(actionName))
-        {
-            Debug.LogWarning($"Input action '{actionName}' not found!");
-            return;
-        }
-        
-        waitingForInputPanel.SetActive(true);
-        waitingForInputText.text = $"wait for...<size=70%> {actionName} rebinding</size>";
-        
-        SetAllButtonsInteractable(false); // 禁用所有按钮避免重复点击
-        
-        isRebinding = true;
-        rebindingAction = actionName;
-        
-        Debug.Log($"Press any key to bind for {actionName}... (Press Escape to cancel)");
-        
-        currentRebindingOperation = InputSystem.onAnyButtonPress.CallOnce(OnAnyButtonPressed);
-    }
+    // public void StartRebinding(string actionName)
+    // {
+    //     if (isRebinding) return;
+    //     
+    //     if (!actionMap.ContainsKey(actionName))
+    //     {
+    //         Debug.LogWarning($"Input action '{actionName}' not found!");
+    //         return;
+    //     }
+    //     
+    //     waitingForInputPanel.SetActive(true);
+    //     waitingForInputText.text = $"wait for...<size=70%> {actionName} rebinding</size>";
+    //     
+    //     SetAllButtonsInteractable(false); // 禁用所有按钮避免重复点击
+    //     
+    //     isRebinding = true;
+    //     rebindingAction = actionName;
+    //     
+    //     Debug.Log($"Press any key to bind for {actionName}... (Press Escape to cancel)");
+    //     
+    //     currentRebindingOperation = InputSystem.onAnyButtonPress.CallOnce(OnAnyButtonPressed);
+    // }
 
     private void OnAnyButtonPressed(InputControl control)
     {
@@ -383,7 +438,6 @@ public class PlayerInputManager : MonoBehaviour
         rebindingAction = null;
         currentRebindingOperation?.Dispose();
         currentRebindingOperation = null;
-        Debug.Log("Rebinding cancelled");
         
         waitingForInputPanel.SetActive(false);
         SetAllButtonsInteractable(true);
@@ -408,7 +462,6 @@ public class PlayerInputManager : MonoBehaviour
             UpdateButtonVisuals(actionButtonObjects[actionName], actionName);
         }
         
-        Debug.Log($"Bound {actionName} to {newKey}");
         waitingForInputPanel.SetActive(false);
         SetAllButtonsInteractable(true);
     }
@@ -448,7 +501,6 @@ public class PlayerInputManager : MonoBehaviour
         }
         
         SaveKeyBindings();
-        Debug.Log("All bindings reset to defaults");
     }
 
     #region 输入查询方法
@@ -536,7 +588,6 @@ public class PlayerInputManager : MonoBehaviour
             return key;
         }
         
-        Debug.LogWarning($"Could not convert KeyCode {keyCode} to new Input System Key");
         return Key.None;
     }
     
@@ -565,7 +616,6 @@ public class PlayerInputManager : MonoBehaviour
             return keyCode;
         }
         
-        Debug.LogWarning($"Could not convert Key {key} to KeyCode");
         return KeyCode.None;
     }
     
@@ -581,49 +631,69 @@ public class PlayerInputManager : MonoBehaviour
     }
 
     #region 显示名称转换
-    string GetDisplayName(string actionName)
+    public string GetDisplayName(string actionName)
     {
         return actionName switch
         {
-            "MoveUp" => "MoveUp",
-            "MoveDown" => "MoveDown", 
-            "MoveLeft" => "MoveLeft",
-            "MoveRight" => "MoveRight",
-            "Jump" => "Jump",
-            "Attack" => "Attack",
-            "Interact" => "Interact",
-            "Menu" => "Menu",
-            "UIMenu" => "UIMenu",
-            "UIUp" => "上",
-            "UIDown" => "下",
-            "UILeft" => "⬅",
-            "UIRight" => "→",
-            "UIConfirm" => "Confirm",
-            "UICancel" => "Cancel",
+            "MoveUp" => "向上移动",
+            "MoveDown" => "向下移动", 
+            "MoveLeft" => "向左移动",
+            "MoveRight" => "向右移动",
+            "Jump" => "跳跃",
+            "Attack_1" => "攻击",
+            "Skill_1" => "技能",
+            "Interact" => "交互",
+            "Menu" => "游戏菜单",
+            "UIMenu" => "UI菜单",
+            "UIUp" => "UI向上",
+            "UIDown" => "UI向下",
+            "UILeft" => "UI向左",
+            "UIRight" => "UI向右",
+            "UIConfirm" => "UI确认",
+            "UICancel" => "UI取消",
             _ => actionName
         };
     }
 
-    string GetKeyDisplayName(KeyCode keyCode)
+    public string GetKeyDisplayName(KeyCode keyCode)
     {
         return keyCode switch
         {
-            KeyCode.Mouse0 => "Mouse0",
-            KeyCode.Mouse1 => "Mouse1",
-            KeyCode.Mouse2 => "Mouse2",
-            KeyCode.UpArrow => "Up",
-            KeyCode.DownArrow => "DownArrow", 
-            KeyCode.LeftArrow => "LeftArrow",
-            KeyCode.RightArrow => "RightArrow",
-            KeyCode.Return => "Return",
+            KeyCode.Mouse0 => "鼠标左键",
+            KeyCode.Mouse1 => "鼠标右键",
+            KeyCode.Mouse2 => "鼠标中键",
+            KeyCode.UpArrow => "上箭头",
+            KeyCode.DownArrow => "下箭头", 
+            KeyCode.LeftArrow => "左箭头",
+            KeyCode.RightArrow => "右箭头",
+            KeyCode.Return => "回车",
             KeyCode.Escape => "ESC",
-            KeyCode.Space => "Space",
-            KeyCode.LeftShift => "LeftShift",
-            KeyCode.RightShift => "RightShift",
-            KeyCode.LeftControl => "LeftControl",
-            KeyCode.RightControl => "RightControl",
-            KeyCode.LeftAlt => "LeftAlt",
-            KeyCode.RightAlt => "RightAlt",
+            KeyCode.Space => "空格",
+            KeyCode.LeftShift => "左Shift",
+            KeyCode.RightShift => "右Shift",
+            KeyCode.LeftControl => "左Ctrl",
+            KeyCode.RightControl => "右Ctrl",
+            KeyCode.LeftAlt => "左Alt",
+            KeyCode.RightAlt => "右Alt",
+            KeyCode.Tab => "Tab",
+            KeyCode.CapsLock => "大写锁定",
+            KeyCode.Backspace => "退格",
+            KeyCode.Insert => "Insert",
+            KeyCode.Delete => "Delete",
+            KeyCode.Home => "Home",
+            KeyCode.End => "End",
+            KeyCode.PageUp => "PageUp",
+            KeyCode.PageDown => "PageDown",
+            KeyCode.Keypad0 => "小键盘0",
+            KeyCode.Keypad1 => "小键盘1",
+            KeyCode.Keypad2 => "小键盘2",
+            KeyCode.Keypad3 => "小键盘3",
+            KeyCode.Keypad4 => "小键盘4",
+            KeyCode.Keypad5 => "小键盘5",
+            KeyCode.Keypad6 => "小键盘6",
+            KeyCode.Keypad7 => "小键盘7",
+            KeyCode.Keypad8 => "小键盘8",
+            KeyCode.Keypad9 => "小键盘9",
             _ => keyCode.ToString()
         };
     }

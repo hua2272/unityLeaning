@@ -9,7 +9,7 @@ public class playerCounterAttackState : PlayerState
     private bool hasCountered = false;
     private bool hasFailed = false;
     
-    public playerCounterAttackState(Player _player, PlayerStateMachine _stateMachine, string _animBoolName) : base(_player, _stateMachine, _animBoolName)
+    public playerCounterAttackState(Player player, PlayerStateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
     {
     }
 
@@ -20,8 +20,6 @@ public class playerCounterAttackState : PlayerState
         counterWindowStarted = false;
         hasCountered = false;
         hasFailed = false;
-        // player.anim.SetBool("SuccessfulCounterAttack", false);
-        // player.anim.SetBool("FailCounterAttack", false);
         player.anim.SetFloat("CounterAttackState", 0);
     }
 
