@@ -42,14 +42,6 @@ public class MenuController : MonoBehaviour
     // 按钮与菜单项的映射
     private Dictionary<Button, MenuItemData> buttonToMenuItemMap = new Dictionary<Button, MenuItemData>();
     
-    // void OnValidate()// 在Inspector中修改数据时更新菜单
-    // {
-    //     if (Application.isPlaying && contentParent != null)
-    //     {
-    //         InitializeMenu();
-    //     }
-    // }
-    
     void Start()
     {
         playerInputManager = PlayerInputManager.instance;
@@ -59,7 +51,24 @@ public class MenuController : MonoBehaviour
         audioManager = AudioManager.instance;
         gameDataManager = GameDataManager.instance;
         uiLangue = UILangue.instance;
+        playerInputManager.onKeyChange.AddListener(OnKeyChange);
         InitializeMenu();
+    }
+    
+    private void OnKeyChange(string actionName)
+    {
+        for (int i = 0; i < menuItems.Count; i++)
+        {
+            MenuItemData menuItem = menuItems[i];
+            if (menuItem.name == actionName)
+            {
+                GameObject menuItemObj = createdMenuItems[i];
+                TextMeshProUGUI buttonText = menuItemObj.GetComponentInChildren<Button>().GetComponentInChildren<TextMeshProUGUI>();
+                buttonText.text = playerInputManager.GetCurrentKeyDisplayName(actionName);
+                Debug.Log($"已更新菜单项 {actionName} 的显示为: {buttonText.text}");
+                break;
+            }
+        }
     }
     
     private void Update()
@@ -298,24 +307,24 @@ public class MenuController : MonoBehaviour
     void InitializeMenuItems()
     {
         menuItems.Clear();
-        menuItems.Add(new MenuItemData(0, 0, null, "继续游戏", null));
-        menuItems.Add(new MenuItemData(0, 0, null, "读取存档", () =>
+        menuItems.Add(new MenuItemData(0, null, 0, null, "继续游戏", null));
+        menuItems.Add(new MenuItemData(0, null, 0, null, "读取存档", () =>
         {
             currentPanelLevel = 1;
             ShowButtons(1.2f);
         }));
-        menuItems.Add(new MenuItemData(0, 0, null, "保存游戏", () =>
+        menuItems.Add(new MenuItemData(0, null, 0, null, "保存游戏", () =>
         {
             currentPanelLevel = 1;
             ShowButtons(1.1f);
         }));
-        menuItems.Add(new MenuItemData(0, 0, null, "设置", () =>
+        menuItems.Add(new MenuItemData(0, null, 0, null, "设置", () =>
         {
             currentPanelLevel = 1;
             ShowButtons(1);
         }));
-        menuItems.Add(new MenuItemData(0, 0, null, "返回主界面", null));
-        menuItems.Add(new MenuItemData(1, 0, null, "按键设置", () =>
+        menuItems.Add(new MenuItemData(0, null, 0, null, "返回主界面", null));
+        menuItems.Add(new MenuItemData(1, null, 0, null, "按键设置", () =>
         {
             currentPanelLevel = 2;
             ShowButtons(2);
@@ -325,14 +334,14 @@ public class MenuController : MonoBehaviour
         menuItems.Add(new MenuItemData(1, 1, "音效", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 4, (index) => audioManager.SetSFXVolume(index), "SFXVolume"));
         menuItems.Add(new MenuItemData(1, 1, "语言", new List<string> {"中文", "English", "日本語"}, 0, (index) => uiLangue.ChangeLanguage(index), "Langue"));
         
-        menuItems.Add(new MenuItemData(2, 1, playerInputManager.GetDisplayName("MoveUp"), playerInputManager.GetCurrentKeyDisplayName("MoveUp"), () => playerInputManager.StartRebinding("MoveUp")));
-        menuItems.Add(new MenuItemData(2, 1, playerInputManager.GetDisplayName("MoveDown"), playerInputManager.GetCurrentKeyDisplayName("MoveDown"), () => playerInputManager.StartRebinding("MoveDown")));
-        menuItems.Add(new MenuItemData(2, 1, playerInputManager.GetDisplayName("MoveLeft"), playerInputManager.GetCurrentKeyDisplayName("MoveLeft"), () => playerInputManager.StartRebinding("MoveLeft")));
-        menuItems.Add(new MenuItemData(2, 1, playerInputManager.GetDisplayName("MoveRight"), playerInputManager.GetCurrentKeyDisplayName("MoveRight"), () => playerInputManager.StartRebinding("MoveRight")));
+        menuItems.Add(new MenuItemData(2, "MoveUp", 1, playerInputManager.GetDisplayName("MoveUp"), playerInputManager.GetCurrentKeyDisplayName("MoveUp"), () => playerInputManager.StartRebinding("MoveUp")));
+        menuItems.Add(new MenuItemData(2, "MoveDown", 1, playerInputManager.GetDisplayName("MoveDown"), playerInputManager.GetCurrentKeyDisplayName("MoveDown"), () => playerInputManager.StartRebinding("MoveDown")));
+        menuItems.Add(new MenuItemData(2, "MoveLeft", 1, playerInputManager.GetDisplayName("MoveLeft"), playerInputManager.GetCurrentKeyDisplayName("MoveLeft"), () => playerInputManager.StartRebinding("MoveLeft")));
+        menuItems.Add(new MenuItemData(2, "MoveRight", 1, playerInputManager.GetDisplayName("MoveRight"), playerInputManager.GetCurrentKeyDisplayName("MoveRight"), () => playerInputManager.StartRebinding("MoveRight")));
         
         
         List<string> allSaveFiles = GameSaveManager.GetAllSaveFiles();
-        menuItems.Add(new MenuItemData(1.1f, 0, null,"新建存档", () => gameSaveManager.SaveGame(allSaveFiles.Count)));
+        menuItems.Add(new MenuItemData(1.1f, null, 0, null,"新建存档", () => gameSaveManager.SaveGame(allSaveFiles.Count)));
 
         for (var i = 0; i < allSaveFiles.Count; i++)
         {
@@ -406,8 +415,8 @@ public class MenuController : MonoBehaviour
             Transform picTransform = infoTransform.Find("screenshotImage");
             Image image = picTransform.GetComponent<Image>();
             
-            Transform playTimeTransform = infoTransform.Find("playTime");
-            TextMeshProUGUI playTime = playTimeTransform.GetComponent<TextMeshProUGUI>();
+            // Transform playTimeTransform = infoTransform.Find("playTime");
+            // TextMeshProUGUI playTime = playTimeTransform.GetComponent<TextMeshProUGUI>();
             
             Transform saveTimeTransform = infoTransform.Find("saveTime");
             TextMeshProUGUI saveTime = saveTimeTransform.GetComponent<TextMeshProUGUI>();
@@ -423,12 +432,12 @@ public class MenuController : MonoBehaviour
             aspectFitter.aspectRatio = 16f / 9f; // 根据你的截图比例调整
             
             // 设置第一个文本的位置（中间偏左）
-            RectTransform playTimeRect = playTimeTransform.GetComponent<RectTransform>();
-            playTimeRect.anchorMin = new Vector2(0.4f, 0.6f); // 水平居中，垂直偏上
-            playTimeRect.anchorMax = new Vector2(0.8f, 0.8f);
-            playTimeRect.pivot = new Vector2(0, 0.5f);
-            playTimeRect.offsetMin = new Vector2(10, 0);
-            playTimeRect.offsetMax = new Vector2(-10, 0);
+            // RectTransform playTimeRect = playTimeTransform.GetComponent<RectTransform>();
+            // playTimeRect.anchorMin = new Vector2(0.4f, 0.6f); // 水平居中，垂直偏上
+            // playTimeRect.anchorMax = new Vector2(0.8f, 0.8f);
+            // playTimeRect.pivot = new Vector2(0, 0.5f);
+            // playTimeRect.offsetMin = new Vector2(10, 0);
+            // playTimeRect.offsetMax = new Vector2(-10, 0);
     
             // 设置第二个文本的位置（中间偏右）
             RectTransform saveTimeRect = saveTimeTransform.GetComponent<RectTransform>();
@@ -439,7 +448,7 @@ public class MenuController : MonoBehaviour
             saveTimeRect.offsetMax = new Vector2(-10, 0);
 
             LoadThumbnailAsync(image, itemData.screenshotImage);
-            playTime.text = itemData.playTime;
+            // playTime.text = itemData.playTime;
             saveTime.text = itemData.saveTime;
             
             itemLayout.childAlignment = TextAnchor.MiddleLeft; // 标题不为空时，左对齐（标题在左，按钮在右）

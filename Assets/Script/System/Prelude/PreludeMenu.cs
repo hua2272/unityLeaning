@@ -507,21 +507,21 @@ public class PreludeMenu : MonoBehaviour
     void InitializeMenuItems()
     {
         menuItems.Clear();
-        menuItems.Add(new MenuItemData(0, 0, null, "继续游戏", null));
-        menuItems.Add(new MenuItemData(0, 0, null, "新游戏", null));
-        menuItems.Add(new MenuItemData(0, 0, null, "读取存档", () =>
+        menuItems.Add(new MenuItemData(0, null, 0, null, "继续游戏", null));
+        menuItems.Add(new MenuItemData(0, null, 0, null, "新游戏", null));
+        menuItems.Add(new MenuItemData(0, null, 0, null, "读取存档", () =>
         {
             currentPanelLevel = 1;
             ShowButtons(1.2f);
         }));
-        menuItems.Add(new MenuItemData(0, 0, null, "设置", () =>
+        menuItems.Add(new MenuItemData(0, null, 0, null, "设置", () =>
         {
             currentPanelLevel = 1;
             ShowButtons(1);
         }));
-        menuItems.Add(new MenuItemData(0, 0, null, "退出游戏", gameLoadManager.OnQuitClicked));
+        menuItems.Add(new MenuItemData(0, null, 0, null, "退出游戏", gameLoadManager.OnQuitClicked));
         
-        menuItems.Add(new MenuItemData(1, 0, null, "键盘按键设置", null));
+        menuItems.Add(new MenuItemData(1, null, 0, null, "键盘按键设置", null));
         menuItems.Add(new MenuItemData(1, 1, "屏幕", new List<string> {"无边框全屏", "窗口化"}, 0, (index) => screenController.ScreenModeChange(index), "ScreenMode"));
         menuItems.Add(new MenuItemData(1, 1, "音乐", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 4, (index) => audioManager.SetMusicVolume(index), "MusicVolume"));
         menuItems.Add(new MenuItemData(1, 1, "音效", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 4, (index) => audioManager.SetSFXVolume(index), "SFXVolume"));
@@ -611,8 +611,8 @@ public class PreludeMenu : MonoBehaviour
             Transform picTransform = infoTransform.Find("screenshotImage");
             Image image = picTransform.GetComponent<Image>();
             
-            Transform playTimeTransform = infoTransform.Find("playTime");
-            TextMeshProUGUI playTime = playTimeTransform.GetComponent<TextMeshProUGUI>();
+            // Transform playTimeTransform = infoTransform.Find("playTime");
+            // TextMeshProUGUI playTime = playTimeTransform.GetComponent<TextMeshProUGUI>();
             
             Transform saveTimeTransform = infoTransform.Find("saveTime");
             TextMeshProUGUI saveTime = saveTimeTransform.GetComponent<TextMeshProUGUI>();
@@ -628,12 +628,12 @@ public class PreludeMenu : MonoBehaviour
             aspectFitter.aspectRatio = 16f / 9f; // 根据你的截图比例调整
             
             // 设置第一个文本的位置（中间偏左）
-            RectTransform playTimeRect = playTimeTransform.GetComponent<RectTransform>();
-            playTimeRect.anchorMin = new Vector2(0.4f, 0.6f); // 水平居中，垂直偏上
-            playTimeRect.anchorMax = new Vector2(0.8f, 0.8f);
-            playTimeRect.pivot = new Vector2(0, 0.5f);
-            playTimeRect.offsetMin = new Vector2(10, 0);
-            playTimeRect.offsetMax = new Vector2(-10, 0);
+            // RectTransform playTimeRect = playTimeTransform.GetComponent<RectTransform>();
+            // playTimeRect.anchorMin = new Vector2(0.4f, 0.6f); // 水平居中，垂直偏上
+            // playTimeRect.anchorMax = new Vector2(0.8f, 0.8f);
+            // playTimeRect.pivot = new Vector2(0, 0.5f);
+            // playTimeRect.offsetMin = new Vector2(10, 0);
+            // playTimeRect.offsetMax = new Vector2(-10, 0);
     
             // 设置第二个文本的位置（中间偏右）
             RectTransform saveTimeRect = saveTimeTransform.GetComponent<RectTransform>();
@@ -644,7 +644,7 @@ public class PreludeMenu : MonoBehaviour
             saveTimeRect.offsetMax = new Vector2(-10, 0);
 
             LoadThumbnailAsync(image, itemData.screenshotImage);
-            playTime.text = itemData.playTime;
+            // playTime.text = itemData.playTime;
             saveTime.text = itemData.saveTime;
             
             itemLayout.childAlignment = TextAnchor.MiddleLeft; // 标题不为空时，左对齐（标题在左，按钮在右）

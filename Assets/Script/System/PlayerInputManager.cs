@@ -17,6 +17,8 @@ public class PlayerInputManager : MonoBehaviour
     public class KeyBindingChangedEvent : UnityEvent<string, KeyCode> { }
     public KeyBindingChangedEvent OnKeyBindingChanged = new KeyBindingChangedEvent();
     
+    public UnityEvent<string> onKeyChange;
+    
     private bool inputBufferEnabled = false;
     private float inputBufferTime = 0.2f;
     private float lastRebindTime = 0f;
@@ -88,23 +90,6 @@ public class PlayerInputManager : MonoBehaviour
             return GetKeyDisplayName(actionMap[actionName].currentKeyboardKey);
         }
         return "None";
-    }
-    
-    // 新增：修改对应按键的方法
-    public void ChangeKeyBinding(string actionName, KeyCode newKey)
-    {
-        if (actionMap.ContainsKey(actionName))
-        {
-            actionMap[actionName].currentKeyboardKey = newKey;
-            SaveKeyBindings();
-            OnKeyBindingChanged?.Invoke(actionName, newKey);
-            
-            // 更新按钮显示
-            if (actionButtonObjects.ContainsKey(actionName))
-            {
-                UpdateButtonVisuals(actionButtonObjects[actionName], actionName);
-            }
-        }
     }
     
     // 修改：公开StartRebinding方法供其他脚本调用
@@ -394,29 +379,6 @@ public class PlayerInputManager : MonoBehaviour
             scrollRect.verticalNormalizedPosition = 1;
         }
     }
-    
-    // public void StartRebinding(string actionName)
-    // {
-    //     if (isRebinding) return;
-    //     
-    //     if (!actionMap.ContainsKey(actionName))
-    //     {
-    //         Debug.LogWarning($"Input action '{actionName}' not found!");
-    //         return;
-    //     }
-    //     
-    //     waitingForInputPanel.SetActive(true);
-    //     waitingForInputText.text = $"wait for...<size=70%> {actionName} rebinding</size>";
-    //     
-    //     SetAllButtonsInteractable(false); // 禁用所有按钮避免重复点击
-    //     
-    //     isRebinding = true;
-    //     rebindingAction = actionName;
-    //     
-    //     Debug.Log($"Press any key to bind for {actionName}... (Press Escape to cancel)");
-    //     
-    //     currentRebindingOperation = InputSystem.onAnyButtonPress.CallOnce(OnAnyButtonPressed);
-    // }
 
     private void OnAnyButtonPressed(InputControl control)
     {
@@ -456,6 +418,7 @@ public class PlayerInputManager : MonoBehaviour
         SaveKeyBindings();
         
         OnKeyBindingChanged?.Invoke(actionName, newKey);//更新提示按钮的文本
+        onKeyChange?.Invoke(actionName);
         // 更新按钮显示
         if (actionButtonObjects.ContainsKey(actionName))
         {

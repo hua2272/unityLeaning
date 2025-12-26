@@ -7,6 +7,7 @@ public class MenuItemData
 {
     public float PanelId;
     public float buttonType;
+    public string name;
     public string title;
     public string buttonText;
     [NonSerialized] public Action action;
@@ -23,9 +24,10 @@ public class MenuItemData
     private string saveKey;//保存标识符
 
     // 普通按钮构造函数
-    public MenuItemData(float panelId, float buttonType, string title, string buttonText, Action action)
+    public MenuItemData(float panelId, string name, float buttonType, string title, string buttonText, Action action)
     {
         this.PanelId = panelId;
+        this.name = name;
         this.buttonType = buttonType;
         this.title = title;
         this.buttonText = buttonText;
