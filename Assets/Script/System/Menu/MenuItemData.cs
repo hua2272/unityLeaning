@@ -6,14 +6,13 @@ using UnityEngine.UI;
 public class MenuItemData
 {
     public float PanelId;
-    public float buttonType;
+    public float buttonType;//0单独按钮；1选项按钮；2保存、读取；3按键绑定按钮
     public string name;
     public string title;
     public string buttonText;
     [NonSerialized] public Action action;
     public string screenshotImage;//图片存储路径
     public string saveTime;
-    public string playTime;
 
     // 选项相关字段
     public bool isOptionButton = false;
@@ -36,9 +35,10 @@ public class MenuItemData
     }
 
     // 选项按钮构造函数
-    public MenuItemData(float panelId, float buttonType, string title, List<string> options, int defaultIndex, Action<int> onOptionChanged, string saveKey = null)
+    public MenuItemData(float panelId, string name, float buttonType, string title, List<string> options, int defaultIndex, Action<int> onOptionChanged, string saveKey = null)
     {
         this.PanelId = panelId;
+        this.name = name;
         this.buttonType = buttonType;
         this.title = title;
         this.options = options;
@@ -52,7 +52,8 @@ public class MenuItemData
         UpdateButtonText();
     }
     
-    public MenuItemData(float panelId, float buttonType, string buttonText, Action action, string screenshotImage, string saveTime, string playTime)
+    // 保存，读取按钮
+    public MenuItemData(float panelId, float buttonType, string buttonText, Action action, string screenshotImage, string saveTime)
     {
         this.PanelId = panelId;
         this.buttonType = buttonType;
@@ -60,7 +61,6 @@ public class MenuItemData
         this.action = action;
         this.screenshotImage = screenshotImage;
         this.saveTime = saveTime;
-        this.playTime = playTime;
     }
 
     // 新增：直接设置选项索引

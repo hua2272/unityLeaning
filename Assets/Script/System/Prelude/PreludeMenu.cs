@@ -522,17 +522,17 @@ public class PreludeMenu : MonoBehaviour
         menuItems.Add(new MenuItemData(0, null, 0, null, "退出游戏", gameLoadManager.OnQuitClicked));
         
         menuItems.Add(new MenuItemData(1, null, 0, null, "键盘按键设置", null));
-        menuItems.Add(new MenuItemData(1, 1, "屏幕", new List<string> {"无边框全屏", "窗口化"}, 0, (index) => screenController.ScreenModeChange(index), "ScreenMode"));
-        menuItems.Add(new MenuItemData(1, 1, "音乐", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 4, (index) => audioManager.SetMusicVolume(index), "MusicVolume"));
-        menuItems.Add(new MenuItemData(1, 1, "音效", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 4, (index) => audioManager.SetSFXVolume(index), "SFXVolume"));
-        menuItems.Add(new MenuItemData(1, 1, "语言", new List<string> {"中文", "English", "日本語"}, 0, (index) => uiLangue.ChangeLanguage(index), "Langue"));
+        menuItems.Add(new MenuItemData(1, "screen", 1, "屏幕", new List<string> {"无边框全屏", "窗口化"}, 0, (index) => screenController.ScreenModeChange(index), "ScreenMode"));
+        menuItems.Add(new MenuItemData(1, "BGM", 1, "音乐", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 4, (index) => audioManager.SetMusicVolume(index), "MusicVolume"));
+        menuItems.Add(new MenuItemData(1, "SFX", 1, "音效", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 4, (index) => audioManager.SetSFXVolume(index), "SFXVolume"));
+        menuItems.Add(new MenuItemData(1, "langue", 1, "语言", new List<string> {"中文", "English", "日本語"}, 0, null, "Langue"));
 
         List<string> allSaveFiles = GameSaveManager.GetAllSaveFiles();
         for (var i = 0; i < allSaveFiles.Count; i++)
         {
             int currentIndex = i;// 创建局部变量来捕获当前循环的值
             string screenshotPath = Path.Combine(GameSaveManager.GetParentSavePath(), $"screenshot{currentIndex}.png");
-            menuItems.Add(new MenuItemData(1.2f, 2, "读取游戏", () => gameLoadManager.LoadGame(currentIndex), screenshotPath, gameDataManager.saveTime, gameDataManager.playTime));
+            menuItems.Add(new MenuItemData(1.2f, 2, "读取游戏", () => gameLoadManager.LoadGame(currentIndex), screenshotPath, gameDataManager.saveTime));
         }
     }
     
@@ -676,7 +676,7 @@ public class PreludeMenu : MonoBehaviour
             buttonLayout.preferredHeight = 40f;
             buttonLayout.minHeight = 30f;
         }
-        if (itemData.buttonType == 1)
+        if (itemData.buttonType == 1 || itemData.buttonType == 3)
         {
             infoTransform.gameObject.SetActive(false);
             titleTransform.gameObject.SetActive(true);
