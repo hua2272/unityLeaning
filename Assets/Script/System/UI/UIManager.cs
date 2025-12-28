@@ -42,6 +42,16 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void OnLangueChange()
+    {
+        foreach (UIComponent component in uiComponents)
+        {
+            TextMeshProUGUI textComponent = component.canvasGroup.GetComponentInChildren<TextMeshProUGUI>();
+            if (textComponent == null) continue;
+            textComponent.text = uiLangue.Content(component.textContentId);
+        }
+    }
+
     public void SetUIVisibility(UIGroup group, bool show, float fadeDuration = 0.2f)// 基础显示/隐藏方法
     {
         if (uiDictionary.TryGetValue(group, out UIComponent component))

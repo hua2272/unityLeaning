@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 using System.IO;
+using UnityEngine.Events;
 
 public class MenuController : MonoBehaviour
 {
@@ -35,6 +36,7 @@ public class MenuController : MonoBehaviour
     private PlayerInputManager playerInputManager;
     private GameDataManager gameDataManager;
     private UILangue uiLangue;
+    private UIManager uiManager;
     
     private List<GameObject> createdMenuItems = new List<GameObject>();
     private RectTransform contentRectTransform;
@@ -51,6 +53,7 @@ public class MenuController : MonoBehaviour
         audioManager = AudioManager.instance;
         gameDataManager = GameDataManager.instance;
         uiLangue = UILangue.instance;
+        uiManager = UIManager.instance;
         playerInputManager.onKeyChange.AddListener(OnKeyChange);
         InitializeMenu();
     }
@@ -88,6 +91,7 @@ public class MenuController : MonoBehaviour
                 buttonText.text = uiLangueContent4Menu[menuItem.name];
             }
         }
+        uiManager.OnLangueChange();
     }
     
     private void Update()
