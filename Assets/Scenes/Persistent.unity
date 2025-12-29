@@ -5885,7 +5885,7 @@ MonoBehaviour:
   uiSource: {fileID: 2132500610}
   uiClick: {fileID: 8300000, guid: 51ad6e1c5bba1a74f8321844803dc912, type: 3}
   uiNavigate: {fileID: 8300000, guid: ccb21d902c5a2ba42b7b3a2b9565ff13, type: 3}
-  audioMixer: {fileID: 24100000, guid: 202c8321b9d5f0c40becc416f59b0445, type: 2}
+  audioMixer: {fileID: 24100000, guid: 5be20822d64ddab429bcf8872ccc4465, type: 2}
   musicVolumeParam: MusicVolume
   sfxVolumeParam: SFXVolume
 --- !u!1 &616784255
@@ -8463,7 +8463,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f93a56f2176f74441b92b0c57a21bd38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentLangue: 0
 --- !u!1 &791058807
 GameObject:
   m_ObjectHideFlags: 0
@@ -16388,6 +16387,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OnButtonsCreated:
+    m_PersistentCalls:
+      m_Calls: []
+  onKeyChange:
     m_PersistentCalls:
       m_Calls: []
   bindingsContent: {fileID: 636730179}
