@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -69,6 +70,11 @@ public class GameLoadManager : MonoBehaviour
         {
             StartCoroutine(LoadGameCoroutine(savePath));
         }
+    }
+    
+    public void LoadLatestGame(string latestFilePath)
+    {
+        StartCoroutine(LoadGameCoroutine(latestFilePath));
     }
     
     public void OnQuitClicked()

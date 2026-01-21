@@ -37,6 +37,7 @@ public class PreludeMenu : MonoBehaviour
     [SerializeField] private Vector2 lightBarSize = new Vector2(200f, 10f);         // 光线条尺寸
     
     [Header("功能脚本")]
+    private GameSaveManager gameSaveManager;
     private GameLoadManager gameLoadManager;
     private ScreenController screenController;
     private AudioManager audioManager;
@@ -61,6 +62,7 @@ public class PreludeMenu : MonoBehaviour
     void Start()
     {
         playerInputManager = PlayerInputManager.instance;
+        gameSaveManager =  GameSaveManager.instance;
         gameLoadManager = GameLoadManager.instance;
         screenController = ScreenController.instance;
         audioManager = AudioManager.instance;
@@ -507,7 +509,11 @@ public class PreludeMenu : MonoBehaviour
     void InitializeMenuItems()
     {
         menuItems.Clear();
-        menuItems.Add(new MenuItemData(0, null, 0, null, "继续游戏", null));
+        string latestSaveFiles = gameSaveManager.GetLatestSaveFiles();
+        if (latestSaveFiles != "")
+        {
+            menuItems.Add(new MenuItemData(0, null, 0, null, "继续游戏",  () => gameLoadManager.LoadLatestGame(latestSaveFiles)));
+        }
         menuItems.Add(new MenuItemData(0, null, 0, null, "新游戏", null));
         menuItems.Add(new MenuItemData(0, null, 0, null, "读取存档", () =>
         {

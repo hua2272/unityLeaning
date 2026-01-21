@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class GameSaveManager : MonoBehaviour
 {
-    public static GameSaveManager instance;
+    public static GameSaveManager instance { get; private set; }
 
     private GameDataManager gameDataManager;
     private Player player;
@@ -127,11 +127,47 @@ public class GameSaveManager : MonoBehaviour
             }
             Debug.Log($"在目录 {directoryPath} 中找到 {saveFiles.Count} 个保存文件");
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Debug.LogError($"获取保存文件列表失败: {e.Message}");
         }
         return saveFiles;
+    }
+
+    public string GetLatestSaveFiles()
+    {
+        string directoryPath = GetParentSavePath();
+        string[] saveFiles = Directory.GetFiles(directoryPath, "*.dat");    // 搜索所有.dat文件
+        if (saveFiles.Length == 0) return "";
+        
+        Dictionary<string, DateTime> fileTimes = new Dictionary<string, DateTime>();    // 使用字典存储文件路径和修改时间
+        foreach (string filePath in saveFiles)                                          // 获取每个文件的最后修改时间
+        {
+            try
+            {
+                if (File.Exists(filePath))
+                {
+                    DateTime lastWriteTime = File.GetLastWriteTime(filePath);
+                    fileTimes[filePath] = lastWriteTime;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"读取文件时间失败 {filePath}: {e.Message}");
+            }
+        }
+        
+        string latestFilePath = null;
+        DateTime latestTime = DateTime.MinValue;
+        foreach (var kvp in fileTimes)                                                   // 找到修改时间最近的文件
+        {
+            if (kvp.Value > latestTime)
+            {
+                latestTime = kvp.Value;
+                latestFilePath = kvp.Key;
+            }
+        }
+        return latestFilePath;
     }
     
     // 地形保存相关方法

@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 
 public class ScreenController : MonoBehaviour, IPointerDownHandler, IDragHandler
 {
-    public static ScreenController instance;
+    public static ScreenController instance { get; private set; }
     
     [Header("Screen Modes")]
     public bool borderlessFullscreen = false;
