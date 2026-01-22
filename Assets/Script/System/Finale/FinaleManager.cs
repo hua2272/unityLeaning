@@ -1,15 +1,16 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
-using UnityEngine.Rendering;
-
 
 public class FinaleManager : MonoBehaviour
 {
+    [Header("UI References")]
+    [SerializeField] private Image displayImage; // 用于显示图片的Image组件
+    [SerializeField] private CanvasGroup imageCanvasGroup; // 显示图片的CanvasGroup
+
     [Header("Content Settings")] 
-    [SerializeField] private Sprite[] content;
+    [SerializeField] private Sprite[] content; // 使用Sprite数组存储图片
     [SerializeField] private float fadeInDuration = 1f;
     [SerializeField] private float fadeOutDuration = 1f;
     [SerializeField] private float intervalBetweenItems = 0.5f;
@@ -22,7 +23,8 @@ public class FinaleManager : MonoBehaviour
     [SerializeField] private bool useBackgroundImage = false;
     [SerializeField] private float backgroundFadeDuration = 2f;
 
-    [Header("Events")] public UnityEvent onCreditsStart;
+    [Header("Events")] 
+    public UnityEvent onCreditsStart;
     public UnityEvent onCreditsComplete;
 
     private Coroutine creditsCoroutine;
@@ -36,63 +38,99 @@ public class FinaleManager : MonoBehaviour
             if (!useBackgroundImage) backgroundImage.sprite = null;
         }
 
+        // 确保显示图片的CanvasGroup存在
+        if (displayImage != null && imageCanvasGroup == null)
+        {
+            imageCanvasGroup = displayImage.GetComponent<CanvasGroup>();
+            if (imageCanvasGroup == null)
+            {
+                imageCanvasGroup = displayImage.gameObject.AddComponent<CanvasGroup>();
+            }
+        }
+
+        // 初始隐藏显示图片
+        if (imageCanvasGroup != null)
+        {
+            imageCanvasGroup.alpha = 0f;
+            displayImage.gameObject.SetActive(false);
+        }
+
         if (autoStartOnEnable)
         {
-            if (isPlaying) return;
-            StopAllCoroutines();
-            creditsCoroutine = StartCoroutine(PlayCreditsSequence());
+            StartCredits();
         }
+    }
+
+    public void StartCredits()
+    {
+        if (isPlaying) return;
+        
+        StopAllCoroutines();
+        creditsCoroutine = StartCoroutine(PlayCreditsSequence());
     }
 
     private IEnumerator PlayCreditsSequence()
     {
         isPlaying = true;
         onCreditsStart?.Invoke();
-        yield return StartCoroutine(FadeBackground(0f, 1f, backgroundFadeDuration));// 淡入背景
+        
+        // 淡入背景
+        yield return StartCoroutine(FadeBackground(0f, 1f, backgroundFadeDuration));
         
         do
         {
             for (int i = 0; i < content.Length; i++)
             {
-                yield return StartCoroutine(DisplayContent(content[i], i));
+                yield return StartCoroutine(DisplayContent(content[i]));
                 yield return new WaitForSeconds(intervalBetweenItems);
             }
         } while (loopCredits && isPlaying);
         
-        yield return StartCoroutine(FadeBackground(1f, 0f, backgroundFadeDuration));// 淡出背景
+        // 淡出背景
+        yield return StartCoroutine(FadeBackground(1f, 0f, backgroundFadeDuration));
 
         isPlaying = false;
         onCreditsComplete?.Invoke();
     }
 
-    private IEnumerator DisplayContent(Sprite item, int index)
+    private IEnumerator DisplayContent(Sprite sprite)
     {
-        // 获取UI组件
-        Image itemImage = item.GetComponent<Image>();
-        CanvasGroup itemCanvasGroup = item.GetComponent<CanvasGroup>();
-
-        if (itemCanvasGroup != null) itemCanvasGroup.alpha = 0f;
+        if (displayImage == null || sprite == null) yield break;
         
-        itemImage.sprite = item.GetComponent<SpriteRenderer>().sprite;
-        itemImage.gameObject.SetActive(true);
+        // 设置要显示的图片
+        displayImage.sprite = sprite;
+        displayImage.gameObject.SetActive(true);
         
-        //保持图片比例
-        float aspectRatio = item.rect.width / item.rect.height;
-        RectTransform rect = itemImage.GetComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(rect.sizeDelta.y * aspectRatio, rect.sizeDelta.y);
+        // 保持图片比例
+        if (displayImage.preserveAspect)
+        {
+            // 如果设置了保持比例，自动处理
+            displayImage.SetNativeSize();
+        }
+        else
+        {
+            // 手动计算比例并设置大小
+            float aspectRatio = sprite.rect.width / sprite.rect.height;
+            RectTransform rectTransform = displayImage.GetComponent<RectTransform>();
+            if (rectTransform != null)
+            {
+                // 保持高度不变，按比例调整宽度
+                float newWidth = rectTransform.sizeDelta.y * aspectRatio;
+                rectTransform.sizeDelta = new Vector2(newWidth, rectTransform.sizeDelta.y);
+            }
+        }
 
         // 淡入
-        if (itemCanvasGroup != null)
-        {
-            yield return StartCoroutine(FadeCanvasGroup(itemCanvasGroup, 0f, 1f, fadeInDuration / 2f));
-        }
+        yield return StartCoroutine(FadeCanvasGroup(imageCanvasGroup, 0f, 1f, fadeInDuration));
+        
+        // 等待显示时间（这里固定1秒，你可以根据需要调整）
         yield return new WaitForSeconds(1f);
-
+        
         // 淡出
-        if (itemCanvasGroup != null)
-        {
-            yield return StartCoroutine(FadeCanvasGroup(itemCanvasGroup, 1f, 0f, fadeOutDuration / 2f));
-        }
+        yield return StartCoroutine(FadeCanvasGroup(imageCanvasGroup, 1f, 0f, fadeOutDuration));
+        
+        // 隐藏图片
+        displayImage.gameObject.SetActive(false);
     }
 
     private IEnumerator FadeCanvasGroup(CanvasGroup group, float startAlpha, float endAlpha, float duration)
