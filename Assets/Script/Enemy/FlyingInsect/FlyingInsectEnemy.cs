@@ -1,7 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class FlyingInsectEnemy : Enemy
 {
@@ -44,5 +42,10 @@ public class FlyingInsectEnemy : Enemy
     {
         base.Update();
     }
-    
+
+    public override void Die()
+    {
+        base.Die();
+        SceneManager.LoadSceneAsync("Finale");
+    }
 }

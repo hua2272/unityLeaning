@@ -16,7 +16,7 @@ public class Prelude : MonoBehaviour
     public Transform cameraTargetPosition;
     
     [Header("Audio Settings")]
-    public AudioClip  background;
+    public AudioClip background;
     private AudioManager audioManager;
     
     private bool mainMenuLoaded = false;

@@ -246,6 +246,7 @@ MonoBehaviour:
   onCreditsComplete:
     m_PersistentCalls:
       m_Calls: []
+  background: {fileID: 8300000, guid: 799b21d6deca30a4abc658cfb9520081, type: 3}
 --- !u!4 &359194884
 Transform:
   m_ObjectHideFlags: 0

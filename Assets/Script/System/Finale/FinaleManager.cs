@@ -27,11 +27,16 @@ public class FinaleManager : MonoBehaviour
     public UnityEvent onCreditsStart;
     public UnityEvent onCreditsComplete;
 
+    private AudioManager audioManager;
+    public AudioClip background;
+    
     private Coroutine creditsCoroutine;
     private bool isPlaying = false;
 
     private void Start()
     {
+        audioManager = AudioManager.instance;
+        audioManager.PlayBackgroundMusic(background, true);
         if (backgroundImage != null)
         {
             backgroundImage.color = backgroundColor;
