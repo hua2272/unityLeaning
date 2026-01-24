@@ -35,6 +35,7 @@ public class MenuController : MonoBehaviour
     private AudioManager audioManager;
     private PlayerInputManager playerInputManager;
     private GameDataManager gameDataManager;
+    private GameStateManager gameStateManager;
     private UILangue uiLangue;
     private UIManager uiManager;
     
@@ -52,6 +53,7 @@ public class MenuController : MonoBehaviour
         screenController = ScreenController.instance;
         audioManager = AudioManager.instance;
         gameDataManager = GameDataManager.instance;
+        gameStateManager = GameStateManager.instance;
         uiLangue = UILangue.instance;
         uiManager = UIManager.instance;
         playerInputManager.onKeyChange.AddListener(OnKeyChange);
@@ -96,8 +98,8 @@ public class MenuController : MonoBehaviour
     
     private void Update()
     {
-        if (playerInputManager.isRebinding) return;// 如果正在重绑定，完全跳过所有输入处理
-
+        if (playerInputManager.isRebinding) return;     // 如果正在重绑定，完全跳过所有输入处理
+        if (gameStateManager.CantOpenMenu()) return;    // 如果是不能打开菜单的状态，则
         if (playerInputManager.GetButtonDown("UIMenu"))
         {
             if (panel.activeSelf)

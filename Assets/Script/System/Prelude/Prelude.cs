@@ -22,6 +22,7 @@ public class Prelude : MonoBehaviour
     private bool mainMenuLoaded = false;
     private bool waitingForInput = false;
     private UIManager uiManager;
+    private GameStateManager gameStateManager;
 
     private int langueType;
     
@@ -35,9 +36,11 @@ public class Prelude : MonoBehaviour
     {
         audioManager = AudioManager.instance;
         uiManager = UIManager.instance;
+        gameStateManager = GameStateManager.instance;
         StartCoroutine(StartIntroSequence());                             //开始闪烁文本和等待输入
         audioManager.PlayBackgroundMusic(background, true);                 //播放背景音乐
         uiManager.SwitchScene(UIPreset.PressStart);
+        gameStateManager.CurrentState = GameState.Prelude;
     }
     
     void Update()

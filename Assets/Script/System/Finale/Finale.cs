@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
-public class FinaleManager : MonoBehaviour
+public class Finale : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] private Image displayImage; // 用于显示图片的Image组件
@@ -29,6 +29,7 @@ public class FinaleManager : MonoBehaviour
 
     private AudioManager audioManager;
     public AudioClip background;
+    private GameStateManager gameStateManager;
     
     private Coroutine creditsCoroutine;
     private bool isPlaying = false;
@@ -36,6 +37,8 @@ public class FinaleManager : MonoBehaviour
     private void Start()
     {
         audioManager = AudioManager.instance;
+        gameStateManager = GameStateManager.instance;
+        gameStateManager.CurrentState = GameState.Finale;
         audioManager.PlayBackgroundMusic(background, true);
         if (backgroundImage != null)
         {

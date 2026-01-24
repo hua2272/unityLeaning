@@ -12,6 +12,7 @@ public class GameLoadManager : MonoBehaviour
     
     private Player player;
     private GameSaveManager gameSaveManager;
+    private GameStateManager gameStateManager;
     private AudioManager audioManager;
     private UIManager uiManager;
     private string currentSceneName;
@@ -42,6 +43,7 @@ public class GameLoadManager : MonoBehaviour
     {
         player = PlayerManager.instance.player;
         gameSaveManager =  GameSaveManager.instance;
+        gameStateManager = GameStateManager.instance;
         audioManager = AudioManager.instance;
         uiManager = UIManager.instance;
         currentSceneName = SceneManager.GetActiveScene().name;
@@ -100,6 +102,7 @@ public class GameLoadManager : MonoBehaviour
         }
         GameDataManager.instance.DataPersistence(gameData);// 再加载玩家数据
         SceneManager.LoadScene("harbor");
+        gameStateManager.CurrentState = GameState.Normal;
         player.transform.position = new Vector3(gameData.playerPosition.x, gameData.playerPosition.y, gameData.playerPosition.z);
         yield return null;
     }
