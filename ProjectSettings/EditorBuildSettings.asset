@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/MainMenu.unity
     guid: b44bacd94e9baff4ca3d77bd9827eb2d
   - enabled: 1
@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/well.unity
     guid: c71df2f069a10594cb8cf801458cb07e
+  - enabled: 1
+    path: Assets/Scenes/Finale.unity
+    guid: 255cd1ef69f018047ac2d6641627e493
   m_configObjects: {}
