@@ -85,8 +85,6 @@ public class MenuController : MonoBehaviour
             MenuItemData menuItem = menuItems[i];
             if (menuItem.name != null && uiLangueContent4Menu.ContainsKey(menuItem.name))
             {
-                Debug.Log("-----menuItem.name: " + menuItem.name);
-                Debug.Log("-----uiLangueContent4Menu[menuItem.name]: " + uiLangueContent4Menu[menuItem.name]);
                 GameObject menuItemObj = createdMenuItems[i];
                 TextMeshProUGUI titleText = menuItemObj.GetComponentInChildren<TextMeshProUGUI>();
                 TextMeshProUGUI buttonText = menuItemObj.GetComponentInChildren<Button>().GetComponentInChildren<TextMeshProUGUI>();
@@ -179,7 +177,6 @@ public class MenuController : MonoBehaviour
     }
     
     
-
     void ShowButtons(float panelId)
     {
         if (panelId < 0)
@@ -238,20 +235,14 @@ public class MenuController : MonoBehaviour
             }
         }
         
-        // 设置当前滚动区域
-        currentScrollRect = scrollRect;
-        // 重置当前选中的按钮索引
-        currentButtonIndex = 0;
-        // 更新内容大小以确保滚动正常工作
-        UpdateContentSize();
-        // 如果需要，重置滚动位置到顶部
-        if (currentScrollRect != null)
+        currentScrollRect = scrollRect;                                       // 设置当前滚动区域
+        currentButtonIndex = 0;                                               // 重置当前选中的按钮索引
+        UpdateContentSize();                                                  // 更新内容大小以确保滚动正常工作
+        if (currentScrollRect != null)                                     // 如果需要，重置滚动位置到顶部
         {
-            currentScrollRect.verticalNormalizedPosition = 1f; // 顶部
+            currentScrollRect.verticalNormalizedPosition = 1f;
         }
-        // 更新按钮选中状态
-        UpdateButtonSelection();
-        // 调试信息
+        UpdateButtonSelection();                                              // 更新按钮选中状态
         Debug.Log($"显示面板 {panelId}，找到 {currentPanelButtons.Count} 个按钮");
     }
     

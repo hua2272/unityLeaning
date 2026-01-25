@@ -64,12 +64,16 @@ public class UILangue : MonoBehaviour
                 Content4Menu.Add("select", "读取存档");
                 Content4Menu.Add("save", "保存游戏");
                 Content4Menu.Add("setting", "设置");
+                Content4Menu.Add("new", "新游戏");
+                Content4Menu.Add("quit", "退出游戏");
                 break;
             case 1:
                 Content4Menu.Add("continue", "continue");
                 Content4Menu.Add("select", "select");
                 Content4Menu.Add("save", "save");
                 Content4Menu.Add("setting", "setting");
+                Content4Menu.Add("new", "start new");
+                Content4Menu.Add("quit", "quit");
                 break;
         }
         return Content4Menu;

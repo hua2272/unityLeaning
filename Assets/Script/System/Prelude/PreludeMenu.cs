@@ -56,6 +56,7 @@ public class PreludeMenu : MonoBehaviour
     private PlayerInputManager playerInputManager;
     private GameDataManager gameDataManager;
     private UILangue uiLangue;
+    private UIManager uiManager;
     
     private List<GameObject> createdMenuItems = new List<GameObject>();
     private RectTransform contentRectTransform;
@@ -80,8 +81,29 @@ public class PreludeMenu : MonoBehaviour
         audioManager = AudioManager.instance;
         gameDataManager = GameDataManager.instance;
         uiLangue = UILangue.instance;
+        uiManager = UIManager.instance;
         InitializeMenu();
         ShowButtons(0);
+    }
+    
+    private void OnLangueChange()
+    {
+        Dictionary<string, string> uiLangueContent4Menu = uiLangue.GetContent4Menu();
+        if (uiLangueContent4Menu == null) return;
+        for (int i = 0; i < menuItems.Count; i++)
+        {
+            MenuItemData menuItem = menuItems[i];
+            if (menuItem.name != null && uiLangueContent4Menu.ContainsKey(menuItem.name))
+            {
+                Debug.Log("-----menuItem.name: " + menuItem.name);
+                Debug.Log("-----uiLangueContent4Menu[menuItem.name]: " + uiLangueContent4Menu[menuItem.name]);
+                GameObject menuItemObj = createdMenuItems[i];
+                TextMeshProUGUI titleText = menuItemObj.GetComponentInChildren<TextMeshProUGUI>();
+                TextMeshProUGUI buttonText = menuItemObj.GetComponentInChildren<Button>().GetComponentInChildren<TextMeshProUGUI>();
+                buttonText.text = uiLangueContent4Menu[menuItem.name];
+            }
+        }
+        uiManager.OnLangueChange();
     }
     
     private void Update()
@@ -524,26 +546,26 @@ public class PreludeMenu : MonoBehaviour
         string latestSaveFiles = gameSaveManager.GetLatestSaveFiles();
         if (latestSaveFiles != "")
         {
-            menuItems.Add(new MenuItemData(0, null, 0, null, "继续游戏",  () => gameLoadManager.LoadLatestGame(latestSaveFiles)));
+            menuItems.Add(new MenuItemData(0, "continue", 0, null, "继续游戏",  () => gameLoadManager.LoadLatestGame(latestSaveFiles)));
         }
-        menuItems.Add(new MenuItemData(0, null, 0, null, "新游戏", null));
-        menuItems.Add(new MenuItemData(0, null, 0, null, "读取存档", () =>
+        menuItems.Add(new MenuItemData(0, "new", 0, null, "新游戏", null));
+        menuItems.Add(new MenuItemData(0, "select", 0, null, "读取存档", () =>
         {
             currentPanelLevel = 1;
             ShowButtons(1.2f);
         }));
-        menuItems.Add(new MenuItemData(0, null, 0, null, "设置", () =>
+        menuItems.Add(new MenuItemData(0, "setting", 0, null, "设置", () =>
         {
             currentPanelLevel = 1;
             ShowButtons(1);
         }));
-        menuItems.Add(new MenuItemData(0, null, 0, null, "退出游戏", gameLoadManager.OnQuitClicked));
+        menuItems.Add(new MenuItemData(0, "quit", 0, null, "退出游戏", gameLoadManager.OnQuitClicked));
         
         menuItems.Add(new MenuItemData(1, null, 0, null, "键盘按键设置", null));
         menuItems.Add(new MenuItemData(1, "screen", 1, "屏幕", new List<string> {"无边框全屏", "窗口化"}, 0, (index) => screenController.ScreenModeChange(index), "ScreenMode"));
         menuItems.Add(new MenuItemData(1, "BGM", 1, "音乐", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 4, (index) => audioManager.SetMusicVolume(index), "MusicVolume"));
         menuItems.Add(new MenuItemData(1, "SFX", 1, "音效", new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}, 4, (index) => audioManager.SetSFXVolume(index), "SFXVolume"));
-        menuItems.Add(new MenuItemData(1, "langue", 1, "语言", new List<string> {"中文", "English", "日本語"}, 0, null, "Langue"));
+        menuItems.Add(new MenuItemData(1, "langue", 1, "语言", new List<string> {"中文", "English", "日本語"}, 0, (index) => OnLangueChange(), "Langue"));
 
         List<string> allSaveFiles = GameSaveManager.GetAllSaveFiles();
         for (var i = 0; i < allSaveFiles.Count; i++)
