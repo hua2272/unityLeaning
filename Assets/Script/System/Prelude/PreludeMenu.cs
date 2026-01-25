@@ -24,17 +24,29 @@ public class PreludeMenu : MonoBehaviour
     
     [Header("Scroll Settings")]
     private ScrollRect currentScrollRect;
-    [SerializeField] private float thresholdTop = 5;                                 //滚动阈值（距离顶部/底部的按钮数量）
-    [SerializeField] private float scrollStep = 100f;                                //每次滚动的距离
+    [SerializeField] private float thresholdTop = 5;                                                //滚动阈值（距离顶部/底部的按钮数量）
+    [SerializeField] private float scrollStep = 100f;                                               //每次滚动的距离
     
     [Header("Navigation Style Settings")]
-    [SerializeField] private float selectedOffset = 30f;                            // 选中时向右偏移的距离
-    [SerializeField] private Color selectedColor = new Color(0.2f, 0.4f, 1f, 1f);   // 选中时的颜色
-    [SerializeField] private Color normalColor = Color.white;                       // 正常颜色
-    [SerializeField] private FontWeight selectedFontWeight = FontWeight.Bold;       // 选中时的字体粗细
-    [SerializeField] private FontWeight normalFontWeight = FontWeight.Regular;      // 正常字体粗细
-    [SerializeField] private Color lightBarColor = new Color(0.2f, 0.4f, 1f, 0.3f); // 光线条颜色
-    [SerializeField] private Vector2 lightBarSize = new Vector2(200f, 10f);         // 光线条尺寸
+    [SerializeField] private float selectedOffset = 40f;                                            // 选中时向右偏移的距离
+    [SerializeField] private Color selectedColor = new Color(0.2f, 0.4f, 1f, 1f);        // 选中时的颜色
+    [SerializeField] private Color normalColor = Color.white;                                    // 正常颜色
+    [SerializeField] private FontWeight selectedFontWeight = FontWeight.Bold;                       // 选中时的字体粗细
+    [SerializeField] private FontWeight normalFontWeight = FontWeight.Regular;                      // 正常字体粗细
+    [SerializeField] private Color lightBarColor = new Color(0.2f, 0.4f, 1f, 0.3f);      // 光线条颜色
+    [SerializeField] private Vector2 lightBarSize = new Vector2(300f, 10f);                         // 光线条尺寸
+    
+    [Header("字体自动调整设置")]
+    [SerializeField] private float titleFontSizeMin = 12f;                                         // 标题最小字体大小
+    [SerializeField] private float titleFontSizeMax = 24f;                                         // 标题最大字体大小
+    [SerializeField] private float buttonFontSizeMin = 10f;                                        // 按钮最小字体大小
+    [SerializeField] private float buttonFontSizeMax = 16f;                                        // 按钮最大字体大小
+    
+    [Header("按钮尺寸设置")]
+    [SerializeField] private Vector2 buttonSize = new Vector2(120f, 40f);                               // 按钮尺寸
+    
+    [Header("布局设置")]
+    [SerializeField] private float titleButtonSpacing = 800f;                                           // 标题和按钮之间的间距
     
     [Header("功能脚本")]
     private GameSaveManager gameSaveManager;
@@ -597,7 +609,7 @@ public class PreludeMenu : MonoBehaviour
         
         HorizontalLayoutGroup itemLayout = menuItem.AddComponent<HorizontalLayoutGroup>();
         itemLayout.padding = new RectOffset(10, 10, 5, 5);
-        itemLayout.spacing = 800f;                                                                  //标题和按钮之间创建空隙
+        itemLayout.spacing = titleButtonSpacing;                                                                  //标题和按钮之间创建空隙
         itemLayout.childControlWidth = true;
         itemLayout.childControlHeight = true;
         itemLayout.childForceExpandWidth = false;
@@ -617,9 +629,6 @@ public class PreludeMenu : MonoBehaviour
             Transform picTransform = infoTransform.Find("screenshotImage");
             Image image = picTransform.GetComponent<Image>();
             
-            // Transform playTimeTransform = infoTransform.Find("playTime");
-            // TextMeshProUGUI playTime = playTimeTransform.GetComponent<TextMeshProUGUI>();
-            
             Transform saveTimeTransform = infoTransform.Find("saveTime");
             TextMeshProUGUI saveTime = saveTimeTransform.GetComponent<TextMeshProUGUI>();
             
@@ -633,14 +642,6 @@ public class PreludeMenu : MonoBehaviour
             aspectFitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
             aspectFitter.aspectRatio = 16f / 9f; // 根据你的截图比例调整
             
-            // 设置第一个文本的位置（中间偏左）
-            // RectTransform playTimeRect = playTimeTransform.GetComponent<RectTransform>();
-            // playTimeRect.anchorMin = new Vector2(0.4f, 0.6f); // 水平居中，垂直偏上
-            // playTimeRect.anchorMax = new Vector2(0.8f, 0.8f);
-            // playTimeRect.pivot = new Vector2(0, 0.5f);
-            // playTimeRect.offsetMin = new Vector2(10, 0);
-            // playTimeRect.offsetMax = new Vector2(-10, 0);
-    
             // 设置第二个文本的位置（中间偏右）
             RectTransform saveTimeRect = saveTimeTransform.GetComponent<RectTransform>();
             saveTimeRect.anchorMin = new Vector2(0.4f, 0.4f); // 水平居中，垂直偏下
@@ -650,7 +651,6 @@ public class PreludeMenu : MonoBehaviour
             saveTimeRect.offsetMax = new Vector2(-10, 0);
 
             LoadThumbnailAsync(image, itemData.screenshotImage);
-            // playTime.text = itemData.playTime;
             saveTime.text = itemData.saveTime;
             
             itemLayout.childAlignment = TextAnchor.MiddleLeft; // 标题不为空时，左对齐（标题在左，按钮在右）
@@ -702,8 +702,8 @@ public class PreludeMenu : MonoBehaviour
             buttonLayout.flexibleWidth = 0f; // 按钮不拉伸
             
             titleText.enableAutoSizing = true;// 设置标题文本自适应
-            titleText.fontSizeMin = 12f;
-            titleText.fontSizeMax = 24f;
+            titleText.fontSizeMin = titleFontSizeMin;
+            titleText.fontSizeMax = titleFontSizeMax;
             titleText.overflowMode = TextOverflowModes.Ellipsis;
             titleText.alignment = TextAlignmentOptions.Left;
             
@@ -716,15 +716,15 @@ public class PreludeMenu : MonoBehaviour
 
         // 设置按钮的RectTransform
         RectTransform buttonRect = buttonTransform.GetComponent<RectTransform>();
-        buttonRect.sizeDelta = new Vector2(120f, 40f);
+        buttonRect.sizeDelta = buttonSize;
 
         // 设置按钮文本
         Transform buttonTextTransform = buttonTransform.Find("Text");
         TextMeshProUGUI buttonText = buttonTextTransform.GetComponent<TextMeshProUGUI>();
         buttonText.text = itemData.GetCurrentOptionText();
         buttonText.enableAutoSizing = true;
-        buttonText.fontSizeMin = 10f;
-        buttonText.fontSizeMax = 16f;
+        buttonText.fontSizeMin = buttonFontSizeMin;
+        buttonText.fontSizeMax = buttonFontSizeMax;
         buttonText.overflowMode = TextOverflowModes.Ellipsis;
         buttonText.alignment = TextAlignmentOptions.Center;
         RectTransform textRect = buttonTextTransform.GetComponent<RectTransform>();     // 确保按钮文本填满整个按钮

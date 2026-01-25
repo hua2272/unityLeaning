@@ -4193,8 +4193,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -30, y: 32.8}
-  m_SizeDelta: {x: 54.9579, y: 34.7577}
+  m_AnchoredPosition: {x: -39, y: 31.6}
+  m_SizeDelta: {x: 54.6236, y: 34.8692}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!212 &449621261
 SpriteRenderer:
@@ -17549,13 +17549,19 @@ MonoBehaviour:
   defaultThumbnail: {fileID: 21300000, guid: af8a72c2c1fd39b44b0a4ff9ca2394b0, type: 3}
   thresholdTop: 5
   scrollStep: 100
-  selectedOffset: 30
+  selectedOffset: 40
   selectedColor: {r: 0.2, g: 0.4, b: 1, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   selectedFontWeight: 700
   normalFontWeight: 400
   lightBarColor: {r: 0.2, g: 0.4, b: 1, a: 0.3}
   lightBarSize: {x: 200, y: 10}
+  titleFontSizeMin: 20
+  titleFontSizeMax: 60
+  buttonFontSizeMin: 20
+  buttonFontSizeMax: 60
+  buttonSize: {x: 160, y: 60}
+  titleButtonSpacing: 800
   mainMenuContainer: {fileID: 0}
 --- !u!1 &2034163275
 GameObject:
