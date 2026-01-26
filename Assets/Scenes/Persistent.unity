@@ -17562,7 +17562,6 @@ MonoBehaviour:
   buttonFontSizeMax: 60
   buttonSize: {x: 160, y: 60}
   titleButtonSpacing: 800
-  mainMenuContainer: {fileID: 0}
 --- !u!1 &2034163275
 GameObject:
   m_ObjectHideFlags: 0
