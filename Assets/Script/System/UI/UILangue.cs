@@ -66,6 +66,10 @@ public class UILangue : MonoBehaviour
                 Content4Menu.Add("setting", "设置");
                 Content4Menu.Add("new", "新游戏");
                 Content4Menu.Add("quit", "退出游戏");
+                Content4Menu.Add("screen", "屏幕模式");
+                Content4Menu.Add("BGM", "背景音乐");
+                Content4Menu.Add("SFX", "音效音乐");
+                Content4Menu.Add("langue", "语言");
                 break;
             case 1:
                 Content4Menu.Add("continue", "continue");
@@ -74,6 +78,10 @@ public class UILangue : MonoBehaviour
                 Content4Menu.Add("setting", "setting");
                 Content4Menu.Add("new", "start new");
                 Content4Menu.Add("quit", "quit");
+                Content4Menu.Add("screen", "screen");
+                Content4Menu.Add("BGM", "BGM");
+                Content4Menu.Add("SFX", "SFX");
+                Content4Menu.Add("langue", "langue");
                 break;
         }
         return Content4Menu;

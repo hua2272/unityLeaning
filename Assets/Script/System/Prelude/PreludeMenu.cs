@@ -102,7 +102,11 @@ public class PreludeMenu : MonoBehaviour
                 GameObject menuItemObj = allMenuItems[i];
                 TextMeshProUGUI titleText = menuItemObj.GetComponentInChildren<TextMeshProUGUI>();
                 TextMeshProUGUI buttonText = menuItemObj.GetComponentInChildren<Button>().GetComponentInChildren<TextMeshProUGUI>();
-                buttonText.text = uiLangueContent4Menu[menuItem.name];
+                titleText.text = uiLangueContent4Menu[menuItem.name];
+                if (menuItem.buttonType == 0)
+                {
+                    buttonText.text = uiLangueContent4Menu[menuItem.name];
+                }
             }
         }
         uiManager.OnLangueChange();
