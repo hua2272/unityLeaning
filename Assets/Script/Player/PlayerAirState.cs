@@ -12,6 +12,7 @@ public class PlayerAirState : PlayerState
     public override void Update()
     {
         base.Update();
+        player.SetVelocity(xInput * player.moveSpeed / 2, rb.velocity.y);
         if (player.isSlamming)
         {
             player.anim.SetFloat("AirState", 2);

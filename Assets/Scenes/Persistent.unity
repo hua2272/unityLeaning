@@ -16073,7 +16073,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1840562114
 Transform:
   m_ObjectHideFlags: 0
@@ -18318,11 +18318,11 @@ AudioSource:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 752308985}
   - {fileID: 735536998}
   - {fileID: 1956940237}
-  - {fileID: 1963069208}
+  - {fileID: 752308985}
   - {fileID: 1840562114}
+  - {fileID: 1963069208}
   - {fileID: 1085764286}
   - {fileID: 942119512}
   - {fileID: 1142823683}

@@ -39,7 +39,6 @@ public class PlayerState
         xInput = movement.x;
         yInput = movement.y;
         stateTimer -= Time.deltaTime;
-        //player.anim.SetFloat("yVelocity", rb.velocity.y);
     }
     
     public virtual void Exit()
