@@ -8,6 +8,9 @@ public class ParabolicProjectile : MonoBehaviour
     public int damage = 15;
     public LayerMask collisionLayers = -1;
     
+    [Header("碰撞检测")]
+    public float collisionRadius = 0.5f; // 新增：碰撞检测半径
+    
     [Header("视觉效果")]
     public GameObject hitEffect;
     public AudioClip hitSound;
@@ -31,10 +34,10 @@ public class ParabolicProjectile : MonoBehaviour
         
         if (isReflected)
         {
-            UpdateReflectedMovement();// 反弹后的直线飞行逻辑
+            UpdateReflectedMovement(); // 反弹后的直线飞行逻辑
             return;
         }
-        UpdateParabolicMovement();// 原有抛物线移动逻辑
+        UpdateParabolicMovement(); // 原有抛物线移动逻辑
     }
     
     void UpdateParabolicMovement()
@@ -42,19 +45,22 @@ public class ParabolicProjectile : MonoBehaviour
         float distCovered = (Time.time - startTime) * speed;
         float fractionOfJourney = distCovered / journeyLength;
         
-        if (fractionOfJourney >= 1f)
-        {
-            CreateHitEffect(targetPosition);
-            CheckCollisionAtPosition(targetPosition);
-            Destroy(gameObject);
-            return;
-        }
-        
         Vector3 currentPos = Vector3.Lerp(startPosition, targetPosition, fractionOfJourney);
         float parabola = 1f - 4f * (fractionOfJourney - 0.5f) * (fractionOfJourney - 0.5f);
         currentPos.y += parabola * height;
         
-        transform.position = currentPos;
+        transform.position = currentPos;// 更新位置
+        
+        // 实时碰撞检测：以炮弹当前位置为圆心检测碰撞
+        if (CheckCollisionAtCurrentPosition())
+        {
+            // 检测到碰撞，在当前位置爆炸并销毁
+            CreateHitEffect(transform.position);
+            Destroy(gameObject);
+            return;
+        }
+        
+        // 旋转逻辑保持不变
         if (Time.time - startTime > 0.1f)
         {
             Vector3 moveDirection = (transform.position - startPosition).normalized;
@@ -65,15 +71,31 @@ public class ParabolicProjectile : MonoBehaviour
             }
         }
         
-        if (Time.time - startTime > lifetime) Destroy(gameObject);
+        // 生命周期检查：如果炮弹飞得太久还没碰到任何东西，销毁它
+        if (fractionOfJourney >= 1f || Time.time - startTime > lifetime)
+        {
+            // 如果到达目标位置还没有击中任何东西，在目标位置创建效果
+            CreateHitEffect(targetPosition);
+            Destroy(gameObject);
+        }
     }
     
     void UpdateReflectedMovement()
     {
         Vector3 newPosition = transform.position + reflectDirection * speed * Time.deltaTime;       // 水平反弹飞行 
         
-        // 更新位置和旋转
+        // 更新位置
         transform.position = newPosition;
+        
+        // 反弹后的实时碰撞检测
+        if (CheckCollisionAtCurrentPosition())
+        {
+            CreateHitEffect(transform.position);
+            Destroy(gameObject);
+            return;
+        }
+        
+        // 更新旋转
         if (reflectDirection != Vector3.zero)
         {
             float angle = Mathf.Atan2(reflectDirection.y, reflectDirection.x) * Mathf.Rad2Deg;
@@ -81,6 +103,28 @@ public class ParabolicProjectile : MonoBehaviour
         }
         
         if (Time.time - reflectStartTime > lifetime) Destroy(gameObject);       // 反弹后的生命周期检查
+    }
+    
+    // 实时碰撞检测方法
+    bool CheckCollisionAtCurrentPosition()
+    {
+        // 以炮弹当前位置为圆心，检测指定半径内的碰撞体
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(
+            transform.position, 
+            collisionRadius, 
+            collisionLayers
+        );
+        
+        // 如果没有检测到碰撞体，返回false
+        if (hitColliders.Length == 0) return false;
+        
+        // 对检测到的所有碰撞体应用伤害
+        foreach (Collider2D collider in hitColliders)
+        {
+            ApplyDamage(collider);
+        }
+        
+        return true; // 检测到碰撞，返回true
     }
     
     public void Initialize(Vector3 target, float projectileSpeed, float projectileHeight)
@@ -135,15 +179,6 @@ public class ParabolicProjectile : MonoBehaviour
         }
     }
     
-    void CheckCollisionAtPosition(Vector3 position)
-    {
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(position, 1f, collisionLayers);
-        foreach (Collider2D collider in hitColliders)
-        {
-            ApplyDamage(collider);
-        }
-    }
-    
     void ApplyDamage(Collider2D collider)
     {
         // 根据是否反弹应用不同的伤害逻辑
@@ -168,7 +203,7 @@ public class ParabolicProjectile : MonoBehaviour
         }
     }
     
-    // 在Scene视图中绘制轨迹预览
+    // 在Scene视图中绘制轨迹预览和碰撞检测范围
     void OnDrawGizmosSelected()
     {
         if (!isInitialized) return;
@@ -187,5 +222,9 @@ public class ParabolicProjectile : MonoBehaviour
             Gizmos.DrawLine(previousPoint, point);
             previousPoint = point;
         }
+        
+        // 绘制碰撞检测范围
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, collisionRadius);
     }
 }
