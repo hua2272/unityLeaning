@@ -24,6 +24,23 @@ public class Enemy : MonoBehaviour
     public float attackCooldown;
     [HideInInspector] public float lastTimeAttacked;
     
+    [Header("攻击设置")]
+    public Transform firePoint;
+    public GameObject straightProjectilePrefab;
+    public GameObject parabolicProjectilePrefab;
+    
+    [Header("目标设置")]
+    public Transform playerTarget;
+    
+    [Header("直线炮弹设置")]
+    public float straightFireRate = 2f;
+    public float straightProjectileSpeed = 8f;
+    
+    [Header("抛物线炮弹设置")]
+    public float parabolicFireRate = 3f;
+    public float parabolicProjectileSpeed = 10f;
+    public float parabolicHeight = 3f;
+    
     public EnemyStateMachine stateMachine { get; private set; }
     public string lastAnimBoolName { get; private set; }
     
@@ -71,6 +88,32 @@ public class Enemy : MonoBehaviour
     protected virtual void Update()
     {
         stateMachine.currentState.Update();
+    }
+    
+    public void FireStraightProjectile()
+    {
+        if (straightProjectilePrefab == null || firePoint == null) return;
+        
+        GameObject projectile = Instantiate(straightProjectilePrefab, firePoint.position, firePoint.rotation);
+        StraightProjectile straightScript = projectile.GetComponent<StraightProjectile>();
+        
+        if (straightScript != null)
+        {
+            straightScript.Initialize(straightProjectileSpeed);
+        }
+    }
+    
+    public void FireParabolicProjectile()
+    {
+        if (parabolicProjectilePrefab == null || firePoint == null || playerTarget == null) return;
+        
+        GameObject projectile = Instantiate(parabolicProjectilePrefab, firePoint.position, Quaternion.identity);
+        ParabolicProjectile parabolicScript = projectile.GetComponent<ParabolicProjectile>();
+        
+        if (parabolicScript != null)
+        {
+            parabolicScript.Initialize(playerTarget.position, parabolicProjectileSpeed, parabolicHeight);
+        }
     }
 
     public virtual void AssignLastAnimName(string animBoolName)

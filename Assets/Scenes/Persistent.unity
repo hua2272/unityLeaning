@@ -1195,7 +1195,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &65791140
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1221,6 +1221,15 @@ MonoBehaviour:
   attackDistance: 0
   attackCooldown: 0
   lastTimeAttacked: 0
+  firePoint: {fileID: 1959216635}
+  straightProjectilePrefab: {fileID: 7145265371048817460, guid: be0e4b4ee5e92fe48b3e8eae59ee7dc2, type: 3}
+  parabolicProjectilePrefab: {fileID: 3896861469729050021, guid: 3c2b50bc87292e647b0bfa0681c5f2f4, type: 3}
+  playerTarget: {fileID: 0}
+  straightFireRate: 2
+  straightProjectileSpeed: 8
+  parabolicFireRate: 3
+  parabolicProjectileSpeed: 10
+  parabolicHeight: 3
   knockbackDirection: {x: 0, y: 0}
   knockbackDuration: 0
   attackCheck: {fileID: 1188472785}
@@ -1233,14 +1242,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   npcId: 0
-  firePoint: {fileID: 1959216635}
-  straightProjectilePrefab: {fileID: 7145265371048817460, guid: be0e4b4ee5e92fe48b3e8eae59ee7dc2, type: 3}
-  parabolicProjectilePrefab: {fileID: 3896861469729050021, guid: 3c2b50bc87292e647b0bfa0681c5f2f4, type: 3}
-  straightFireRate: 2
-  straightProjectileSpeed: 8
-  parabolicFireRate: 3
-  parabolicProjectileSpeed: 10
-  parabolicHeight: 3
 --- !u!4 &65791141
 Transform:
   m_ObjectHideFlags: 0
@@ -1250,7 +1251,7 @@ Transform:
   m_GameObject: {fileID: 65791139}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 56.651203, y: -9.780298, z: 0.47606352}
+  m_LocalPosition: {x: 25.61, y: -4.28, z: 0.47606352}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4604,6 +4605,15 @@ MonoBehaviour:
   attackDistance: 2
   attackCooldown: 1
   lastTimeAttacked: 0
+  firePoint: {fileID: 0}
+  straightProjectilePrefab: {fileID: 0}
+  parabolicProjectilePrefab: {fileID: 0}
+  playerTarget: {fileID: 0}
+  straightFireRate: 2
+  straightProjectileSpeed: 8
+  parabolicFireRate: 3
+  parabolicProjectileSpeed: 10
+  parabolicHeight: 3
   knockbackDirection: {x: 7, y: 12}
   knockbackDuration: 0.07
   attackCheck: {fileID: 1516749319}
@@ -5002,7 +5012,7 @@ Transform:
   m_GameObject: {fileID: 497899630}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 27.85, y: -1.98, z: 0}
+  m_LocalPosition: {x: 38.76, y: -1.08, z: 0}
   m_LocalScale: {x: 1.0912068, y: 2.9441898, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8223,6 +8233,15 @@ MonoBehaviour:
   attackDistance: 0
   attackCooldown: 0
   lastTimeAttacked: 0
+  firePoint: {fileID: 0}
+  straightProjectilePrefab: {fileID: 0}
+  parabolicProjectilePrefab: {fileID: 0}
+  playerTarget: {fileID: 0}
+  straightFireRate: 2
+  straightProjectileSpeed: 8
+  parabolicFireRate: 3
+  parabolicProjectileSpeed: 10
+  parabolicHeight: 3
   knockbackDirection: {x: 0, y: 0}
   knockbackDuration: 0
   attackCheck: {fileID: 250789734}
@@ -14220,7 +14239,7 @@ Transform:
   m_GameObject: {fileID: 1525866281}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 36.8456, y: -4.3723, z: -5.694029}
+  m_LocalPosition: {x: 38.24, y: -5.1, z: -5.694029}
   m_LocalScale: {x: 8.9913, y: 1.3446, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

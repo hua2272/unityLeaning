@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PlayerEffectManager : MonoBehaviour
 {
-    public static PlayerEffectManager instance;
+    public static PlayerEffectManager instance { get; private set; }
     public DustEffect dustEffect;
     public ScreenEffect screenEffect;
     
