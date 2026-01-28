@@ -31,13 +31,10 @@ public class ParabolicProjectile : MonoBehaviour
         
         if (isReflected)
         {
-            // 反弹后的直线飞行逻辑
-            UpdateReflectedMovement();
+            UpdateReflectedMovement();// 反弹后的直线飞行逻辑
             return;
         }
-        
-        // 原有抛物线移动逻辑
-        UpdateParabolicMovement();
+        UpdateParabolicMovement();// 原有抛物线移动逻辑
     }
     
     void UpdateParabolicMovement()
@@ -47,7 +44,9 @@ public class ParabolicProjectile : MonoBehaviour
         
         if (fractionOfJourney >= 1f)
         {
-            ReachDestination();
+            CreateHitEffect(targetPosition);
+            CheckCollisionAtPosition(targetPosition);
+            Destroy(gameObject);
             return;
         }
         
@@ -56,28 +55,32 @@ public class ParabolicProjectile : MonoBehaviour
         currentPos.y += parabola * height;
         
         transform.position = currentPos;
-        UpdateRotation();
-        
-        if (Time.time - startTime > lifetime)
+        if (Time.time - startTime > 0.1f)
         {
-            Destroy(gameObject);
+            Vector3 moveDirection = (transform.position - startPosition).normalized;
+            if (moveDirection != Vector3.zero)
+            {
+                float angle = Mathf.Atan2(moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
+                transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+            }
         }
+        
+        if (Time.time - startTime > lifetime) Destroy(gameObject);
     }
     
     void UpdateReflectedMovement()
     {
-        // 水平反弹飞行 
-        Vector3 newPosition = transform.position + reflectDirection * speed * Time.deltaTime;
+        Vector3 newPosition = transform.position + reflectDirection * speed * Time.deltaTime;       // 水平反弹飞行 
         
         // 更新位置和旋转
         transform.position = newPosition;
-        UpdateReflectedRotation();
-        
-        // 反弹后的生命周期检查
-        if (Time.time - reflectStartTime > lifetime)
+        if (reflectDirection != Vector3.zero)
         {
-            Destroy(gameObject);
+            float angle = Mathf.Atan2(reflectDirection.y, reflectDirection.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         }
+        
+        if (Time.time - reflectStartTime > lifetime) Destroy(gameObject);       // 反弹后的生命周期检查
     }
     
     public void Initialize(Vector3 target, float projectileSpeed, float projectileHeight)
@@ -106,53 +109,17 @@ public class ParabolicProjectile : MonoBehaviour
         // 重置碰撞检测，确保反弹后能击中敌人
         gameObject.layer = LayerMask.NameToLayer("PlayerProjectile"); // 设置到玩家炮弹层
         
-        // 可以在这里添加反弹视觉效果
-        if (TryGetComponent<TrailRenderer>(out TrailRenderer trail))
+        if (TryGetComponent<TrailRenderer>(out TrailRenderer trail))// 可以在这里添加反弹视觉效果
         {
             trail.Clear(); // 清除原有轨迹
-            trail.colorGradient = CreateReflectedTrailColor(); // 改变轨迹颜色
-        }
-    }
-    
-    Gradient CreateReflectedTrailColor()
-    {
-        Gradient gradient = new Gradient();
-        gradient.colorKeys = new GradientColorKey[]
-        {
-            new GradientColorKey(Color.blue, 0f),
-            new GradientColorKey(Color.cyan, 1f)
-        };
-        return gradient;
-    }
-    
-    void UpdateRotation()
-    {
-        if (Time.time - startTime > 0.1f)
-        {
-            Vector3 moveDirection = (transform.position - startPosition).normalized;
-            if (moveDirection != Vector3.zero)
+            Gradient gradient = new Gradient();
+            gradient.colorKeys = new GradientColorKey[]
             {
-                float angle = Mathf.Atan2(moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
-                transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-            }
+                new GradientColorKey(Color.blue, 0f),
+                new GradientColorKey(Color.cyan, 1f)
+            };
+            trail.colorGradient = gradient; // 改变轨迹颜色
         }
-    }
-    
-    void UpdateReflectedRotation()
-    {
-        // 反弹后的旋转，保持水平
-        if (reflectDirection != Vector3.zero)
-        {
-            float angle = Mathf.Atan2(reflectDirection.y, reflectDirection.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-        }
-    }
-    
-    void ReachDestination()
-    {
-        CreateHitEffect(targetPosition);
-        CheckCollisionAtPosition(targetPosition);
-        Destroy(gameObject);
     }
     
     void CreateHitEffect(Vector3 position)
@@ -182,52 +149,21 @@ public class ParabolicProjectile : MonoBehaviour
         // 根据是否反弹应用不同的伤害逻辑
         if (isReflected)
         {
-            // 反弹后击中敌人
+            Debug.Log("--------enemy");
             Enemy enemy = collider.GetComponent<Enemy>();
             if (enemy != null)
             {
-                // 这里假设Enemy有TakeDamage方法，根据你的实际代码调整
-                //enemy.TakeDamage(damage * 2); // 反弹后伤害加倍
+                enemy.enemyStatus.currentHealth -= damage*10;
+                Debug.Log("now health: " + enemy.enemyStatus.currentHealth);
             }
         }
         else
         {
-            // 原始状态击中玩家
+            Debug.Log("--------player");
             Player player = collider.GetComponent<Player>();
             if (player != null)
             {
                 player.playerStatus.currentHealth -= damage;
-            }
-        }
-    }
-    
-    void OnTriggerEnter2D(Collider2D collision)
-    {
-        int collisionLayer = 1 << collision.gameObject.layer;
-        
-        if ((collisionLayer & collisionLayers) != 0)
-        {
-            // 如果是反弹状态，只对敌人层做出反应
-            if (isReflected)
-            {
-                Enemy enemy = collision.GetComponent<Enemy>();
-                if (enemy != null)
-                {
-                    CreateHitEffect(transform.position);
-                    ApplyDamage(collision);
-                    Destroy(gameObject);
-                }
-            }
-            else
-            {
-                // 原始状态对玩家层做出反应
-                Player player = collision.GetComponent<Player>();
-                if (player != null)
-                {
-                    CreateHitEffect(transform.position);
-                    ApplyDamage(collision);
-                    Destroy(gameObject);
-                }
             }
         }
     }
