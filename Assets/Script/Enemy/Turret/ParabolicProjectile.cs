@@ -6,7 +6,6 @@ public class ParabolicProjectile : MonoBehaviour
     public float speed = 10f;
     public float lifetime = 5f;
     public int damage = 15;
-    public LayerMask collisionLayers = -1;
     
     [Header("碰撞检测")]
     public float collisionRadius = 0.5f; // 新增：碰撞检测半径
@@ -86,7 +85,6 @@ public class ParabolicProjectile : MonoBehaviour
         
         // 更新位置
         transform.position = newPosition;
-        
         // 反弹后的实时碰撞检测
         if (CheckCollisionAtCurrentPosition())
         {
@@ -108,18 +106,16 @@ public class ParabolicProjectile : MonoBehaviour
     // 实时碰撞检测方法
     bool CheckCollisionAtCurrentPosition()
     {
-        // 以炮弹当前位置为圆心，检测指定半径内的碰撞体
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(
-            transform.position, 
-            collisionRadius, 
-            collisionLayers
-        );
+        LayerMask checkLayerMask;   // 以炮弹当前位置为圆心，检测指定半径内的碰撞体
+        if (isReflected)
+            checkLayerMask = (1 << LayerMask.NameToLayer("Enemy")) | (1 << LayerMask.NameToLayer("Ground"));
+        else
+            checkLayerMask = (1 << LayerMask.NameToLayer("Player")) | (1 << LayerMask.NameToLayer("Ground"));
         
-        // 如果没有检测到碰撞体，返回false
-        if (hitColliders.Length == 0) return false;
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, collisionRadius, checkLayerMask);
         
-        // 对检测到的所有碰撞体应用伤害
-        foreach (Collider2D collider in hitColliders)
+        if (hitColliders.Length == 0) return false;         // 如果没有检测到碰撞体，返回false
+        foreach (Collider2D collider in hitColliders)       // 对检测到的所有碰撞体应用伤害
         {
             ApplyDamage(collider);
         }
@@ -139,7 +135,7 @@ public class ParabolicProjectile : MonoBehaviour
         isInitialized = true;
     }
     
-    // 新增：被反击时调用的方法
+    // 被弹反时调用的方法
     public void ReflectProjectile(Vector3 reflectDir)
     {
         if (isReflected) return; // 防止多次反弹
@@ -150,7 +146,6 @@ public class ParabolicProjectile : MonoBehaviour
         reflectDirection = reflectDirection.normalized;
         reflectStartTime = Time.time;
         
-        // 重置碰撞检测，确保反弹后能击中敌人
         gameObject.layer = LayerMask.NameToLayer("PlayerProjectile"); // 设置到玩家炮弹层
         
         if (TryGetComponent<TrailRenderer>(out TrailRenderer trail))// 可以在这里添加反弹视觉效果
@@ -181,10 +176,8 @@ public class ParabolicProjectile : MonoBehaviour
     
     void ApplyDamage(Collider2D collider)
     {
-        // 根据是否反弹应用不同的伤害逻辑
         if (isReflected)
         {
-            Debug.Log("--------enemy");
             Enemy enemy = collider.GetComponent<Enemy>();
             if (enemy != null)
             {
@@ -194,7 +187,6 @@ public class ParabolicProjectile : MonoBehaviour
         }
         else
         {
-            Debug.Log("--------player");
             Player player = collider.GetComponent<Player>();
             if (player != null)
             {
