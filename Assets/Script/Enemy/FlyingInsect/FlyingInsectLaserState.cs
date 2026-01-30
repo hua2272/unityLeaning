@@ -11,7 +11,6 @@ public class FlyingInsectLaserState : EnemyState
     {
         Scanning,      // 扇形扫描
         Locking,       // 锁定跟踪
-        FixedDirection,// 固定方向
         Damaging       // 伤害判定
     }
     
@@ -20,8 +19,10 @@ public class FlyingInsectLaserState : EnemyState
     private float damageTimer = 0f;
     private float scanAngle = 0f;
     private float scanSpeed = 180f;
-    
-    public FlyingInsectLaserState(Enemy enemyBase, EnemyStateMachine stateMachine, string animBoolName, FlyingInsectEnemy enemy) : base(enemyBase, stateMachine, animBoolName)
+    private bool isLaserActive = false;
+
+    public FlyingInsectLaserState(Enemy enemyBase, EnemyStateMachine stateMachine, string animBoolName, FlyingInsectEnemy enemy) 
+        : base(enemyBase, stateMachine, animBoolName)
     {
         this.enemy = enemy;
     }
@@ -30,26 +31,29 @@ public class FlyingInsectLaserState : EnemyState
     {
         base.Enter();
         
+        Debug.Log("进入激光攻击状态");
+        
         // 初始化激光
         enemy.InitializeLaser();
         
-        // 重置参数
-        enemy.lockedPlayer = null;
-        enemy.laserStateTimer = 0f;
-        enemy.currentLaserDirection = enemyBase.transform.right;
+        // 重置所有参数
+        ResetLaserState();
+        
+        // 标记激光为激活状态
+        isLaserActive = true;
         
         // 开始激光攻击协程
-        if (laserCoroutine != null) 
-            enemyBase.StopCoroutine(laserCoroutine);
-        
         laserCoroutine = enemyBase.StartCoroutine(LaserAttackRoutine());
-        
-        Debug.Log("进入激光攻击状态");
     }
     
     public override void Exit()
     {
         base.Exit();
+        
+        Debug.Log("退出激光攻击状态");
+        
+        // 标记激光为非激活状态
+        isLaserActive = false;
         
         // 停止激光协程
         if (laserCoroutine != null)
@@ -58,42 +62,80 @@ public class FlyingInsectLaserState : EnemyState
             laserCoroutine = null;
         }
         
-        // 隐藏激光
-        if (enemy.laserLineRenderer != null)
-            enemy.laserLineRenderer.enabled = false;
-        
-        Debug.Log("退出激光攻击状态");
+        // 清理激光效果
+        CleanupLaserEffects();
     }
     
     public override void Update()
     {
         base.Update();
         
-        // 更新状态计时器
+        if (!isLaserActive) return;
+        
+        // 更新激光状态计时器
         enemy.laserStateTimer += Time.deltaTime;
     }
     
+    // 重置激光状态参数
+    private void ResetLaserState()
+    {
+        enemy.lockedPlayer = null;
+        enemy.laserStateTimer = 0f;
+        enemy.currentLaserDirection = enemyBase.transform.right;
+        enemy.targetLockPosition = Vector2.zero;
+        
+        currentPhase = LaserPhase.Scanning;
+        phaseTimer = 0f;
+        damageTimer = 0f;
+        scanAngle = 0f;
+    }
+    
+    // 清理激光效果
+    private void CleanupLaserEffects()
+    {
+        // 隐藏激光线
+        if (enemy.laserLineRenderer != null)
+        {
+            enemy.laserLineRenderer.enabled = false;
+        }
+        
+        // 重置所有相关变量
+        enemy.lockedPlayer = null;
+        enemy.currentLaserDirection = Vector2.zero;
+    }
+
     // 激光攻击主协程
     private IEnumerator LaserAttackRoutine()
     {
-        // 第一阶段：扇形扫描
-        yield return StartCoroutine(ScanningPhase());
+        // 第一阶段：扇形扫描（寻找目标）
+        yield return StartCoroutine(PerformScanningPhase());
+
+        // 如果扫描阶段没有找到目标，直接退出
+        if (enemy.lockedPlayer == null)
+        {
+            Debug.Log("扫描阶段未找到目标，结束激光攻击");
+            stateMachine.ChangeState(enemy.patrolState);
+            yield break;
+        }
         
         // 第二阶段：锁定跟踪
-        yield return StartCoroutine(LockingPhase());
+        yield return StartCoroutine(PerformLockingPhase());
         
-        // 第三阶段：固定方向
-        yield return StartCoroutine(FixedDirectionPhase());
-        
-        // 第四阶段：伤害判定
-        yield return StartCoroutine(DamagingPhase());
-        
-        // 激光攻击结束，返回空闲状态
-        stateMachine.ChangeState(enemy.patrolState);
+        // 第三阶段：伤害判定
+        yield return StartCoroutine(PerformDamagingPhase());
+
+        // 激光攻击结束
+        Debug.Log("激光攻击完成");
+
+        // 确保状态切换回巡逻
+        if (isLaserActive)
+        {
+            stateMachine.ChangeState(enemy.patrolState);
+        }
     }
     
-    // 第一阶段：扇形扫描
-    private IEnumerator ScanningPhase()
+    // 扫描阶段
+    private IEnumerator PerformScanningPhase()
     {
         Debug.Log("开始扇形扫描");
         currentPhase = LaserPhase.Scanning;
@@ -104,41 +146,42 @@ public class FlyingInsectLaserState : EnemyState
         enemy.laserLineRenderer.startColor = Color.yellow;
         enemy.laserLineRenderer.endColor = Color.yellow;
         
-        // 扫描持续时间（可配置，这里用3秒）
+        // 扫描持续时间
         float scanDuration = 3f;
         
-        while (phaseTimer < scanDuration)
+        while (phaseTimer < scanDuration && isLaserActive)
         {
             phaseTimer += Time.deltaTime;
             
-            // 计算扫描角度
+            // 计算扫描角度（来回扫描）
             scanAngle = Mathf.PingPong(phaseTimer * scanSpeed, enemy.laserSectorAngle) 
                       - enemy.laserSectorAngle / 2;
             
             // 计算扫描方向
             Vector2 scanDir = Quaternion.Euler(0, 0, scanAngle) * enemyBase.transform.right;
             
-            // 更新激光显示
+            // 更新激光可视化
             UpdateLaserVisualization(scanDir, Color.yellow);
             
             // 检测玩家
             if (DetectPlayerInSector(scanDir))
             {
                 Debug.Log("检测到玩家，开始锁定");
-                yield break;
+                yield break; // 提前结束扫描
             }
             
             yield return null;
         }
         
-        Debug.Log("未检测到玩家，结束激光攻击");
-        // 扫描结束未发现玩家，直接结束状态
-        stateMachine.ChangeState(enemy.patrolState);
+        // 扫描结束未发现玩家
+        enemy.lockedPlayer = null;
     }
     
-    // 第二阶段：锁定跟踪
-    private IEnumerator LockingPhase()
+    // 锁定阶段
+    private IEnumerator PerformLockingPhase()
     {
+        if (enemy.lockedPlayer == null) yield break;
+        
         Debug.Log("开始锁定跟踪");
         currentPhase = LaserPhase.Locking;
         phaseTimer = 0f;
@@ -147,28 +190,15 @@ public class FlyingInsectLaserState : EnemyState
         enemy.laserLineRenderer.startColor = Color.red;
         enemy.laserLineRenderer.endColor = Color.red;
         
-        // 锁定阶段总时长
-        while (phaseTimer < enemy.lockDuration && enemy.lockedPlayer != null)
+        // 第一阶段：跟随玩家1秒
+        while (phaseTimer < enemy.followDuration && enemy.lockedPlayer != null && isLaserActive)
         {
             phaseTimer += Time.deltaTime;
             
-            // 前followDuration秒跟随玩家
-            if (phaseTimer < enemy.followDuration)
-            {
-                Vector2 dirToPlayer = ((Vector2)enemy.lockedPlayer.position - (Vector2)enemy.laserOrigin.position).normalized;
-                enemy.currentLaserDirection = dirToPlayer;
-                enemy.targetLockPosition = enemy.lockedPlayer.position;
-            }
-            // 1秒后锁定最后位置
-            else if (phaseTimer >= enemy.followDuration && phaseTimer < enemy.lockDuration)
-            {
-                // 记录最后方向
-                if (Mathf.Approximately(phaseTimer - Time.deltaTime, enemy.followDuration))
-                {
-                    enemy.currentLaserDirection = ((Vector2)enemy.targetLockPosition - (Vector2)enemy.laserOrigin.position).normalized;
-                    Debug.Log($"锁定玩家最后位置: {enemy.targetLockPosition}");
-                }
-            }
+            // 计算指向玩家的方向
+            Vector2 dirToPlayer = ((Vector2)enemy.lockedPlayer.position - (Vector2)enemy.laserOrigin.position).normalized;
+            enemy.currentLaserDirection = dirToPlayer;
+            enemy.targetLockPosition = enemy.lockedPlayer.position;
             
             // 更新激光显示
             UpdateLaserVisualization(enemy.currentLaserDirection, Color.red);
@@ -177,8 +207,23 @@ public class FlyingInsectLaserState : EnemyState
             if (!IsPlayerStillInSight())
             {
                 Debug.Log("玩家丢失，提前结束锁定");
+                enemy.lockedPlayer = null;
                 yield break;
             }
+            
+            yield return null;
+        }
+        
+        // 第二阶段：锁定最后位置1秒
+        float lockRemainingTime = enemy.lockDuration - enemy.followDuration;
+        phaseTimer = 0f;
+        
+        while (phaseTimer < lockRemainingTime && isLaserActive)
+        {
+            phaseTimer += Time.deltaTime;
+            
+            // 保持锁定最后的方向
+            UpdateLaserVisualization(enemy.currentLaserDirection, Color.red);
             
             yield return null;
         }
@@ -186,69 +231,26 @@ public class FlyingInsectLaserState : EnemyState
         Debug.Log("锁定阶段结束");
     }
     
-    // 检查玩家是否仍在视野内
-    private bool IsPlayerStillInSight()
-    {
-        if (enemy.lockedPlayer == null) return false;
-        
-        Vector2 origin = enemy.laserOrigin.position;
-        Vector2 dirToPlayer = ((Vector2)enemy.lockedPlayer.position - origin).normalized;
-        float distance = Vector2.Distance(origin, enemy.lockedPlayer.position);
-        
-        // 距离检查
-        if (distance > enemy.laserSectorRadius) return false;
-        
-        // 角度检查
-        float angleToPlayer = Vector2.Angle(enemyBase.transform.right, dirToPlayer);
-        if (angleToPlayer > enemy.laserSectorAngle / 2) return false;
-        
-        // 障碍物检查
-        RaycastHit2D hit = Physics2D.Raycast(origin, dirToPlayer, distance, enemy.obstacleLayer);
-        return hit.collider == null;
-    }
-    
-    // 第三阶段：固定方向（短暂停留）
-    private IEnumerator FixedDirectionPhase()
-    {
-        Debug.Log("固定方向阶段");
-        currentPhase = LaserPhase.FixedDirection;
-        phaseTimer = 0f;
-        
-        // 短暂停留0.5秒
-        float fixedDuration = 0.5f;
-        
-        while (phaseTimer < fixedDuration)
-        {
-            phaseTimer += Time.deltaTime;
-            
-            // 更新激光显示（紫色）
-            UpdateLaserVisualization(enemy.currentLaserDirection, new Color(1, 0, 1)); // 洋红色
-            
-            yield return null;
-        }
-        
-        Debug.Log("固定方向阶段结束");
-    }
-    
-    // 第四阶段：伤害判定
-    private IEnumerator DamagingPhase()
+    // 伤害判定阶段
+    private IEnumerator PerformDamagingPhase()
     {
         Debug.Log("开始伤害判定阶段");
         currentPhase = LaserPhase.Damaging;
         phaseTimer = 0f;
         damageTimer = 0f;
         
-        // 设置激光颜色为红色（伤害颜色）
-        enemy.laserLineRenderer.startColor = Color.red;
-        enemy.laserLineRenderer.endColor = Color.red;
+        // 设置激光颜色为深红色（伤害颜色）
+        Color damageColor = new Color(0.8f, 0.1f, 0.1f);
+        enemy.laserLineRenderer.startColor = damageColor;
+        enemy.laserLineRenderer.endColor = damageColor;
         
-        while (phaseTimer < enemy.damageDuration)
+        while (phaseTimer < enemy.damageDuration && isLaserActive)
         {
             phaseTimer += Time.deltaTime;
             damageTimer += Time.deltaTime;
             
             // 更新激光显示
-            UpdateLaserVisualization(enemy.currentLaserDirection, Color.red);
+            UpdateLaserVisualization(enemy.currentLaserDirection, damageColor);
             
             // 定期造成伤害
             if (damageTimer >= enemy.damageInterval)
@@ -266,6 +268,8 @@ public class FlyingInsectLaserState : EnemyState
     // 更新激光可视化
     private void UpdateLaserVisualization(Vector2 direction, Color color)
     {
+        if (enemy.laserLineRenderer == null || enemy.laserOrigin == null) return;
+        
         Vector2 origin = enemy.laserOrigin.position;
         
         // 射线检测
@@ -281,6 +285,60 @@ public class FlyingInsectLaserState : EnemyState
         // 更新颜色
         enemy.laserLineRenderer.startColor = color;
         enemy.laserLineRenderer.endColor = color;
+    }
+    
+    // 检测扇形区域内玩家
+    private bool DetectPlayerInSector(Vector2 scanDirection)
+    {
+        Vector2 origin = enemy.laserOrigin.position;
+        
+        // 使用OverlapCircle检测所有玩家
+        Collider2D[] players = Physics2D.OverlapCircleAll(origin, enemy.laserSectorRadius, enemy.playerLayer);
+        
+        foreach (Collider2D player in players)
+        {
+            Vector2 dirToPlayer = ((Vector2)player.transform.position - origin).normalized;
+            
+            // 计算角度是否在扇形内
+            float angleToPlayer = Vector2.Angle(scanDirection, dirToPlayer);
+            
+            if (angleToPlayer <= 5f) // 使用较小的角度容差
+            {
+                // 检查是否有障碍物阻挡
+                float distance = Vector2.Distance(origin, player.transform.position);
+                RaycastHit2D hit = Physics2D.Raycast(origin, dirToPlayer, distance, enemy.obstacleLayer);
+                
+                if (hit.collider == null)
+                {
+                    enemy.lockedPlayer = player.transform;
+                    enemy.targetLockPosition = player.transform.position;
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    
+    // 检查玩家是否仍在视野内
+    private bool IsPlayerStillInSight()
+    {
+        if (enemy.lockedPlayer == null) return false;
+        
+        Vector2 origin = enemy.laserOrigin.position;
+        Vector2 dirToPlayer = ((Vector2)enemy.lockedPlayer.position - origin).normalized;
+        float distance = Vector2.Distance(origin, enemy.lockedPlayer.position);
+        
+        // 距离检查
+        if (distance > enemy.laserSectorRadius) return false;
+        
+        // 角度检查（允许稍微大一点的角度容差）
+        float angleToPlayer = Vector2.Angle(enemyBase.transform.right, dirToPlayer);
+        if (angleToPlayer > enemy.laserSectorAngle / 2 + 10f) return false;
+        
+        // 障碍物检查
+        RaycastHit2D hit = Physics2D.Raycast(origin, dirToPlayer, distance, enemy.obstacleLayer);
+        return hit.collider == null;
     }
     
     // 应用激光伤害
@@ -303,43 +361,9 @@ public class FlyingInsectLaserState : EnemyState
                 
                 if (obstacleCheck.collider == null)
                 {
-                    // todo 对玩家造成伤害
-                    
+                    // TODO 对玩家造成伤害
                 }
             }
         }
-    }
-    
-    // 辅助方法：扇形区域内检测玩家（更精确的方法）
-    private bool DetectPlayerInSector(Vector2 scanDirection)
-    {
-        Vector2 origin = enemy.laserOrigin.position;
-        
-        // 使用OverlapCircle检测所有玩家
-        Collider2D[] players = Physics2D.OverlapCircleAll(origin, enemy.laserSectorRadius, enemy.playerLayer);
-        
-        foreach (Collider2D player in players)
-        {
-            Vector2 dirToPlayer = ((Vector2)player.transform.position - origin).normalized;
-            
-            // 计算角度是否在扇形内
-            float angleToPlayer = Vector2.Angle(enemyBase.transform.right, dirToPlayer);
-            
-            if (angleToPlayer <= enemy.laserSectorAngle / 2)
-            {
-                // 检查是否有障碍物阻挡
-                float distance = Vector2.Distance(origin, player.transform.position);
-                RaycastHit2D hit = Physics2D.Raycast(origin, dirToPlayer, distance, enemy.obstacleLayer);
-                
-                if (hit.collider == null)
-                {
-                    enemy.lockedPlayer = player.transform;
-                    enemy.targetLockPosition = player.transform.position;
-                    return true;
-                }
-            }
-        }
-        
-        return false;
     }
 }
