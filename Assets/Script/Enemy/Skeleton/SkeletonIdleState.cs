@@ -24,8 +24,8 @@ public class SkeletonIdleState : SkeletonGroundedState
         stateTimer = enemy.idleTime;
     }
 
-    public override void Exist()
+    public override void Exit()
     {
-        base.Exist();
+        base.Exit();
     }
 }

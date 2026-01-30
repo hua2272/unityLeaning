@@ -20,8 +20,8 @@ public class FlyingInsectAttackState : EnemyState
         base.Enter();
     }
 
-    public override void Exist()
+    public override void Exit()
     {
-        base.Exist();
+        base.Exit();
     }
 }

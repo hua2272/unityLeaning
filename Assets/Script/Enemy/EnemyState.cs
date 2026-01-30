@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyState
+public class EnemyState : MonoBehaviour
 {
     protected EnemyStateMachine stateMachine;
     protected Enemy enemyBase;
@@ -31,7 +31,7 @@ public class EnemyState
         triggerCalled = false;
     }
 
-    public virtual void Exist()
+    public virtual void Exit()
     {
         enemyBase.anim.SetBool(animBoolName, false);
         enemyBase.AssignLastAnimName(animBoolName);

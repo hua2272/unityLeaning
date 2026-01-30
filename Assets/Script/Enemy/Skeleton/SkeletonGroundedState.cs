@@ -27,8 +27,8 @@ public class SkeletonGroundedState : EnemyState
         player = PlayerManager.instance.player.transform;
     }
 
-    public override void Exist()
+    public override void Exit()
     {
-        base.Exist();
+        base.Exit();
     }
 }

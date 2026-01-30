@@ -26,9 +26,9 @@ public class SkeletonStunnedState : EnemyState
         rb.velocity = new Vector2(-enemy.facingDir * enemy.stunDirection.x, enemy.stunDirection.y);
     }
 
-    public override void Exist()
+    public override void Exit()
     {
-        base.Exist();
+        base.Exit();
         enemy.fx.Invoke("CancelRedBlink", 0);
     }
 }

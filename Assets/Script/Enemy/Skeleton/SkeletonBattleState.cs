@@ -51,9 +51,9 @@ public class SkeletonBattleState : EnemyState
         player = PlayerManager.instance.player.transform;
     }
 
-    public override void Exist()
+    public override void Exit()
     {
-        base.Exist();
+        base.Exit();
     }
 
     private bool CanAttack()

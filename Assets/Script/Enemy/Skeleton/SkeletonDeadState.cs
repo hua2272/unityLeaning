@@ -30,8 +30,8 @@ public class SkeletonDeadState : EnemyState
         stateTimer = 0.1f;
     }
 
-    public override void Exist()
+    public override void Exit()
     {
-        base.Exist();
+        base.Exit();
     }
 }

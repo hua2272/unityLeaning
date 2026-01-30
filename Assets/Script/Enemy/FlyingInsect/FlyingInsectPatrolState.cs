@@ -44,8 +44,8 @@ public class FlyingInsectPatrolState : EnemyState
         stateTimer = enemy.idleTime;
     }
 
-    public override void Exist()
+    public override void Exit()
     {
-        base.Exist();
+        base.Exit();
     }
 }
