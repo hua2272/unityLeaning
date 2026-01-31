@@ -32,9 +32,6 @@ public class FlyingInsectLaserState : EnemyState
         
         Debug.Log("进入激光攻击状态");
         
-        // 初始化激光
-        enemy.InitializeLaser();
-        
         // 重置所有参数
         ResetLaserState();
         
@@ -51,8 +48,9 @@ public class FlyingInsectLaserState : EnemyState
         
         Debug.Log("退出激光攻击状态");
         
-        // 标记激光为非激活状态
-        isLaserActive = false;
+        
+        isLaserActive = false;// 标记激光为非激活状态
+        rb.isKinematic = false;// 不受重力影响
         
         // 停止激光协程
         if (laserCoroutine != null)
@@ -106,8 +104,11 @@ public class FlyingInsectLaserState : EnemyState
     // 激光攻击主协程
     private IEnumerator LaserAttackRoutine()
     {
+        enemy.ZeroVelocity();
+        rb.isKinematic = true;
         // 第一阶段：扇形扫描（寻找目标）
         yield return enemy.StartCoroutine(PerformScanningPhase());
+        yield return new WaitForSeconds(2f);
 
         // 如果扫描阶段没有找到目标，直接退出
         if (enemy.lockedPlayer == null)
@@ -119,6 +120,7 @@ public class FlyingInsectLaserState : EnemyState
         
         // 第二阶段：锁定跟踪
         yield return enemy.StartCoroutine(PerformLockingPhase());
+        yield return new WaitForSeconds(2f);
         
         // 第三阶段：伤害判定
         yield return enemy.StartCoroutine(PerformDamagingPhase());

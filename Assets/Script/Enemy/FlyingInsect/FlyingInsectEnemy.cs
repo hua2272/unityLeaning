@@ -62,32 +62,6 @@ public class FlyingInsectEnemy : Enemy
     {
         base.Update();
     }
-    
-    // 初始化激光
-    public void InitializeLaser()
-    {
-        // 如果没有指定激光起点，创建一个
-        if (laserOrigin == null)
-        {
-            GameObject originObj = new GameObject("LaserOrigin");
-            originObj.transform.SetParent(transform);
-            originObj.transform.localPosition = laserOriginOffset;
-            laserOrigin = originObj.transform;
-        }
-        
-        // 初始化LineRenderer
-        if (laserLineRenderer == null)
-        {
-            laserLineRenderer = gameObject.AddComponent<LineRenderer>();
-            laserLineRenderer.startWidth = 0.15f;
-            laserLineRenderer.endWidth = 0.05f;
-            laserLineRenderer.positionCount = 2;
-            laserLineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-            laserLineRenderer.startColor = Color.yellow;
-            laserLineRenderer.endColor = Color.yellow;
-            laserLineRenderer.enabled = false;
-        }
-    }
 
     public override void Die()
     {
