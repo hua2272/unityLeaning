@@ -21,8 +21,7 @@ public class FlyingInsectLaserState : EnemyState
     private float scanSpeed = 180f;
     private bool isLaserActive = false;
 
-    public FlyingInsectLaserState(Enemy enemyBase, EnemyStateMachine stateMachine, string animBoolName, FlyingInsectEnemy enemy) 
-        : base(enemyBase, stateMachine, animBoolName)
+    public FlyingInsectLaserState(Enemy enemyBase, EnemyStateMachine stateMachine, string animBoolName, FlyingInsectEnemy enemy) : base(enemyBase, stateMachine, animBoolName)
     {
         this.enemy = enemy;
     }
@@ -43,7 +42,7 @@ public class FlyingInsectLaserState : EnemyState
         isLaserActive = true;
         
         // 开始激光攻击协程
-        laserCoroutine = enemyBase.StartCoroutine(LaserAttackRoutine());
+        laserCoroutine = enemy.StartCoroutine(LaserAttackRoutine());
     }
     
     public override void Exit()
@@ -58,7 +57,7 @@ public class FlyingInsectLaserState : EnemyState
         // 停止激光协程
         if (laserCoroutine != null)
         {
-            enemyBase.StopCoroutine(laserCoroutine);
+            enemy.StopCoroutine(laserCoroutine);
             laserCoroutine = null;
         }
         
@@ -81,7 +80,7 @@ public class FlyingInsectLaserState : EnemyState
     {
         enemy.lockedPlayer = null;
         enemy.laserStateTimer = 0f;
-        enemy.currentLaserDirection = enemyBase.transform.right;
+        enemy.currentLaserDirection = enemy.transform.right;
         enemy.targetLockPosition = Vector2.zero;
         
         currentPhase = LaserPhase.Scanning;
@@ -108,7 +107,7 @@ public class FlyingInsectLaserState : EnemyState
     private IEnumerator LaserAttackRoutine()
     {
         // 第一阶段：扇形扫描（寻找目标）
-        yield return StartCoroutine(PerformScanningPhase());
+        yield return enemy.StartCoroutine(PerformScanningPhase());
 
         // 如果扫描阶段没有找到目标，直接退出
         if (enemy.lockedPlayer == null)
@@ -119,10 +118,10 @@ public class FlyingInsectLaserState : EnemyState
         }
         
         // 第二阶段：锁定跟踪
-        yield return StartCoroutine(PerformLockingPhase());
+        yield return enemy.StartCoroutine(PerformLockingPhase());
         
         // 第三阶段：伤害判定
-        yield return StartCoroutine(PerformDamagingPhase());
+        yield return enemy.StartCoroutine(PerformDamagingPhase());
 
         // 激光攻击结束
         Debug.Log("激光攻击完成");
@@ -158,7 +157,7 @@ public class FlyingInsectLaserState : EnemyState
                       - enemy.laserSectorAngle / 2;
             
             // 计算扫描方向
-            Vector2 scanDir = Quaternion.Euler(0, 0, scanAngle) * enemyBase.transform.right;
+            Vector2 scanDir = Quaternion.Euler(0, 0, scanAngle) * enemy.transform.right;
             
             // 更新激光可视化
             UpdateLaserVisualization(scanDir, Color.yellow);
@@ -333,7 +332,7 @@ public class FlyingInsectLaserState : EnemyState
         if (distance > enemy.laserSectorRadius) return false;
         
         // 角度检查（允许稍微大一点的角度容差）
-        float angleToPlayer = Vector2.Angle(enemyBase.transform.right, dirToPlayer);
+        float angleToPlayer = Vector2.Angle(enemy.transform.right, dirToPlayer);
         if (angleToPlayer > enemy.laserSectorAngle / 2 + 10f) return false;
         
         // 障碍物检查

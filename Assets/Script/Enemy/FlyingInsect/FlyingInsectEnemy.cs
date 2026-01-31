@@ -55,7 +55,7 @@ public class FlyingInsectEnemy : Enemy
     protected override void Start()
     {
         base.Start();
-        stateMachine.Initialize(patrolState);
+        stateMachine.Initialize(laserState);
     }
     
     protected override void Update()

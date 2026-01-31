@@ -1195,7 +1195,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &65791140
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5708,7 +5708,7 @@ Transform:
   m_GameObject: {fileID: 596385010}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.15, y: -5.65, z: 0}
+  m_LocalPosition: {x: -10.83, y: -1.47, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8206,6 +8206,7 @@ Transform:
   - {fileID: 1142537680}
   - {fileID: 120670808}
   - {fileID: 250789734}
+  - {fileID: 2069473647}
   m_Father: {fileID: 635846061}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &783262847
@@ -8275,7 +8276,21 @@ MonoBehaviour:
     m_Bits: 64
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8
+  laserSectorAngle: 60
+  laserSectorRadius: 10
+  laserOriginOffset: {x: 0, y: 0}
+  lockDuration: 2
+  followDuration: 1
+  damageDuration: 1
+  laserDamage: 10
+  damageInterval: 0.5
+  laserLineRenderer: {fileID: 0}
+  laserOrigin: {fileID: 2069473647}
+  currentLaserDirection: {x: 0, y: 0}
+  targetLockPosition: {x: 0, y: 0}
+  lockedPlayer: {fileID: 0}
+  laserStateTimer: 0
 --- !u!70 &783262848
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -8677,7 +8692,7 @@ Transform:
   m_GameObject: {fileID: 818595348}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.77, y: -5.73, z: 0}
+  m_LocalPosition: {x: -7.39, y: 1.33, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17607,7 +17622,7 @@ Transform:
   m_GameObject: {fileID: 2050972581}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.5, y: -3.99, z: 0}
+  m_LocalPosition: {x: -3.06, y: -2.08, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17666,6 +17681,37 @@ MonoBehaviour:
   defaultThumbnail: {fileID: 21300000, guid: af8a72c2c1fd39b44b0a4ff9ca2394b0, type: 3}
   thresholdTop: 5
   scrollStep: 100
+--- !u!1 &2069473646
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2069473647}
+  m_Layer: 7
+  m_Name: laser
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2069473647
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2069473646}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.96, y: -1.43, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 783262846}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2081604110
 GameObject:
   m_ObjectHideFlags: 0
