@@ -6,7 +6,8 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] protected LayerMask whatIsPlayer;
+    public LayerMask playerMask;
+    public LayerMask obstacleMask;
 
     [Header("Stunned Info")] 
     public float stunDuration;
@@ -18,6 +19,10 @@ public class Enemy : MonoBehaviour
     public float moveSpeed;
     public float idleTime;
     public float battleTime;
+    
+    [Header("Detect Info")]
+    public float radius = 10;
+    public float coneAngle = 60;
 
     [Header("Attack info")] 
     public float attackDistance;
@@ -145,29 +150,65 @@ public class Enemy : MonoBehaviour
     
     public virtual void AnimationFinishTrigger() => stateMachine.currentState.AnimationFinishTrigger();
     
-    public virtual RaycastHit2D IsPlayerDetected() => Physics2D.Raycast(wallCheck.position, Vector2.right * facingDir, 50, whatIsPlayer);
+    public virtual RaycastHit2D IsPlayerDetected() => Physics2D.Raycast(wallCheck.position, Vector2.right * facingDir, 50, playerMask);
 
-    public Collider2D[] ConeCast(Vector2 origin, float maxRadius, Vector2 direction, float coneAngle)
+    public RaycastHit2D IsPlayerDetectedInCone(Transform center, Vector2 direction)
     {
-        // 先获取圆形区域内的所有玩家碰撞体
-        Collider2D[] allColliders = Physics2D.OverlapCircleAll(origin, maxRadius, whatIsPlayer);
+        Vector2 centerPos = center.position;
+        float halfAngle = coneAngle * 0.5f;
+        float cosHalfAngle = Mathf.Cos(halfAngle * Mathf.Deg2Rad);
     
-        // 筛选在锥形角度内的碰撞体
-        List<Collider2D> coneColliders = new List<Collider2D>();
+        // 1. 直接使用圆形检测（最简单）
+        Collider2D[] results = new Collider2D[10];
+        int hitCount = Physics2D.OverlapCircleNonAlloc(
+            centerPos,
+            radius,
+            results,
+            playerMask
+        );
     
-        foreach (Collider2D collider in allColliders)
+        RaycastHit2D closestHit = new RaycastHit2D();
+        float closestDistance = Mathf.Infinity;
+    
+        // 2. 快速筛选
+        for (int i = 0; i < hitCount; i++)
         {
-            Vector2 toCollider = (Vector2)collider.transform.position - origin;
-            float angle = Vector2.Angle(direction, toCollider);
+            Collider2D playerCollider = results[i];
+            Vector2 playerPos = playerCollider.transform.position;
+            Vector2 toPlayer = (playerPos - centerPos);
         
-            if (angle <= coneAngle / 2)
+            // 快速距离平方检查
+            float sqrDistance = toPlayer.sqrMagnitude;
+            if (sqrDistance > radius * radius) continue;
+        
+            // 快速角度检查（使用点积）
+            toPlayer.Normalize();
+            if (Vector2.Dot(direction, toPlayer) >= cosHalfAngle)
             {
-                coneColliders.Add(collider);
+                float distance = Mathf.Sqrt(sqrDistance);
+            
+                // 障碍物检测
+                if (!Physics2D.Raycast(centerPos, toPlayer, distance, obstacleMask))
+                {
+                    // 最后的精确检测
+                    RaycastHit2D hit = Physics2D.Raycast(
+                        centerPos, 
+                        toPlayer, 
+                        distance, 
+                        playerMask
+                    );
+                
+                    if (hit.collider != null && distance < closestDistance)
+                    {
+                        closestHit = hit;
+                        closestDistance = distance;
+                    }
+                }
             }
         }
-        return coneColliders.ToArray();
-    }
     
+        return closestHit;
+    }
 
     
     public virtual void DamageEffect()

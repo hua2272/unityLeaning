@@ -15,6 +15,12 @@ public class FlyingInsectPatrolState : EnemyState
     {
         base.Update();
         if (enemy.patrolPoints.Length == 0) return;
+        RaycastHit2D playerHit = enemy.IsPlayerDetectedInCone(enemy.transform, new Vector2(enemy.facingDir, 0));
+        if (playerHit.collider != null)
+        {
+            Debug.Log("-----------进入battleState");
+            stateMachine.ChangeState(enemy.battleState);
+        }
         
         Vector2 targetPosition = enemy.patrolPoints[enemy.currentPatrolIndex].position;             //移动到当前巡逻点
         Vector2 direction = (targetPosition - (Vector2)enemy.transform.position).normalized;
@@ -30,11 +36,6 @@ public class FlyingInsectPatrolState : EnemyState
         {
             enemy.currentPatrolIndex = (enemy.currentPatrolIndex + 1) % enemy.patrolPoints.Length;      //切换到下一个巡逻点
             stateTimer = enemy.idleTime;
-        }
-
-        if (enemy.ConeCast(enemy.origin, enemy.maxRadius, enemy.direction, enemy.coneAngle).Length > 0)
-        {
-            stateMachine.ChangeState(enemy.attackState);
         }
     }
 

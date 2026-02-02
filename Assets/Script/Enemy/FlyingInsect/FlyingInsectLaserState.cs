@@ -33,7 +33,15 @@ public class FlyingInsectLaserState : EnemyState
         Debug.Log("进入激光攻击状态");
         
         // 重置所有参数
-        ResetLaserState();
+        enemy.lockedPlayer = null;
+        enemy.laserStateTimer = 0f;
+        enemy.currentLaserDirection = enemy.transform.right;
+        enemy.targetLockPosition = Vector2.zero;
+        
+        currentPhase = LaserPhase.Scanning;
+        phaseTimer = 0f;
+        damageTimer = 0f;
+        scanAngle = 0f;
         
         // 标记激光为激活状态
         isLaserActive = true;
@@ -45,10 +53,7 @@ public class FlyingInsectLaserState : EnemyState
     public override void Exit()
     {
         base.Exit();
-        
         Debug.Log("退出激光攻击状态");
-        
-        
         isLaserActive = false;// 标记激光为非激活状态
         rb.isKinematic = false;// 不受重力影响
         
@@ -60,7 +65,11 @@ public class FlyingInsectLaserState : EnemyState
         }
         
         // 清理激光效果
-        CleanupLaserEffects();
+        enemy.laserLineRenderer.enabled = false;
+        enemy.lockedPlayer = null;
+        enemy.currentLaserDirection = Vector2.zero;
+        
+        // stateMachine.ChangeState(enemy.battleState);
     }
     
     public override void Update()
@@ -71,34 +80,6 @@ public class FlyingInsectLaserState : EnemyState
         
         // 更新激光状态计时器
         enemy.laserStateTimer += Time.deltaTime;
-    }
-    
-    // 重置激光状态参数
-    private void ResetLaserState()
-    {
-        enemy.lockedPlayer = null;
-        enemy.laserStateTimer = 0f;
-        enemy.currentLaserDirection = enemy.transform.right;
-        enemy.targetLockPosition = Vector2.zero;
-        
-        currentPhase = LaserPhase.Scanning;
-        phaseTimer = 0f;
-        damageTimer = 0f;
-        scanAngle = 0f;
-    }
-    
-    // 清理激光效果
-    private void CleanupLaserEffects()
-    {
-        // 隐藏激光线
-        if (enemy.laserLineRenderer != null)
-        {
-            enemy.laserLineRenderer.enabled = false;
-        }
-        
-        // 重置所有相关变量
-        enemy.lockedPlayer = null;
-        enemy.currentLaserDirection = Vector2.zero;
     }
 
     // 激光攻击主协程
@@ -275,7 +256,7 @@ public class FlyingInsectLaserState : EnemyState
         
         // 射线检测
         RaycastHit2D hit = Physics2D.Raycast(origin, direction, enemy.laserSectorRadius, 
-            enemy.playerLayer | enemy.obstacleLayer);
+            enemy.playerMask | enemy.obstacleMask);
         
         float drawLength = hit.collider != null ? hit.distance : enemy.laserSectorRadius;
         
@@ -294,7 +275,7 @@ public class FlyingInsectLaserState : EnemyState
         Vector2 origin = enemy.laserOrigin.position;
         
         // 使用OverlapCircle检测所有玩家
-        Collider2D[] players = Physics2D.OverlapCircleAll(origin, enemy.laserSectorRadius, enemy.playerLayer);
+        Collider2D[] players = Physics2D.OverlapCircleAll(origin, enemy.laserSectorRadius, enemy.playerMask);
         
         foreach (Collider2D player in players)
         {
@@ -307,7 +288,7 @@ public class FlyingInsectLaserState : EnemyState
             {
                 // 检查是否有障碍物阻挡
                 float distance = Vector2.Distance(origin, player.transform.position);
-                RaycastHit2D hit = Physics2D.Raycast(origin, dirToPlayer, distance, enemy.obstacleLayer);
+                RaycastHit2D hit = Physics2D.Raycast(origin, dirToPlayer, distance, enemy.obstacleMask);
                 
                 if (hit.collider == null)
                 {
@@ -338,7 +319,7 @@ public class FlyingInsectLaserState : EnemyState
         if (angleToPlayer > enemy.laserSectorAngle / 2 + 10f) return false;
         
         // 障碍物检查
-        RaycastHit2D hit = Physics2D.Raycast(origin, dirToPlayer, distance, enemy.obstacleLayer);
+        RaycastHit2D hit = Physics2D.Raycast(origin, dirToPlayer, distance, enemy.obstacleMask);
         return hit.collider == null;
     }
     
@@ -349,7 +330,7 @@ public class FlyingInsectLaserState : EnemyState
         
         // 检测射线上的所有玩家
         RaycastHit2D[] hits = Physics2D.RaycastAll(origin, enemy.currentLaserDirection, 
-            enemy.laserSectorRadius, enemy.playerLayer);
+            enemy.laserSectorRadius, enemy.playerMask);
         
         foreach (RaycastHit2D hit in hits)
         {
@@ -358,7 +339,7 @@ public class FlyingInsectLaserState : EnemyState
                 // 检查是否有障碍物
                 float distance = Vector2.Distance(origin, hit.point);
                 RaycastHit2D obstacleCheck = Physics2D.Raycast(origin, enemy.currentLaserDirection, 
-                    distance, enemy.obstacleLayer);
+                    distance, enemy.obstacleMask);
                 
                 if (obstacleCheck.collider == null)
                 {

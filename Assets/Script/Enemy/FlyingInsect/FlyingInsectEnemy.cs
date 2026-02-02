@@ -6,6 +6,7 @@ public class FlyingInsectEnemy : Enemy
     public FlyingInsectPatrolState patrolState { get; private set; }
     public FlyingInsectAttackState attackState { get; private set; }
     public FlyingInsectLaserState laserState { get; private set; }
+    public FlyingInsectBattleState battleState { get; private set; }
     
     [Header("巡逻设置")]
     [SerializeField] public Transform[] patrolPoints; // 巡逻点
@@ -13,18 +14,6 @@ public class FlyingInsectEnemy : Enemy
     [SerializeField] public float patrolWaitTime = 1f; // 到达巡逻点后的等待时间
     [SerializeField] public float patrolHeight = 5f; // 巡逻飞行高度
     public int currentPatrolIndex = 0;
-    public Vector2 origin;
-    public float maxRadius;
-    public Vector2 direction;
-    public float coneAngle;
-    
-    [Header("视野设置")]
-    [SerializeField] public float detectionRange = 10f;
-    [SerializeField] public float attackRange = 7f;
-    [SerializeField] public float minAttackDistance = 3f;
-    [SerializeField] public float visionAngle = 90f;
-    [SerializeField] public LayerMask playerLayer;
-    [SerializeField] public LayerMask obstacleLayer;
     
     [Header("激光技能设置")]
     [SerializeField] public float laserSectorAngle = 60f; // 扇形角度
@@ -48,6 +37,7 @@ public class FlyingInsectEnemy : Enemy
     {
         base.Awake();
         patrolState = new FlyingInsectPatrolState(this, stateMachine, "Patrol", this);
+        battleState = new FlyingInsectBattleState(this, stateMachine, "Patrol", this);
         attackState = new FlyingInsectAttackState(this, stateMachine, "Attack", this);
         laserState = new FlyingInsectLaserState(this, stateMachine, "Laser", this);
     }
@@ -55,7 +45,7 @@ public class FlyingInsectEnemy : Enemy
     protected override void Start()
     {
         base.Start();
-        stateMachine.Initialize(laserState);
+        stateMachine.Initialize(patrolState);
     }
     
     protected override void Update()
