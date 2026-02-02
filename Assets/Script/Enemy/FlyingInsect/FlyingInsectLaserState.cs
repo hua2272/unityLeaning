@@ -68,8 +68,6 @@ public class FlyingInsectLaserState : EnemyState
         enemy.laserLineRenderer.enabled = false;
         enemy.lockedPlayer = null;
         enemy.currentLaserDirection = Vector2.zero;
-        
-        // stateMachine.ChangeState(enemy.battleState);
     }
     
     public override void Update()
@@ -112,7 +110,7 @@ public class FlyingInsectLaserState : EnemyState
         // 确保状态切换回巡逻
         if (isLaserActive)
         {
-            stateMachine.ChangeState(enemy.patrolState);
+            stateMachine.ChangeState(enemy.battleState);
         }
     }
     
@@ -136,11 +134,10 @@ public class FlyingInsectLaserState : EnemyState
             phaseTimer += Time.deltaTime;
             
             // 计算扫描角度（来回扫描）
-            scanAngle = Mathf.PingPong(phaseTimer * scanSpeed, enemy.laserSectorAngle) 
-                      - enemy.laserSectorAngle / 2;
+            scanAngle = Mathf.PingPong(phaseTimer * scanSpeed, enemy.laserSectorAngle) - enemy.laserSectorAngle / 2;
             
             // 计算扫描方向
-            Vector2 scanDir = Quaternion.Euler(0, 0, scanAngle) * enemy.transform.right;
+            Vector2 scanDir = Quaternion.Euler(0, 0, scanAngle) * new Vector2(enemy.facingDir, 0);;
             
             // 更新激光可视化
             UpdateLaserVisualization(scanDir, Color.yellow);
@@ -329,8 +326,7 @@ public class FlyingInsectLaserState : EnemyState
         Vector2 origin = enemy.laserOrigin.position;
         
         // 检测射线上的所有玩家
-        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, enemy.currentLaserDirection, 
-            enemy.laserSectorRadius, enemy.playerMask);
+        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, enemy.currentLaserDirection, enemy.laserSectorRadius, enemy.playerMask);
         
         foreach (RaycastHit2D hit in hits)
         {
@@ -338,8 +334,7 @@ public class FlyingInsectLaserState : EnemyState
             {
                 // 检查是否有障碍物
                 float distance = Vector2.Distance(origin, hit.point);
-                RaycastHit2D obstacleCheck = Physics2D.Raycast(origin, enemy.currentLaserDirection, 
-                    distance, enemy.obstacleMask);
+                RaycastHit2D obstacleCheck = Physics2D.Raycast(origin, enemy.currentLaserDirection, distance, enemy.obstacleMask);
                 
                 if (obstacleCheck.collider == null)
                 {

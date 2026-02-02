@@ -158,14 +158,9 @@ public class Enemy : MonoBehaviour
         float halfAngle = coneAngle * 0.5f;
         float cosHalfAngle = Mathf.Cos(halfAngle * Mathf.Deg2Rad);
     
-        // 1. 直接使用圆形检测（最简单）
+        // 1. 直接使用圆形检测
         Collider2D[] results = new Collider2D[10];
-        int hitCount = Physics2D.OverlapCircleNonAlloc(
-            centerPos,
-            radius,
-            results,
-            playerMask
-        );
+        int hitCount = Physics2D.OverlapCircleNonAlloc(centerPos, radius, results, playerMask);
     
         RaycastHit2D closestHit = new RaycastHit2D();
         float closestDistance = Mathf.Infinity;
@@ -191,12 +186,7 @@ public class Enemy : MonoBehaviour
                 if (!Physics2D.Raycast(centerPos, toPlayer, distance, obstacleMask))
                 {
                     // 最后的精确检测
-                    RaycastHit2D hit = Physics2D.Raycast(
-                        centerPos, 
-                        toPlayer, 
-                        distance, 
-                        playerMask
-                    );
+                    RaycastHit2D hit = Physics2D.Raycast(centerPos, toPlayer, distance, playerMask);
                 
                     if (hit.collider != null && distance < closestDistance)
                     {
@@ -246,11 +236,6 @@ public class Enemy : MonoBehaviour
         facingRight = !facingRight;
         transform.Rotate(0, 180, 0);
     }
-
-    public virtual void FlipController(float _xVelocity)
-    {
-        if (_xVelocity < 0 && facingRight || _xVelocity > 0 && !facingRight) Flip();
-    }
     
     
     public void ZeroVelocity()
@@ -263,7 +248,7 @@ public class Enemy : MonoBehaviour
     {
         if (isKnocked) return;
         rb.velocity = new Vector2(xVelocity, yVelocity);
-        FlipController(xVelocity);
+        if (xVelocity < 0 && facingRight || xVelocity > 0 && !facingRight) Flip();
     }
 
     public virtual void Die() {}
