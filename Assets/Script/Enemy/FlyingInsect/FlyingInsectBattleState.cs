@@ -16,6 +16,7 @@ public class FlyingInsectBattleState : EnemyState
     public override void Enter()
     {
         base.Enter();
+        Debug.Log("-----------进入battleState");
         playerLostTime = 0f;
     }
     

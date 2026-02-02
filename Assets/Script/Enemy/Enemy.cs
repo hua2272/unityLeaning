@@ -219,14 +219,6 @@ public class Enemy : MonoBehaviour
     #region Collision
     public virtual bool isGroundDetected() => Physics2D.Raycast(groundCheck.position, Vector2.down, groundCheckDistance, whatIsGround);
     public virtual bool isWallDetected() => Physics2D.Raycast(groundCheck.position, Vector2.right * facingDir, wallCheckDistance, whatIsGround);
-    protected virtual void OnDrawGizmos()
-    {
-        Gizmos.DrawLine(groundCheck.position, new Vector3(groundCheck.position.x, groundCheck.position.y - groundCheckDistance));
-        Gizmos.DrawLine(wallCheck.position, new Vector3(wallCheck.position.x + wallCheckDistance, wallCheck.position.y));
-        Gizmos.DrawWireSphere(attackCheck.position, attackCheckRadius);
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(transform.position, new Vector3(transform.position.x + attackDistance * facingDir, transform.position.y));
-    }
     #endregion
     
     
@@ -252,4 +244,73 @@ public class Enemy : MonoBehaviour
     }
 
     public virtual void Die() {}
+    
+    protected virtual void OnDrawGizmos()
+    {
+        Gizmos.DrawLine(groundCheck.position, new Vector3(groundCheck.position.x, groundCheck.position.y - groundCheckDistance));
+        Gizmos.DrawLine(wallCheck.position, new Vector3(wallCheck.position.x + wallCheckDistance, wallCheck.position.y));
+        Gizmos.DrawWireSphere(attackCheck.position, attackCheckRadius);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(transform.position, new Vector3(transform.position.x + attackDistance * facingDir, transform.position.y));
+        DrawDetectionCone();
+    }
+    
+    private void DrawDetectionCone()
+    {
+        if (wallCheck == null) return;
+
+        // 设置扇形颜色
+        Gizmos.color = new Color(0, 1, 0, 0.3f); // 半透明绿色
+
+        // 获取扇形中心点和方向
+        Vector2 center = wallCheck.position;
+        Vector2 direction = Vector2.right * facingDir;
+
+        // 计算扇形的左右边界方向
+        float halfAngle = coneAngle * 0.5f;
+        Vector2 leftBoundary = Quaternion.Euler(0, 0, halfAngle) * direction;
+        Vector2 rightBoundary = Quaternion.Euler(0, 0, -halfAngle) * direction;
+
+        // 绘制扇形
+        int segments = 30; // 扇形分割段数，值越大越平滑
+        Vector2[] points = new Vector2[segments + 2];
+
+        // 第一个点是中心点
+        points[0] = center;
+
+        // 计算扇形边缘上的点
+        for (int i = 0; i <= segments; i++)
+        {
+            float angle = -halfAngle + (coneAngle * i / segments);
+            Vector2 dir = Quaternion.Euler(0, 0, angle) * direction;
+            points[i + 1] = center + dir * radius;
+        }
+
+        // 绘制扇形填充（使用三角形）
+        for (int i = 1; i <= segments; i++)
+        {
+            Gizmos.DrawLine(points[0], points[i]);
+            Gizmos.DrawLine(points[i], points[i + 1]);
+        }
+
+        Gizmos.DrawLine(points[0], points[segments + 1]);
+
+        // 可选：绘制扇形边框（更明显）
+        Gizmos.color = Color.green;
+        for (int i = 1; i <= segments; i++)
+        {
+            Gizmos.DrawLine(points[i], points[i + 1]);
+        }
+
+        Gizmos.DrawLine(points[0], points[1]);
+        Gizmos.DrawLine(points[0], points[segments + 1]);
+
+        // 可选：绘制中心方向线
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(center, center + direction.normalized * radius * 0.8f);
+
+        // 可选：绘制检测范围的圆形边界
+        Gizmos.color = new Color(0, 1, 0, 0.1f);
+        Gizmos.DrawWireSphere(center, radius);
+    }
 }
