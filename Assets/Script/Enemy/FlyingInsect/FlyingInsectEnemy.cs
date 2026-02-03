@@ -45,6 +45,7 @@ public class FlyingInsectEnemy : Enemy
     protected override void Start()
     {
         base.Start();
+		rb.isKinematic = true;                                          // 不受重力影响
         stateMachine.Initialize(patrolState);
     }
     
