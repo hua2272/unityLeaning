@@ -4396,7 +4396,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -214.16922, y: -127.4395, z: -201.77933, w: -28.319931}
+  m_margin: {x: -279.87146, y: -247.18703, z: -279.13843, w: -78.126526}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -7732,8 +7732,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 749748308}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7.82, y: -5.44, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -5.45, y: -6.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7751,7 +7751,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f67bf4f07354814da0963fbb36bd225, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectionRadius: 1.17
+  detectionRadius: 2
   promptCanvas: {fileID: 1060916727}
   promptText: {fileID: 454076187}
   promptIcon: {fileID: 0}
@@ -10708,7 +10708,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -6.07, y: -4.59}
+  m_AnchoredPosition: {x: -5.36, y: -3.56}
   m_SizeDelta: {x: 807.285, y: 430.8112}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1060916725
@@ -17877,8 +17877,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 749748309}
   - {fileID: 1060916724}
+  - {fileID: 749748309}
   m_Father: {fileID: 91794164}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2034163275

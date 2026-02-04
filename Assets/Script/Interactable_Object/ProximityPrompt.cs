@@ -26,9 +26,11 @@ public class ProximityPrompt : MonoBehaviour
     private CanvasGroup canvasGroup;
     private bool isPlayerNearby = false;
     private Coroutine fadeCoroutine;
+    private PlayerInputManager playerInputManager;
     
     void Start()
     {
+        playerInputManager = PlayerInputManager.instance;
         canvasGroup = promptCanvas.GetComponent<CanvasGroup>();
         playerTransform = PlayerManager.instance.player.transform;
         canvasGroup.alpha = 0f;             // 初始隐藏UI
@@ -36,9 +38,8 @@ public class ProximityPrompt : MonoBehaviour
         canvasGroup.blocksRaycasts = false;
         
         // 设置提示文本
-        promptText.text = promptMessage;
+        promptText.text = GetContent("1");
         promptText.color = textColor;
-        
     }
     
     void Update()
@@ -59,6 +60,13 @@ public class ProximityPrompt : MonoBehaviour
             if (fadeCoroutine != null) StopCoroutine(fadeCoroutine);
             fadeCoroutine = StartCoroutine(FadePrompt(canvasGroup.alpha, 0f));
         }
+    }
+
+    private string GetContent(string promptMessage)
+    {
+        string confirmKey = playerInputManager.GetActionKeyFormattedName("UIConfirm");
+        string cancelKey = playerInputManager.GetActionKeyFormattedName("UICancel");
+        return $"Confirm: {confirmKey}   Cancel: {cancelKey}";
     }
     
     IEnumerator FadePrompt(float startAlpha, float targetAlpha)

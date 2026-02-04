@@ -82,7 +82,7 @@ public class PlayerInputManager : MonoBehaviour
         waitingForInputPanel.SetActive(false);
     }
     
-    // 新增：获取当前按键显示名称的方法
+    // 新增：获取当前按键显示名称的方法（中文显示）
     public string GetCurrentKeyDisplayName(string actionName)
     {
         if (actionMap.ContainsKey(actionName))
@@ -594,6 +594,16 @@ public class PlayerInputManager : MonoBehaviour
     }
 
     #region 显示名称转换
+    
+    public string GetActionKeyFormattedName(string actionName)
+    {
+        if (actionMap.ContainsKey(actionName))
+        {
+            return GetKeyDisplayName(actionMap[actionName].currentKeyboardKey);
+        }
+        return "None";
+    }
+    
     public string GetDisplayName(string actionName)
     {
         return actionName switch
@@ -625,10 +635,10 @@ public class PlayerInputManager : MonoBehaviour
             KeyCode.Mouse0 => "鼠标左键",
             KeyCode.Mouse1 => "鼠标右键",
             KeyCode.Mouse2 => "鼠标中键",
-            KeyCode.UpArrow => "上箭头",
-            KeyCode.DownArrow => "下箭头", 
-            KeyCode.LeftArrow => "左箭头",
-            KeyCode.RightArrow => "右箭头",
+            KeyCode.UpArrow => "↑",
+            KeyCode.DownArrow => "↓",
+            KeyCode.LeftArrow => "←",
+            KeyCode.RightArrow => "→",
             KeyCode.Return => "回车",
             KeyCode.Escape => "ESC",
             KeyCode.Space => "空格",

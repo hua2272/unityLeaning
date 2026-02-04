@@ -62,7 +62,7 @@ public class GameLoadManager : MonoBehaviour
     public void StartNewGame()
     {
         gameSaveManager.ClearAllTileStates();// 新游戏时清空地形破坏记录
-        SceneTransitionManager.Instance.LoadSceneWithFade("GameScene");
+        SceneManager.LoadScene("NewGame");
     }
 
     public void LoadGame(int slotId)

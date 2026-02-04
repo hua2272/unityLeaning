@@ -488,7 +488,7 @@ public class PreludeMenu : MonoBehaviour
         {
             menuItems.Add(new MenuItemData(0, "continue", 0, null, "继续游戏",  () => gameLoadManager.LoadLatestGame(latestSaveFiles)));
         }
-        menuItems.Add(new MenuItemData(0, "new", 0, null, "新游戏", null));
+        menuItems.Add(new MenuItemData(0, "new", 0, null, "新游戏", () => gameLoadManager.StartNewGame()));
         menuItems.Add(new MenuItemData(0, "select", 0, null, "读取存档", () =>
         {
             currentPanelLevel = 1;
