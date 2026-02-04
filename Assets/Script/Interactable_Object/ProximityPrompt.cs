@@ -33,12 +33,10 @@ public class ProximityPrompt : MonoBehaviour
         playerInputManager = PlayerInputManager.instance;
         canvasGroup = promptCanvas.GetComponent<CanvasGroup>();
         playerTransform = PlayerManager.instance.player.transform;
-        canvasGroup.alpha = 0f;             // 初始隐藏UI
+        canvasGroup.alpha = 0f;                                                     // 初始隐藏UI
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
-        
-        // 设置提示文本
-        promptText.text = GetContent("1");
+        promptText.text = GetContent("1");                            // 设置提示文本
         promptText.color = textColor;
     }
     
@@ -66,7 +64,22 @@ public class ProximityPrompt : MonoBehaviour
     {
         string confirmKey = playerInputManager.GetActionKeyFormattedName("UIConfirm");
         string cancelKey = playerInputManager.GetActionKeyFormattedName("UICancel");
-        return $"Confirm: {confirmKey}   Cancel: {cancelKey}";
+        string moveUp = playerInputManager.GetActionKeyFormattedName("MoveUp");
+        string moveDown = playerInputManager.GetActionKeyFormattedName("MoveDown");
+        string moveLeft = playerInputManager.GetActionKeyFormattedName("MoveLeft");
+        string moveRight = playerInputManager.GetActionKeyFormattedName("MoveRight");
+        string jump = playerInputManager.GetActionKeyFormattedName("Jump");
+        string attack1 = playerInputManager.GetActionKeyFormattedName("Attack_1");
+        string skill1 = playerInputManager.GetActionKeyFormattedName("Skill_1");
+        return $"上：{moveUp}\n" +
+               $"下: {moveDown}\n" +
+               $"左: {moveLeft}\n" +
+               $"右: {moveRight}\n" +
+               $"跳跃: {jump}\n" +
+               $"攻击1: {attack1}\n" +
+               $"技能1: {skill1}\n" +
+               $"确认: {confirmKey}\n" +
+               $"取消: {cancelKey}";
     }
     
     IEnumerator FadePrompt(float startAlpha, float targetAlpha)

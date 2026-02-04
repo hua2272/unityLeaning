@@ -182,7 +182,6 @@ public class PlayerInputManager : MonoBehaviour
         actionButtons.Clear();
 
         // 创建分类和按钮
-        CreateCategoryTitle("游戏行为");
         CreateButtonForAction("MoveUp");
         CreateButtonForAction("MoveDown");
         CreateButtonForAction("MoveLeft");
@@ -194,7 +193,6 @@ public class PlayerInputManager : MonoBehaviour
         CreateButtonForAction("Interact");
         CreateButtonForAction("Menu");
         
-        CreateCategoryTitle("UI行为");
         CreateButtonForAction("UIMenu");
         CreateButtonForAction("UIUp");
         CreateButtonForAction("UIDown");
@@ -207,25 +205,6 @@ public class PlayerInputManager : MonoBehaviour
         
         RefreshLayout();
         OnButtonsCreated?.Invoke();
-    }
-    
-    void CreateCategoryTitle(string title)
-    {
-        GameObject titleObj = new GameObject(title + "Title", typeof(RectTransform));
-        titleObj.transform.SetParent(bindingsContent);
-        
-        LayoutElement layoutElem = titleObj.AddComponent<LayoutElement>();
-        layoutElem.preferredHeight = 40;
-        
-        RectTransform rect = titleObj.GetComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(0, 40);
-        
-        TextMeshProUGUI text = titleObj.AddComponent<TextMeshProUGUI>();
-        text.text = title;
-        text.fontSize = 22;
-        text.alignment = TextAlignmentOptions.Center;
-        text.color = new Color(0.2f, 0.2f, 0.2f);
-        text.fontStyle = FontStyles.Bold;
     }
 
     public void CreateButtonForAction(string actionName)
