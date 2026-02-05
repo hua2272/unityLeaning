@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class SkeletonBattleState : EnemyState
 {
-    private Transform player;
     private Enemy_Skeleton enemy;
     private int moveDir;
     public SkeletonBattleState(Enemy _enemyBase, EnemyStateMachine _stateMachine, string _animBoolName, Enemy_Skeleton enemy) : base(_enemyBase, _stateMachine, _animBoolName)
@@ -48,7 +47,6 @@ public class SkeletonBattleState : EnemyState
     public override void Enter()
     {
         base.Enter();
-        player = PlayerManager.instance.player.transform;
     }
 
     public override void Exit()

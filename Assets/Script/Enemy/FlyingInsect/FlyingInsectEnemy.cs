@@ -28,17 +28,22 @@ public class FlyingInsectEnemy : Enemy
     [SerializeField] public Transform laserOrigin; // 激光起点
     
     // 激光相关公共变量
-    [HideInInspector] public Vector2 currentLaserDirection;
     [HideInInspector] public Vector2 targetLockPosition;
-    [HideInInspector] public Transform lockedPlayer;
     [HideInInspector] public float laserStateTimer = 0f;
+    
+    [Header("冲撞攻击设置")]
+    public float attackSpeed = 15f;
+    public float attackRange = 10f;
+    public float attackDamage = 10f;
+    public float knockbackForce = 5f;
+    public float hitRadius = 0.5f;
 
     protected override void Awake()
     {
         base.Awake();
         patrolState = new FlyingInsectPatrolState(this, stateMachine, "Patrol", this);
         battleState = new FlyingInsectBattleState(this, stateMachine, "Patrol", this);
-        attackState = new FlyingInsectAttackState(this, stateMachine, "Attack", this);
+        attackState = new FlyingInsectAttackState(this, stateMachine, "Attack_Normal", this);
         laserState = new FlyingInsectLaserState(this, stateMachine, "Laser", this);
     }
 
