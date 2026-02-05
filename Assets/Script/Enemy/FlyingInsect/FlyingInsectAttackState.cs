@@ -8,8 +8,10 @@ public class FlyingInsectAttackState : EnemyState
     
     // 冲撞相关参数
     private Vector3 targetPosition;
+    private Vector3 startChargePosition; // 实际开始冲撞的位置
     private bool isCharging = false;
     private bool hasHit = false;
+    private bool isPreparing = true; // 准备阶段标志
     private float chargeSpeed = 15f; // 冲撞速度
     private float rotationSpeed = 10f; // 旋转速度
     private float attackRange = 10f; // 攻击范围
@@ -18,6 +20,14 @@ public class FlyingInsectAttackState : EnemyState
     private float chargeDuration = 1f; // 冲撞持续时间
     private float chargeTimer = 0f;
     public Vector3 startPosition;
+    
+    // 准备阶段参数
+    private float prepareDuration = 1f; // 准备阶段持续时间
+    private float prepareTimer = 0f;
+    private Vector3 prepareTargetPosition; // 准备阶段的目标位置
+    private float prepareDistance = 10f; // 拉开的距离
+    private float angleVariation = 60f; // 角度变化范围（正负值）
+    private float prepareSpeed = 5f; // 准备阶段的移动速度
     
     public FlyingInsectAttackState(Enemy enemyBase, EnemyStateMachine stateMachine, string animBoolName, FlyingInsectEnemy enemy) : base(enemyBase, stateMachine, animBoolName)
     {
@@ -28,92 +38,172 @@ public class FlyingInsectAttackState : EnemyState
     {
         base.Enter();
         Debug.Log("进入冲撞攻击状态");
+        
         // 重置状态
         isCharging = false;
         hasHit = false;
+        isPreparing = true;
         chargeTimer = chargeDuration;
-
+        prepareTimer = 0f;
+        
         startPosition = enemy.transform.position;
-        targetPosition = player.position;   // 锁定玩家当前位置
-        // 可以添加一些预测玩家移动的算法，例如：根据玩家速度和方向预测位置
-        /*
-        Rigidbody2D playerRb = enemy.player.GetComponent<Rigidbody2D>();
-        if (playerRb != null)
-        {
-            float predictionTime = Vector3.Distance(enemy.transform.position, targetPosition) / chargeSpeed;
-            targetPosition += (Vector3)playerRb.velocity * predictionTime;
-        }
-        */
-        Debug.Log($"锁定目标位置: {targetPosition}");
+        targetPosition = player.position;
+        
+        // 计算准备阶段的目标位置（拉开距离）
+        CalculatePreparePosition();
+        
         // 设置冲撞参数
         chargeSpeed = enemy.attackSpeed;
         attackRange = enemy.attackRange;
+        prepareSpeed = chargeSpeed * 0.5f; // 准备阶段速度为冲撞速度的一半
         
-        // 播放攻击动画或音效
+        Debug.Log($"锁定目标位置: {targetPosition}");
+        Debug.Log($"准备位置: {prepareTargetPosition}");
     }
-
+    
+    /// <summary>
+    /// 计算准备阶段的位置（拉开距离）
+    /// </summary>
+    private void CalculatePreparePosition()
+    {
+        // 计算从目标指向当前位置的方向
+        Vector3 toEnemy = (startPosition - targetPosition).normalized;
+        
+        // 添加随机角度偏移
+        float randomAngle = Random.Range(-angleVariation, angleVariation);
+        Quaternion randomRotation = Quaternion.AngleAxis(randomAngle, Vector3.forward);
+        Vector3 prepareDirection = randomRotation * toEnemy;
+        
+        // 计算准备位置
+        prepareTargetPosition = targetPosition + prepareDirection * prepareDistance;
+        
+        // 确保准备位置不会太靠近目标
+        if (Vector3.Distance(prepareTargetPosition, targetPosition) < prepareDistance * 0.5f)
+        {
+            // 如果太近，重新计算
+            CalculatePreparePosition();
+        }
+    }
+    
     public override void Exit()
     {
         base.Exit();
         Debug.Log("退出冲撞攻击状态");
         isCharging = false;
         hasHit = false;
+        isPreparing = false;
     }
 
     public override void Update()
     {
         base.Update();
-        if (!isCharging)
+        
+        if (isPreparing)
         {
-            // 准备阶段：转向目标并锁定位置
-            // 计算朝向目标的向量
-            Vector3 direction = targetPosition - enemy.transform.position;
-        
-            // 转向目标位置
-            if (direction != Vector3.zero)
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(Vector3.forward, direction);
-                enemy.transform.rotation = Quaternion.Slerp(enemy.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-            }
-        
-            // 检查是否已经朝向目标（可以设置一个角度阈值）
-            float angleToTarget = Vector3.Angle(enemy.transform.up, direction.normalized);
-        
-            // 当转向基本完成或经过一定时间后，开始冲撞
-            if (angleToTarget < 5f || stateTimer > 0.5f)
-            {
-                isCharging = true;
-            }
+            HandlePreparationPhase();
+        }
+        else if (!isCharging)
+        {
+            HandleAimingPhase();
         }
         else
         {
-            // 朝目标位置移动
-            Vector3 direction = (targetPosition - enemy.transform.position).normalized;
-            Vector3 movement = direction * chargeSpeed * Time.deltaTime;
+            HandleChargingPhase();
+        }
+    }
+    
+    /// <summary>
+    /// 处理准备阶段（拉开距离）
+    /// </summary>
+    private void HandlePreparationPhase()
+    {
+        // 移动向准备位置
+        Vector3 direction = (prepareTargetPosition - enemy.transform.position).normalized;
+        Vector3 movement = direction * prepareSpeed * Time.deltaTime;
         
-            // 移动敌人
-            enemy.transform.position += movement;
+        // 移动敌人
+        enemy.transform.position += movement;
         
-            // 保持冲撞方向
-            if (direction != Vector3.zero)
-            {
-                enemy.transform.up = direction;
-            }
-            CheckPlayerHit();// 检测是否击中玩家
-            CheckObstacleHit();// 检测是否撞到墙壁或其他障碍物
+        // 转向移动方向
+        if (direction != Vector3.zero)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(Vector3.forward, direction);
+            enemy.transform.rotation = Quaternion.Slerp(enemy.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        }
         
-            // 检查是否超出范围
-            if (Vector3.Distance(startPosition, enemy.transform.position) > attackRange * 2f)
-            {
-                hasHit = true; // 视为冲撞结束 todo 添加后摇状态
-            }
-            
-            // 检查冲撞是否结束
-            chargeTimer -= Time.deltaTime;
-            if (chargeTimer <= 0f || hasHit)
-            {
-                stateMachine.ChangeState(enemy.battleState);
-            }
+        // 更新准备计时器
+        prepareTimer += Time.deltaTime;
+        
+        // 检查是否到达准备位置或超时
+        float distanceToPrepareTarget = Vector3.Distance(enemy.transform.position, prepareTargetPosition);
+        
+        if (distanceToPrepareTarget < 0.5f || prepareTimer >= prepareDuration)
+        {
+            // 准备阶段结束
+            isPreparing = false;
+            startChargePosition = enemy.transform.position; // 记录开始冲撞的位置
+            Debug.Log("准备阶段结束，开始瞄准目标");
+        }
+    }
+    
+    /// <summary>
+    /// 处理瞄准阶段
+    /// </summary>
+    private void HandleAimingPhase()
+    {
+        // 计算朝向目标的向量
+        Vector3 direction = targetPosition - enemy.transform.position;
+        
+        // 转向目标位置
+        if (direction != Vector3.zero)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(Vector3.forward, direction);
+            enemy.transform.rotation = Quaternion.Slerp(enemy.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        }
+        
+        // 检查是否已经朝向目标（可以设置一个角度阈值）
+        float angleToTarget = Vector3.Angle(enemy.transform.up, direction.normalized);
+        
+        // 当转向基本完成或经过一定时间后，开始冲撞
+        if (angleToTarget < 5f || stateTimer > 1f)
+        {
+            isCharging = true;
+            Debug.Log("开始冲撞攻击！");
+        }
+    }
+    
+    /// <summary>
+    /// 处理冲撞阶段
+    /// </summary>
+    private void HandleChargingPhase()
+    {
+        // 朝目标位置移动
+        Vector3 direction = (targetPosition - enemy.transform.position).normalized;
+        Vector3 movement = direction * chargeSpeed * Time.deltaTime;
+        
+        // 移动敌人
+        enemy.transform.position += movement;
+        
+        // 保持冲撞方向
+        if (direction != Vector3.zero)
+        {
+            enemy.transform.up = direction;
+        }
+        
+        CheckPlayerHit();// 检测是否击中玩家
+        CheckObstacleHit();// 检测是否撞到墙壁或其他障碍物
+        
+        // 检查是否超出范围（从实际开始冲撞的位置计算）
+        if (Vector3.Distance(startChargePosition, enemy.transform.position) > attackRange * 2f)
+        {
+            hasHit = true; // 视为冲撞结束 todo 添加后摇状态
+        }
+        
+        // 检查冲撞是否结束
+        chargeTimer -= Time.deltaTime;
+        if (chargeTimer <= 0f || hasHit)
+        {
+            stateMachine.ChangeState(enemy.battleState);
         }
     }
 
@@ -145,10 +235,6 @@ public class FlyingInsectAttackState : EnemyState
         {
             Debug.Log($"撞到障碍物: {hit.collider.name}");
             hasHit = true;
-            
-            // 可以添加反弹效果
-            // Vector3 reflectDirection = Vector3.Reflect(enemy.transform.up, hit.normal);
-            // enemy.transform.up = reflectDirection;
         }
     }
     
@@ -166,6 +252,14 @@ public class FlyingInsectAttackState : EnemyState
             // 绘制目标位置
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(targetPosition, 0.3f);
+            
+            // 绘制准备位置
+            if (isPreparing)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawWireSphere(prepareTargetPosition, 0.3f);
+                Gizmos.DrawLine(enemy.transform.position, prepareTargetPosition);
+            }
             
             // 绘制冲撞路径
             if (isCharging)
