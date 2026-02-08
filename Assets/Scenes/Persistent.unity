@@ -8511,10 +8511,13 @@ MonoBehaviour:
   damageInterval: 0.5
   laserLineRenderer: {fileID: 2069473648}
   laserOrigin: {fileID: 2069473647}
-  currentLaserDirection: {x: 0, y: 0}
   targetLockPosition: {x: 0, y: 0}
-  lockedPlayer: {fileID: 0}
   laserStateTimer: 0
+  attackSpeed: 15
+  attackRange: 10
+  attackDamage: 10
+  knockbackForce: 5
+  hitRadius: 0.5
 --- !u!70 &783262848
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -15615,7 +15618,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 291865978}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9997592
+  m_Size: 0.99960244
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -16240,7 +16243,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000038555612}
+  m_AnchoredPosition: {x: 0, y: 0.000012882325}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1772407649
@@ -16582,7 +16585,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1840562114
 Transform:
   m_ObjectHideFlags: 0

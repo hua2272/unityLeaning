@@ -323,7 +323,7 @@ public class MenuController : MonoBehaviour
     void InitializeMenuItems()
     {
         menuItems.Clear();
-        menuItems.Add(new MenuItemData(0, "continue", 0, null, "继续游戏", null));
+        menuItems.Add(new MenuItemData(0, "continue", 0, null, "继续游戏", () => panel.SetActive(false)));
         menuItems.Add(new MenuItemData(0, "select", 0, null, "读取存档", () =>
         {
             currentPanelLevel = 1;
@@ -339,7 +339,11 @@ public class MenuController : MonoBehaviour
             currentPanelLevel = 1;
             ShowButtons(1);
         }));
-        menuItems.Add(new MenuItemData(0, "back", 0, null, "返回主界面", null));
+        menuItems.Add(new MenuItemData(0, "back", 0, null, "返回主界面", () =>
+        {
+            gameLoadManager.Return2PreludeMenu();
+            panel.SetActive(false);
+        }));
         menuItems.Add(new MenuItemData(1, null, 0, null, "按键设置", () =>
         {
             currentPanelLevel = 2;

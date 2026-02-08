@@ -23,6 +23,7 @@ public class GameLoadManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
+            DontDestroyOnLoad(gameObject); // 添加这行，确保管理器不被销毁
         }
         else
         {
@@ -63,6 +64,19 @@ public class GameLoadManager : MonoBehaviour
     {
         gameSaveManager.ClearAllTileStates();// 新游戏时清空地形破坏记录
         SceneManager.LoadScene("NewGame");
+    }
+    
+    public void Return2PreludeMenu()
+    {
+        SceneManager.LoadScene("Persistent");
+        StartCoroutine(ActivatePreludeMenuAfterLoad());                                 // 使用协程在场景加载后激活菜单
+    }
+
+    private IEnumerator ActivatePreludeMenuAfterLoad()
+    {
+        yield return null;                                                                     // 等待场景加载完成
+        GameObject preludeMenuDirect = GameObject.Find("Prelude/canvas/PreludeMenu");
+        preludeMenuDirect.SetActive(true);
     }
 
     public void LoadGame(int slotId)
