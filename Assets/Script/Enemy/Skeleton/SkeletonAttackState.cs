@@ -18,6 +18,10 @@ public class SkeletonAttackState : EnemyState
         {
             stateMachine.ChangeState(enemy.battleState);
         }
+        if (player.playerStatus.currentHealth < 0)
+        {
+            stateMachine.ChangeState(enemy.moveState);
+        }
     }
 
     public override void Enter()

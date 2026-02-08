@@ -76,19 +76,25 @@ public class UIManager : MonoBehaviour
                 HideUI(uiDictionary[UIGroup.Title], 0);
                 HideUI(uiDictionary[UIGroup.AutoSaveInfo], 0);
                 HideUI(uiDictionary[UIGroup.PlayerStatus], 0);
+                HideUI(uiDictionary[UIGroup.GameOverInfo], 0);
                 ShowUI(uiDictionary[UIGroup.PressStart], 1);
                 break;
             case UIPreset.Title:
                 HideUI(uiDictionary[UIGroup.PressStart], 0);
                 HideUI(uiDictionary[UIGroup.AutoSaveInfo], 0);
                 HideUI(uiDictionary[UIGroup.PlayerStatus], 0);
+                HideUI(uiDictionary[UIGroup.GameOverInfo], 0);
                 ShowUI(uiDictionary[UIGroup.Title], 1);
                 break;
             case UIPreset.Normal:
                 HideUI(uiDictionary[UIGroup.PressStart], 0);
                 HideUI(uiDictionary[UIGroup.AutoSaveInfo], 0);
                 HideUI(uiDictionary[UIGroup.PlayerStatus], 0);
+                HideUI(uiDictionary[UIGroup.GameOverInfo], 0);
                 HideUI(uiDictionary[UIGroup.Title], 0);
+                break;
+            case UIPreset.GameOver:
+                ShowUI(uiDictionary[UIGroup.GameOverInfo], 1);
                 break;
         }
     }
@@ -165,6 +171,7 @@ public enum UIGroup
     Title,          // 标题
     PlayerStatus,   // 玩家信息
     AutoSaveInfo,   // 自动保存信息
+    GameOverInfo,   // 游戏结束界面
     CombatInfo,     // 战斗信息
     Dialogue,       // 对话
     HealthBar,      // 血条
@@ -177,6 +184,7 @@ public enum UIPreset// UI预设枚举
     PressStart,
     Title,
     Normal,
+    GameOver,
     Combat,
     Exploration,
     Dialogue,

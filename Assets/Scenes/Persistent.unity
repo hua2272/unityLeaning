@@ -1971,6 +1971,7 @@ GameObject:
   - component: {fileID: 179863626}
   - component: {fileID: 179863625}
   - component: {fileID: 179863629}
+  - component: {fileID: 179863630}
   m_Layer: 5
   m_Name: DeathMenuCanvas
   m_TagString: Untagged
@@ -2048,17 +2049,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 179863624}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1707327103}
-  m_Father: {fileID: 1990108852}
+  m_Father: {fileID: 1772407651}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -21.529999, y: 4.55}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &179863629
@@ -2073,10 +2074,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 842ddbc90aebe0046b04e8fec1a2e387, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deathMenuCanvas: {fileID: 179863624}
   menuAnimator: {fileID: 1707327106}
   continueButton: {fileID: 1690024985}
   quitButton: {fileID: 1711452174}
+--- !u!225 &179863630
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 179863624}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &192423684
 GameObject:
   m_ObjectHideFlags: 0
@@ -11322,7 +11334,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   showDebug: 1
-  deathMenu: {fileID: 179863629}
   attackMovement:
   - {x: 3, y: 2}
   - {x: 2, y: 2}
@@ -11455,7 +11466,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health:
-    baseValue: 100
+    baseValue: 10
     modifiers: 
   stamina:
     baseValue: 100
@@ -15496,7 +15507,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1690024986}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1690024986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16289,6 +16312,10 @@ MonoBehaviour:
     textContentId: 4
     isVisible: 0
   - group: 2
+    canvasGroup: {fileID: 179863630}
+    textContentId: 0
+    isVisible: 0
+  - group: 4
     canvasGroup: {fileID: 1005821640}
     textContentId: 0
     isVisible: 0
@@ -16310,6 +16337,7 @@ Transform:
   - {fileID: 350536988}
   - {fileID: 1807796746}
   - {fileID: 458934499}
+  - {fileID: 179863628}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1792941502
@@ -16585,7 +16613,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1840562114
 Transform:
   m_ObjectHideFlags: 0
@@ -17782,7 +17810,6 @@ Transform:
   m_Children:
   - {fileID: 244714874}
   - {fileID: 1967906889}
-  - {fileID: 179863628}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2010816166

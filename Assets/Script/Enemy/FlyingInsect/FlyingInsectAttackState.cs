@@ -47,7 +47,7 @@ public class FlyingInsectAttackState : EnemyState
         prepareTimer = 0f;
         
         startPosition = enemy.transform.position;
-        targetPosition = player.position;
+        targetPosition = player.transform.position;
         
         // 计算准备阶段的目标位置（拉开距离）
         CalculatePreparePosition();
@@ -214,7 +214,7 @@ public class FlyingInsectAttackState : EnemyState
     {
         if (hasHit) return;
         
-        float distanceToPlayer = Vector3.Distance(enemy.transform.position, player.position);
+        float distanceToPlayer = Vector3.Distance(enemy.transform.position, player.transform.position);
         
         if (distanceToPlayer < enemy.hitRadius)
         {

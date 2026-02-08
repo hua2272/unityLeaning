@@ -7,7 +7,7 @@ public class EnemyState
     protected EnemyStateMachine stateMachine;
     protected Enemy enemyBase;
     protected Rigidbody2D rb;
-    protected Transform player;
+    protected Player player;
 
     private string animBoolName;
     protected bool triggerCalled;
@@ -30,7 +30,7 @@ public class EnemyState
         rb = enemyBase.rb;
         enemyBase.anim.SetBool(animBoolName, true);
         triggerCalled = false;
-        player = PlayerManager.instance.player.transform;
+        player = PlayerManager.instance.player;
     }
 
     public virtual void Exit()

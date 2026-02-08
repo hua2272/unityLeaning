@@ -91,6 +91,7 @@ public class GameLoadManager : MonoBehaviour
     public void LoadLatestGame(string latestFilePath)
     {
         StartCoroutine(LoadGameCoroutine(latestFilePath));
+        uiManager.SwitchScene(UIPreset.Normal);
     }
     
     public void OnQuitClicked()

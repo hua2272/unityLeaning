@@ -11,7 +11,6 @@ public class Player : MonoBehaviour
 
     public bool isBusy { get; private set; }
     public GameObject sword { get; private set; }
-    [SerializeField] private DeathMenuController deathMenu;
     
     #region State
     public PlayerStateMachine stateMachine { get; private set; }
@@ -125,8 +124,7 @@ public class Player : MonoBehaviour
     public void Die()
     {
         stateMachine.ChangeState(deadState);
-        //Time.timeScale = 0f; // TODO 清除页面
-        deathMenu.ShowDeathMenu();
+        UIManager.instance.SwitchScene(UIPreset.GameOver);
     }
     
     public virtual void DamageEffect()

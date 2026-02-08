@@ -17,27 +17,24 @@ public class SkeletonBattleState : EnemyState
         if (enemy.IsPlayerDetected())
         {
             stateTimer = enemy.battleTime;
-            if (enemy.IsPlayerDetected().distance < enemy.attackDistance)
+            if (enemy.IsPlayerDetected().distance < enemy.attackDistance && CanAttack() && player.playerStatus.currentHealth > 0)
             {
-                if (CanAttack())
-                {
-                    stateMachine.ChangeState(enemy.attackState);
-                }
+                stateMachine.ChangeState(enemy.attackState);
             }
         }
         else
         {
-            if (stateTimer < 0 || Vector2.Distance(player.position, enemy.transform.position) > 10)
+            if (stateTimer < 0 || Vector2.Distance(player.transform.position, enemy.transform.position) > 10)
             {
                 stateMachine.ChangeState(enemy.idleState);
             }
         }
         
         
-        if (player.position.x > enemy.transform.position.x)
+        if (player.transform.position.x > enemy.transform.position.x)
         {
             moveDir = 1;
-        } else if(player.position.x < enemy.transform.position.x)
+        } else if(player.transform.position.x < enemy.transform.position.x)
         {
             moveDir = -1;
         }
